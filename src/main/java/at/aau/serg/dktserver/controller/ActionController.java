@@ -2,6 +2,7 @@ package at.aau.serg.dktserver.controller;
 
 import at.aau.serg.dktserver.communication.ActionJsonObject;
 import at.aau.serg.dktserver.communication.enums.Action;
+import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
 import at.aau.serg.dktserver.model.Game;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
