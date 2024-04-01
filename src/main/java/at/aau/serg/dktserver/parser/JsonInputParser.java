@@ -27,7 +27,6 @@ public class JsonInputParser implements InputParser {
         try {
             wrapper = gson.fromJson(client_msg, Wrapper.class);
         }catch (Exception e){
-            e.printStackTrace();
             return;
         }
         switch (wrapper.getRequest()){

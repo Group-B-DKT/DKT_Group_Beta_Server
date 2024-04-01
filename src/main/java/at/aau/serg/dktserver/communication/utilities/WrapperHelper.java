@@ -32,7 +32,6 @@ public class WrapperHelper {
         try {
             wrapper = gson.fromJson(json, Wrapper.class);
         }catch (Exception e){
-            e.printStackTrace();
             return null;
         }
         return getInstanceFromWrapper(wrapper);

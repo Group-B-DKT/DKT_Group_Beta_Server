@@ -6,13 +6,15 @@ import lombok.Getter;
 import java.util.Random;
 
 public class Game implements GameHandler {
-    private static Random rng = new Random();
+    private Random rng;
 
     @Getter
     private int id;
 
     public Game(int id) {
+
         this.id = id;
+        rng = new Random();
     }
 
 
