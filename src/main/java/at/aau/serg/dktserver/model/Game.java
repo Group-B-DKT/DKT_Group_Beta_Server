@@ -3,10 +3,10 @@ package at.aau.serg.dktserver.model;
 import at.aau.serg.dktserver.model.interfaces.GameHandler;
 import lombok.Getter;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class Game implements GameHandler {
-    private Random rng;
+    private SecureRandom rng;
 
     @Getter
     private int id;
@@ -14,7 +14,7 @@ public class Game implements GameHandler {
     public Game(int id) {
 
         this.id = id;
-        rng = new Random();
+        rng = new SecureRandom();
     }
 
 
