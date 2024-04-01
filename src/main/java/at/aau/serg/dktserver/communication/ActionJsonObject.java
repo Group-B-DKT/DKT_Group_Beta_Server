@@ -10,7 +10,7 @@ public class ActionJsonObject {
     private Action action;
     private String param;
     private String fromPlayername;
-    
+
     public Action getAction() {
         return action;
     }
