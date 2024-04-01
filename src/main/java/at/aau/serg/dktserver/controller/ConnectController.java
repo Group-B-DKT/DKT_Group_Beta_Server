@@ -10,7 +10,7 @@ public class ConnectController {
     private WebSocketHandlerImpl webSocket;
 
     public ConnectController(){
-        webSocket = webSocket.getInstance();
+        webSocket = WebSocketHandlerImpl.getInstance();
     }
     public void connectUser(String username, String playerId,  int gameId, WebSocketSession session){
         List<String> playerIds = webSocket.getPlayerIds();
