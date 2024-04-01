@@ -1,10 +1,15 @@
 package at.aau.serg.dktserver.websocket.handler;
 
+import at.aau.serg.dktserver.communication.ConnectJsonObject;
+import at.aau.serg.dktserver.communication.enums.ConnectType;
+import at.aau.serg.dktserver.communication.enums.Request;
+import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.parser.JsonInputParser;
 import at.aau.serg.dktserver.parser.interfaces.InputParser;
 import org.springframework.web.socket.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +54,52 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     public boolean supportsPartialMessages() {
         return false;
     }
+
+    public void connectAndAddPlayer(String username, int gameId, String playerId, WebSocketSession session){
+        System.out.println(String.format("%s connects to server...", playerId));
+        PlayerData player = new PlayerData(session, username, playerId, gameId);
+        this.playerData.add(player);
+        reconnectPlayer(playerId);
+    }
+
+    public void reconnectPlayer(String playerId){
+        PlayerData player = this.playerData.stream()
+                .filter(p -> p.getPlayerId().equals(playerId))
+                .findAny().orElse(null);
+        player.setConnected(true);
+
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
+        String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
+
+        sendToUser(player.getUsername(), connectJson);
+    }
+
+    public void sendMessage(int gameId, String msg){
+        System.out.println("HERE" + msg);
+        this.playerData.stream()
+                .filter(p -> p.getGameId() == gameId && p.isConnected())
+                .forEach(p-> {
+                    try {
+                        p.sendMsg(msg);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
+    public void sendToUser(String username, String msg){
+        this.playerData.stream()
+                .filter(p -> p.getUsername().equals(username))
+                .forEach(p-> {
+                    try {
+                        p.sendMsg(msg);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
+
 
     public static WebSocketHandlerImpl getInstance(){
         if (webSocket != null) return webSocket;
