@@ -99,6 +99,15 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
                 });
     }
 
+    public void setSessionOfPlayer(String playerId, WebSocketSession session){
+        this.playerData.stream()
+                .filter(p -> p.getPlayerId().equals(playerId))
+                .forEach(p -> p.setSession(session));
+    }
+
+    public List<String> getPlayerIds() {
+        return this.playerData.stream().map(PlayerData::getPlayerId).toList();
+    }
 
 
     public static WebSocketHandlerImpl getInstance(){
