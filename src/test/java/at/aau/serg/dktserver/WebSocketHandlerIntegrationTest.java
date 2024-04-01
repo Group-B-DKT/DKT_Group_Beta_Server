@@ -50,7 +50,7 @@ class WebSocketHandlerIntegrationTest {
 
         String response = messages.poll(1, TimeUnit.SECONDS);
         ConnectJsonObject connectJsonObjectReceived = (ConnectJsonObject) WrapperHelper.getInstanceFromJson(response);
-        assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED));
+        assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED)).isTrue();
     }
 
     @Test
@@ -69,7 +69,7 @@ class WebSocketHandlerIntegrationTest {
         response = messages.poll(1, TimeUnit.SECONDS);
         ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
         int number = Integer.parseInt(actionJsonObjectReceived.getParam());
-        assertThat(1 >= number && number <= 6);
+        assertThat(1 >= number && number <= 6).isTrue();
     }
 
     private void connectToWebsocket(WebSocketSession session) throws IOException {
