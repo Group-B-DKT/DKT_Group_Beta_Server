@@ -1,5 +1,6 @@
 package at.aau.serg.dktserver.parser;
 
+import at.aau.serg.dktserver.communication.ActionJsonObject;
 import at.aau.serg.dktserver.communication.ConnectJsonObject;
 import at.aau.serg.dktserver.communication.Wrapper;
 import at.aau.serg.dktserver.communication.enums.ConnectType;
@@ -47,6 +48,11 @@ public class JsonInputParser implements InputParser {
     }
 
     private void parseAction(Wrapper wrapper, String fromPLayername){
-        // Todo
+        Object jsonObject = WrapperHelper.getInstanceFromWrapper(wrapper);
+        ActionJsonObject actionJsonObject = jsonObject instanceof ActionJsonObject ? (ActionJsonObject) jsonObject : null;
+
+        if (actionJsonObject == null) return;
+        System.out.println(actionJsonObject);
+        actionController.callAction(actionJsonObject.getAction(), wrapper.getGameId(), fromPLayername);
     }
 }
