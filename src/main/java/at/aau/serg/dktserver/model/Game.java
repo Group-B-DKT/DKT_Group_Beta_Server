@@ -3,7 +3,11 @@ package at.aau.serg.dktserver.model;
 import at.aau.serg.dktserver.model.interfaces.GameHandler;
 import lombok.Getter;
 
+import java.util.Random;
+
 public class Game implements GameHandler {
+    private static Random rng = new Random();
+
     @Getter
     private int id;
 
@@ -14,7 +18,7 @@ public class Game implements GameHandler {
 
     @Override
     public int roll_dice(){
-        return (int) (Math.random() * 10) % 6 + 1;
+        return rng.nextInt(6)+1;
     }
 
 }
