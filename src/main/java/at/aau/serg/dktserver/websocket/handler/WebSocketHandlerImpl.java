@@ -27,8 +27,12 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-        // TODO handle the messages here
-        session.sendMessage(new TextMessage("echo from handler: " + message.getPayload()));
+        PlayerData fromPlayer = this.playerData.stream()
+                .filter(p -> p.getSession().getId().equals(session.getId()))
+                .findAny().orElse(null);
+        String fromPlayername = fromPlayer != null ? fromPlayer.getUsername() : null;
+
+        inputParser.parseInput(message.getPayload().toString(), session, fromPlayername);
     }
 
     @Override
