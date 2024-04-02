@@ -21,6 +21,8 @@ public class ActionController {
     public void callAction(Action action, int gameId, String fromUsername){
         switch (action){
             case ROLL_DICE -> rollDice(gameId, fromUsername);
+            case CREATE_GAME -> gameManager.createGame(webSocket.getPlayerByUsername(fromUsername));
+            case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
         }
     }
 
