@@ -2,11 +2,9 @@ package at.aau.serg.dktserver;
 
 import at.aau.serg.dktserver.communication.ActionJsonObject;
 import at.aau.serg.dktserver.communication.ConnectJsonObject;
-import at.aau.serg.dktserver.communication.InfoJsonObject;
 import at.aau.serg.dktserver.communication.Wrapper;
 import at.aau.serg.dktserver.communication.enums.Action;
 import at.aau.serg.dktserver.communication.enums.ConnectType;
-import at.aau.serg.dktserver.communication.enums.Info;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
 import at.aau.serg.dktserver.websocket.WebSocketHandlerClientImpl;
@@ -71,25 +69,7 @@ class WebSocketHandlerIntegrationTest {
         response = messages.poll(1, TimeUnit.SECONDS);
         ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
         int number = Integer.parseInt(actionJsonObjectReceived.getParam());
-        assertThat(1 <= number && number <= 6).isTrue();
-    }
-
-    @Test
-    public void testWebSocketHandlerInfoGameList() throws Exception {
-        WebSocketSession session = initStompSession();
-
-        connectToWebsocket(session);
-
-        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, -1);
-        Wrapper wrapper = new Wrapper(infoJsonObject.getClass().getSimpleName(), -1, Request.INFO, infoJsonObject);
-        String msg = gson.toJson(wrapper);
-
-        session.sendMessage(new TextMessage(msg));
-
-        String response = messages.poll(1, TimeUnit.SECONDS);
-        response = messages.poll(1, TimeUnit.SECONDS);
-
-        assertThat("Test");
+        assertThat(1 >= number && number <= 6).isTrue();
     }
 
     private void connectToWebsocket(WebSocketSession session) throws IOException {

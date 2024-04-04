@@ -2,11 +2,8 @@ package at.aau.serg.dktserver.communication.utilities;
 
 import at.aau.serg.dktserver.communication.ActionJsonObject;
 import at.aau.serg.dktserver.communication.ConnectJsonObject;
-import at.aau.serg.dktserver.communication.InfoJsonObject;
 import at.aau.serg.dktserver.communication.Wrapper;
-import at.aau.serg.dktserver.communication.enums.Info;
 import at.aau.serg.dktserver.communication.enums.Request;
-import at.aau.serg.dktserver.controller.InfoController;
 import com.google.gson.Gson;
 
 public class WrapperHelper {
@@ -24,9 +21,6 @@ public class WrapperHelper {
             }
             case "ActionJsonObject" -> {
                 return gson.fromJson(object, ActionJsonObject.class);
-            }
-            case "InfoJsonObject" -> {
-                return gson.fromJson(object, InfoJsonObject.class);
             }
 
         }
