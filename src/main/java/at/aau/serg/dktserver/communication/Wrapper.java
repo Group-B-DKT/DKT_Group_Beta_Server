@@ -16,4 +16,12 @@ public class Wrapper {
     private Request request;
     @Getter
     private Object object;
+
+    public int getGameId() {
+        return gameId;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
 }

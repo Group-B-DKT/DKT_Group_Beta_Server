@@ -7,6 +7,8 @@ import at.aau.serg.dktserver.communication.enums.Action;
 import at.aau.serg.dktserver.communication.enums.ConnectType;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
+import at.aau.serg.dktserver.controller.GameManager;
+import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.WebSocketHandlerClientImpl;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
@@ -58,7 +60,7 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         connectToWebsocket(session);
-
+        GameManager.getInstance().createGame(new PlayerData(null, "Example", "1", 1));
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, null, null);
         Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);

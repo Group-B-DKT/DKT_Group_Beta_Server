@@ -12,6 +12,7 @@ import org.springframework.web.socket.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class WebSocketHandlerImpl implements WebSocketHandler {
     private List<PlayerData> playerData;
@@ -66,12 +67,13 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         PlayerData player = this.playerData.stream()
                 .filter(p -> p.getPlayerId().equals(playerId))
                 .findAny().orElse(null);
-        player.setConnected(true);
+        if (player != null) {
+            player.setConnected(true);
+            ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
+            String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
 
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
-        String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
-
-        sendToUser(player.getUsername(), connectJson);
+            sendToUser(player.getUsername(), connectJson);
+        }
     }
 
     public void sendMessage(int gameId, String msg){
@@ -114,5 +116,9 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         if (webSocket != null) return webSocket;
         webSocket = new WebSocketHandlerImpl();
         return webSocket;
+    }
+
+    public PlayerData getPlayerByUsername(String fromUsername) {
+        return this.playerData.stream().filter(p -> Objects.equals(p.getUsername(), fromUsername)).findFirst().orElse(null);
     }
 }
