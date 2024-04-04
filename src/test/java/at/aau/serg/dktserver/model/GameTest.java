@@ -33,6 +33,11 @@ class GameTest {
         game.start(playerData);
         assertTrue(game.isStarted());
     }
+    @Test
+    void startWrongUser() {
+        game.start(new PlayerData(webSocketSession, "False", "2", 1));
+        assertFalse(game.isStarted());
+    }
 
     @Test
     void joinGame() {
@@ -54,6 +59,11 @@ class GameTest {
     }
     @Test
     void testEquals() {
+        Game game1 = game;
+        assertEquals(game, game1);
+    }
+    @Test
+    void testNotEquals() {
         Game game1 = new Game(2, new PlayerData(webSocketSession, "ABC", "1", 2));
         assertNotEquals(game, game1);
     }
