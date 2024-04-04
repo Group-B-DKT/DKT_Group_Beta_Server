@@ -15,6 +15,7 @@ public class Game implements GameHandler {
     @Getter
     private ArrayList<PlayerData> players;
     private PlayerData host;
+    @Getter
     private boolean isStarted = false;
     private PlayerData currentPlayer;
 
