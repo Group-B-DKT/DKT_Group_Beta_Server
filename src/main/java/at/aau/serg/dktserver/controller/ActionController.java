@@ -23,6 +23,7 @@ public class ActionController {
             case ROLL_DICE -> rollDice(gameId, fromUsername);
             case CREATE_GAME -> gameManager.createGame(webSocket.getPlayerByUsername(fromUsername));
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
+            case JOIN_GAME -> gameManager.joinGame(gameId, webSocket.getPlayerByUsername(fromUsername));
         }
     }
 
