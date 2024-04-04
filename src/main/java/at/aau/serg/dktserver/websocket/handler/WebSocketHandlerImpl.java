@@ -67,7 +67,9 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         PlayerData player = this.playerData.stream()
                 .filter(p -> p.getPlayerId().equals(playerId))
                 .findAny().orElse(null);
-        player.setConnected(true);
+        if (player != null) {
+            player.setConnected(true);
+        }
 
         ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
         String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
