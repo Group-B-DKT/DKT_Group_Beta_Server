@@ -75,7 +75,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
     public void sendMessage(int gameId, String msg){
-        System.out.println("HERE" + msg);
         this.playerData.stream()
                 .filter(p -> p.getGameId() == gameId && p.isConnected())
                 .forEach(p-> {

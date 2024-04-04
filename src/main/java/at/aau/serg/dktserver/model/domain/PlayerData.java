@@ -25,6 +25,7 @@ public class PlayerData {
     @Setter
     private boolean isConnected;
 
+
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;
         this.username = username;
