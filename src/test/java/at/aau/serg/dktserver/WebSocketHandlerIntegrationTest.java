@@ -1,6 +1,16 @@
 package at.aau.serg.dktserver;
 
+import at.aau.serg.dktserver.communication.ActionJsonObject;
+import at.aau.serg.dktserver.communication.ConnectJsonObject;
+import at.aau.serg.dktserver.communication.Wrapper;
+import at.aau.serg.dktserver.communication.enums.Action;
+import at.aau.serg.dktserver.communication.enums.ConnectType;
+import at.aau.serg.dktserver.communication.enums.Request;
+import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
+import at.aau.serg.dktserver.controller.GameManager;
+import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.WebSocketHandlerClientImpl;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,11 +21,12 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,6 +36,7 @@ class WebSocketHandlerIntegrationTest {
     private int port;
 
     private final String WEBSOCKET_URI = "ws://localhost:%d/websocket-example-handler";
+    private static Gson gson = new Gson();
 
     /**
      * Queue of messages from the server.
@@ -32,20 +44,47 @@ class WebSocketHandlerIntegrationTest {
     BlockingQueue<String> messages = new LinkedBlockingDeque<>();
 
     @Test
-    public void testWebSocketMessageBroker() throws Exception {
+    public void testWebSocketHandlerConnect() throws Exception {
         WebSocketSession session = initStompSession();
 
         // send a message to the server
-        String message = "Test message";
-        session.sendMessage(new TextMessage(message));
+        connectToWebsocket(session);
 
-        var expectedResponse = "echo from handler: " + message;
-        assertThat(messages.poll(1, TimeUnit.SECONDS)).isEqualTo(expectedResponse);
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        ConnectJsonObject connectJsonObjectReceived = (ConnectJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED)).isTrue();
     }
 
-    /**
-     * @return The basic session for the WebSocket connection.
-     */
+    @Test
+    public void testWebSocketHandlerActionRollDice() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        connectToWebsocket(session);
+        GameManager.getInstance().createGame(new PlayerData(null, "Example", "1", 1));
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, null, null);
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
+        String msg = gson.toJson(wrapper);
+
+        session.sendMessage(new TextMessage(msg));
+
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        int number = Integer.parseInt(actionJsonObjectReceived.getParam());
+        assertThat(1 <= number && number <= 6).isTrue();
+    }
+
+    private void connectToWebsocket(WebSocketSession session) throws IOException {
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, "ID1", "Player1");
+        Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), 1, Request.CONNECT, connectJsonObject);
+        String msg = gson.toJson(wrapper);
+        session.sendMessage(new TextMessage(msg));
+    }
+
+
+        /**
+         * @return The basic session for the WebSocket connection.
+         */
     public WebSocketSession initStompSession() throws Exception {
         WebSocketClient client = new StandardWebSocketClient();
 
