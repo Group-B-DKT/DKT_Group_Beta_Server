@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Map;
+
 @AllArgsConstructor
 @ToString
 public class InfoJsonObject {
@@ -13,4 +15,6 @@ public class InfoJsonObject {
     private Info info;
     @Getter
     private int gameId;
+    @Getter
+    private Map<Integer, Integer> gameInfo;
 }
