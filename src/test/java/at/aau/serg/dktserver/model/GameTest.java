@@ -52,4 +52,9 @@ class GameTest {
     void getId() {
         assertEquals(1, game.getId());
     }
+    @Test
+    void testEquals() {
+        Game game1 = new Game(2, new PlayerData(webSocketSession, "ABC", "1", 2));
+        assertNotEquals(game, game1);
+    }
 }
