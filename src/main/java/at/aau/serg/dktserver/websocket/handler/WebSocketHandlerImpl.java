@@ -69,12 +69,11 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
                 .findAny().orElse(null);
         if (player != null) {
             player.setConnected(true);
+            ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
+            String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
+
+            sendToUser(player.getUsername(), connectJson);
         }
-
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
-        String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
-
-        sendToUser(player.getUsername(), connectJson);
     }
 
     public void sendMessage(int gameId, String msg){
