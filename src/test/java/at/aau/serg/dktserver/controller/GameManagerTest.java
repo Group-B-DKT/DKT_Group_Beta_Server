@@ -42,6 +42,13 @@ class GameManagerTest {
         System.out.println(gameManager.getGames());
         assertEquals(1, gameManager.getGames().size());
     }
+    @Test
+    void create2Games() {
+        gameManager.createGame(playerData);
+        gameManager.createGame(playerData1);
+        System.out.println(gameManager.getGames());
+        assertEquals(2, gameManager.getGames().size());
+    }
 
     @Test
     void joinGame() {
