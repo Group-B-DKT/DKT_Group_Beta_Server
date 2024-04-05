@@ -38,6 +38,8 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
                 .findAny().orElse(null);
         String fromPlayername = fromPlayer != null ? fromPlayer.getUsername() : null;
 
+        System.out.println("WebSocketHandlerImpl::handleMessage/ " + message.getPayload());
+
         inputParser.parseInput(message.getPayload().toString(), session, fromPlayername);
     }
 
@@ -65,7 +67,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     public void reconnectPlayer(String playerId){
         PlayerData player = this.playerData.stream()
-                .filter(p -> p.getPlayerId().equals(playerId))
+                .filter(p -> p.getPlayerId() != null && p.getPlayerId().equals(playerId))
                 .findAny().orElse(null);
         if (player != null) {
             player.setConnected(true);
@@ -77,7 +79,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
     public void sendMessage(int gameId, String msg){
-        System.out.println("HERE" + msg);
+        System.out.println("WebSocketHandlerImpl::sendMessage/ " + msg);
         this.playerData.stream()
                 .filter(p -> p.getGameId() == gameId && p.isConnected())
                 .forEach(p-> {
@@ -90,8 +92,9 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
     public void sendToUser(String username, String msg){
+        System.out.println("WebSocketHandlerImpl::sendToUser/ " + msg);
         this.playerData.stream()
-                .filter(p -> p.getUsername().equals(username))
+                .filter(p -> p.getUsername() != null && p.getUsername().equals(username))
                 .forEach(p-> {
                     try {
                         p.sendMsg(msg);

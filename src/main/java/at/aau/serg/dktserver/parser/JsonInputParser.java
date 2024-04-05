@@ -35,7 +35,7 @@ public class JsonInputParser implements InputParser {
         switch (wrapper.getRequest()){
             case CONNECT -> parseConnect(wrapper, session);
             case ACTION -> parseAction(wrapper, fromPlayername);
-            case INFO -> parseInfo(wrapper);
+            case INFO -> parseInfo(wrapper, fromPlayername);
         }
     }
 
@@ -55,16 +55,14 @@ public class JsonInputParser implements InputParser {
         ActionJsonObject actionJsonObject = jsonObject instanceof ActionJsonObject ? (ActionJsonObject) jsonObject : null;
 
         if (actionJsonObject == null) return;
-        System.out.println(actionJsonObject);
         actionController.callAction(actionJsonObject.getAction(), wrapper.getGameId(), fromPLayername);
     }
 
-    private void parseInfo(Wrapper wrapper){
+    private void parseInfo(Wrapper wrapper, String fromPlayername){
         Object jsonObject = WrapperHelper.getInstanceFromWrapper(wrapper);
         InfoJsonObject infoJsonObject = jsonObject instanceof InfoJsonObject ? (InfoJsonObject) jsonObject : null;
 
         if (infoJsonObject == null) return;
-        System.out.println(infoJsonObject);
-        infoController.receiveInfo(infoJsonObject.getInfo(), wrapper.getGameId());
+        infoController.receiveInfo(infoJsonObject.getInfo(), wrapper.getGameId(), fromPlayername);
     }
 }
