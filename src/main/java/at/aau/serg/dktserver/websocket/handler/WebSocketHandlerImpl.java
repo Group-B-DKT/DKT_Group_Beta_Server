@@ -79,7 +79,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
     public void sendMessage(int gameId, String msg){
-        System.out.println("WebSocketHandlerImpl::sendMessage/ " + msg);
         this.playerData.stream()
                 .filter(p -> p.getGameId() == gameId && p.isConnected())
                 .forEach(p-> {
@@ -92,7 +91,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
     public void sendToUser(String username, String msg){
-        System.out.println("WebSocketHandlerImpl::sendToUser/ " + msg);
         this.playerData.stream()
                 .filter(p -> p.getUsername() != null && p.getUsername().equals(username))
                 .forEach(p-> {
