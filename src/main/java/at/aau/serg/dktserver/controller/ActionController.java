@@ -34,10 +34,10 @@ public class ActionController {
     private void rollDice(int gameId, String fromUsername) {
         Game game = gameManager.getGameById(gameId);
 
-//        if (game == null) return;
-//        int value = game.roll_dice();
+        if (game == null) return;
+        int value = game.roll_dice();
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", (int)Math.random()), fromUsername);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", value), fromUsername);
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, json);
