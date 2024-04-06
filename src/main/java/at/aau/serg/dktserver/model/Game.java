@@ -24,7 +24,7 @@ public class Game implements GameHandler {
     @Getter
     private int id;
 
-    public Game(int id, PlayerData hos, String gameName) {
+    public Game(int id, PlayerData host, String gameName) {
 
         this.id = id;
         this.host = host;
