@@ -49,7 +49,6 @@ class WebSocketHandlerIntegrationTest {
     public void testWebSocketHandlerConnect() throws Exception {
         WebSocketSession session = initStompSession();
 
-        // send a message to the server
         connectToWebsocket(session);
 
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -62,7 +61,7 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         connectToWebsocket(session);
-        GameManager.getInstance().createGame(new PlayerData(null, "Example", "1", 1));
+        GameManager.getInstance().createGame(new PlayerData(null, "Example", "1", 1), "");
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, null, null);
         Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
@@ -81,7 +80,7 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         connectToWebsocket(session);
-        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, -1, null);
+        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, null);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.INFO, infoJsonObject);
 
         session.sendMessage(new TextMessage(msg));
@@ -89,7 +88,7 @@ class WebSocketHandlerIntegrationTest {
         String response = messages.poll(1, TimeUnit.SECONDS);
         response = messages.poll(1, TimeUnit.SECONDS);
         InfoJsonObject infoJsonObject1 = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
-        assertThat(infoJsonObject1.getGameInfo().isEmpty()).isTrue();
+        assertThat(infoJsonObject1.getGameInfoList().isEmpty()).isTrue();
     }
 
     private void connectToWebsocket(WebSocketSession session) throws IOException {

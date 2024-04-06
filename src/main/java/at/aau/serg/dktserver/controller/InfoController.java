@@ -4,9 +4,14 @@ import at.aau.serg.dktserver.communication.InfoJsonObject;
 import at.aau.serg.dktserver.communication.Wrapper;
 import at.aau.serg.dktserver.communication.enums.Info;
 import at.aau.serg.dktserver.communication.enums.Request;
+import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
+import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class InfoController {
@@ -27,9 +32,16 @@ public class InfoController {
 
     private void receiveGameList(String fromPlayername){
         System.out.println("receiveGameList() -> called!");
-        Map<Integer, Integer> gameInfo = gameManager.getGamesAndPlayerCount();
-        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, -1, gameInfo);
+        // Todo
+//        Map<Integer, Integer> gameInfo = gameManager.getGamesAndPlayerCount();
+        List<GameInfo> gameInfos = new ArrayList<>();
+        GameInfo gameInfo = new GameInfo(1, "Spiel 1", 3);
+        GameInfo gameInfo2 = new GameInfo(2, "Spiel 2", 6);
+        gameInfos.add(gameInfo);
+        gameInfos.add(gameInfo2);
+        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, gameInfos);
         Wrapper wrapper = new Wrapper(infoJsonObject.getClass().getSimpleName(), -1, Request.INFO, infoJsonObject);
+
         webSocket.sendToUser(fromPlayername, gson.toJson(wrapper));
     }
 

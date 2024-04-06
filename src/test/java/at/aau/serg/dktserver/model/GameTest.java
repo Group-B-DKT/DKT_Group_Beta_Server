@@ -19,7 +19,7 @@ class GameTest {
     @BeforeEach
     void setUp() {
         playerData = new PlayerData(webSocketSession, "Example", "1", 1);
-        game = new Game(1, playerData);
+        game = new Game(1, playerData, "");
     }
 
     @Test
@@ -64,7 +64,7 @@ class GameTest {
     }
     @Test
     void testNotEquals() {
-        Game game1 = new Game(2, new PlayerData(webSocketSession, "ABC", "1", 2));
+        Game game1 = new Game(2, new PlayerData(webSocketSession, "ABC", "1", 2), "");
         assertNotEquals(game, game1);
     }
 }

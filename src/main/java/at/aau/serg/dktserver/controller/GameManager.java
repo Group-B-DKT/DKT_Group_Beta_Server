@@ -26,8 +26,8 @@ public class GameManager {
         if (gameManager == null) gameManager = this;
         games = new ArrayList<>();
     }
-    public int createGame(PlayerData host) {
-        Game game = new Game(getFreeId(), host);
+    public int createGame(PlayerData host, String gameName) {
+        Game game = new Game(getFreeId(), host, gameName);
         games.add(game);
         return game.getId();
     }
