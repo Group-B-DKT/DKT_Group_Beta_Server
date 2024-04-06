@@ -1,6 +1,7 @@
 package at.aau.serg.dktserver.controller;
 
 import at.aau.serg.dktserver.model.Game;
+import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +64,14 @@ class GameManagerTest {
     void getGameById() {
         int id = gameManager.createGame(playerData, "");
         assertEquals(id, gameManager.getGameById(id).getId());
+    }
+
+    @Test
+    void getGamesAndPlayerCount2() {
+        gameManager.createGame(playerData, "Game1");
+        List<GameInfo> gameInfoList = new ArrayList<>();
+        gameInfoList.add(new GameInfo(1, "Game1", 1));
+        assertEquals(gameInfoList, gameManager.getGamesAndPlayerCount2());
     }
 
     @Test
