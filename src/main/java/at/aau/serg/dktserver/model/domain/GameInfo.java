@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 @AllArgsConstructor
-@ToString
 @EqualsAndHashCode
 public class GameInfo {
     @Getter
