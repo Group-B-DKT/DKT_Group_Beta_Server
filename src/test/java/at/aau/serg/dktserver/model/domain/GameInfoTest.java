@@ -23,7 +23,7 @@ public class GameInfoTest {
     void testHashTrue(){
         GameInfo gameInfo = new GameInfo(1, "Test", 1);
         GameInfo gameInfo2 = new GameInfo(1, "Test", 1);
-        assertFalse(gameInfo.hashCode() == gameInfo2.hashCode());
+        assertTrue(gameInfo.hashCode() == gameInfo2.hashCode());
     }
 
     @Test
