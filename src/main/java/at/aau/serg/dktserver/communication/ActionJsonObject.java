@@ -11,6 +11,10 @@ public class ActionJsonObject {
     private String param;
     private String fromPlayername;
 
+    public ActionJsonObject(Action action) {
+        this.action = action;
+    }
+
     public Action getAction() {
         return action;
     }

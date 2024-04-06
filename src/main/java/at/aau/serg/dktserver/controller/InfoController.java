@@ -33,12 +33,12 @@ public class InfoController {
     private void receiveGameList(String fromPlayername){
         System.out.println("receiveGameList() -> called!");
         // Todo
-//        Map<Integer, Integer> gameInfo = gameManager.getGamesAndPlayerCount();
-        List<GameInfo> gameInfos = new ArrayList<>();
-        GameInfo gameInfo = new GameInfo(1, "Spiel 1", 3);
-        GameInfo gameInfo2 = new GameInfo(2, "Spiel 2", 6);
-        gameInfos.add(gameInfo);
-        gameInfos.add(gameInfo2);
+        List<GameInfo> gameInfos = gameManager.getGamesAndPlayerCount2();
+//        List<GameInfo> gameInfos = new ArrayList<>();
+//        GameInfo gameInfo = new GameInfo(1, "Spiel 1", 3);
+//        GameInfo gameInfo2 = new GameInfo(2, "Spiel 2", 6);
+//        gameInfos.add(gameInfo);
+//        gameInfos.add(gameInfo2);
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, gameInfos);
         Wrapper wrapper = new Wrapper(infoJsonObject.getClass().getSimpleName(), -1, Request.INFO, infoJsonObject);
 
