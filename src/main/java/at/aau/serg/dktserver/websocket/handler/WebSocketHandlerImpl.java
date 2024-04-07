@@ -71,6 +71,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
                 .findAny().orElse(null);
         if (player != null) {
             player.setConnected(true);
+            player.setGameId(-1);
             ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
             String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
 
@@ -91,6 +92,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
     public void sendToUser(String username, String msg){
+        System.out.println("WebSocketHandlerImpl::sendToUser/ " + msg);
         this.playerData.stream()
                 .filter(p -> p.getUsername() != null && p.getUsername().equals(username))
                 .forEach(p-> {

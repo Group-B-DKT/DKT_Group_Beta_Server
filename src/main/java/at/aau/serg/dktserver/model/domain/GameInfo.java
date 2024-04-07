@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
+
 @AllArgsConstructor
 @EqualsAndHashCode
 public class GameInfo {
@@ -13,7 +15,7 @@ public class GameInfo {
     @Getter
     private String name;
     @Getter
-    private int connectedPlayer;
+    private List<String> connectedPlayerNames;
 
 
 }
