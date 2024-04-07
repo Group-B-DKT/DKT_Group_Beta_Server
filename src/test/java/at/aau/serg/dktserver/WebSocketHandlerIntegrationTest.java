@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebSocketHandlerIntegrationTest {
+    private static int id = 1;
 
     @LocalServerPort
     private int port;
@@ -49,8 +50,7 @@ class WebSocketHandlerIntegrationTest {
     public void testWebSocketHandlerConnect() throws Exception {
         WebSocketSession session = initStompSession();
 
-        // send a message to the server
-        connectToWebsocket(session);
+        connectToWebsocket(session, 1);
 
         String response = messages.poll(1, TimeUnit.SECONDS);
         ConnectJsonObject connectJsonObjectReceived = (ConnectJsonObject) WrapperHelper.getInstanceFromJson(response);
@@ -61,8 +61,8 @@ class WebSocketHandlerIntegrationTest {
     public void testWebSocketHandlerActionRollDice() throws Exception {
         WebSocketSession session = initStompSession();
 
-        connectToWebsocket(session);
-        GameManager.getInstance().createGame(new PlayerData(null, "Example", "1", 1));
+        connectToWebsocket(session, 1);
+        GameManager.getInstance().createGame(new PlayerData(null, "Example", "1", 1), "");
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, null, null);
         Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
@@ -80,8 +80,8 @@ class WebSocketHandlerIntegrationTest {
     public void testWebSocketHandlerInfoGameInfo() throws Exception {
         WebSocketSession session = initStompSession();
 
-        connectToWebsocket(session);
-        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, -1, null);
+        connectToWebsocket(session, 1);
+        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, null);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.INFO, infoJsonObject);
 
         session.sendMessage(new TextMessage(msg));
@@ -89,12 +89,30 @@ class WebSocketHandlerIntegrationTest {
         String response = messages.poll(1, TimeUnit.SECONDS);
         response = messages.poll(1, TimeUnit.SECONDS);
         InfoJsonObject infoJsonObject1 = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
-        assertThat(infoJsonObject1.getGameInfo().isEmpty()).isTrue();
+        assertThat(infoJsonObject1.getGameInfoList().isEmpty()).isTrue();
     }
 
-    private void connectToWebsocket(WebSocketSession session) throws IOException {
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, "ID1", "Player1");
-        Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), 1, Request.CONNECT, connectJsonObject);
+    @Test
+    public void testWebSocketHandlerActionCreateGame() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        connectToWebsocket(session, -1);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, "TEST", null);
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), -1, Request.ACTION, actionJsonObject);
+        String msg = gson.toJson(wrapper);
+        System.out.println("HELLO" + msg);
+
+        session.sendMessage(new TextMessage(msg));
+
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assertThat(actionJsonObjectReceived.getAction() == Action.GAME_CREATED_SUCCESSFULLY).isTrue();
+    }
+
+    private void connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, "ID" + id++, "Player1");
+        Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), gameId, Request.CONNECT, connectJsonObject);
         String msg = gson.toJson(wrapper);
         session.sendMessage(new TextMessage(msg));
     }

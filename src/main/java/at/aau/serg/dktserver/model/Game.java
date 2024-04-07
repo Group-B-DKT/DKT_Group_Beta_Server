@@ -18,14 +18,17 @@ public class Game implements GameHandler {
     @Getter
     private boolean isStarted = false;
     private PlayerData currentPlayer;
+    @Getter
+    private String name;
 
     @Getter
     private int id;
 
-    public Game(int id, PlayerData host) {
+    public Game(int id, PlayerData host, String gameName) {
 
         this.id = id;
         this.host = host;
+        this.name = gameName;
         rng = new SecureRandom();
         players = new ArrayList<>();
         players.add(host);

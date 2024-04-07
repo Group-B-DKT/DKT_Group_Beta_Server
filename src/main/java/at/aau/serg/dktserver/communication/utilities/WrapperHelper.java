@@ -26,9 +26,10 @@ public class WrapperHelper {
             case "InfoJsonObject" -> {
                 return gson.fromJson(object, InfoJsonObject.class);
             }
-
+            default -> {
+                return null;
+            }
         }
-        return null;
     }
 
     public static Object getInstanceFromJson(String json){

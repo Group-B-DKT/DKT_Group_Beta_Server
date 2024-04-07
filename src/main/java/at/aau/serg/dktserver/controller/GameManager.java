@@ -1,6 +1,7 @@
 package at.aau.serg.dktserver.controller;
 
 import at.aau.serg.dktserver.model.Game;
+import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +27,8 @@ public class GameManager {
         if (gameManager == null) gameManager = this;
         games = new ArrayList<>();
     }
-    public int createGame(PlayerData host) {
-        Game game = new Game(getFreeId(), host);
+    public int createGame(PlayerData host, String gameName) {
+        Game game = new Game(getFreeId(), host, gameName);
         games.add(game);
         return game.getId();
     }
@@ -38,6 +39,17 @@ public class GameManager {
 
     public Game getGameById(int id){
         return games.stream().filter(g -> g.getId() == id).findFirst().orElse(null);
+    }
+
+
+    public List<GameInfo> getGamesAndPlayerCount2() {
+        List<GameInfo> gamesAndPlayer = new ArrayList<>();
+        for(Game g: games) {
+            gamesAndPlayer.add(
+                    new GameInfo(g.getId(),g.getName(), g.getPlayers().size())
+            );
+        }
+        return gamesAndPlayer;
     }
 
     public Map<Integer, Integer> getGamesAndPlayerCount() {
