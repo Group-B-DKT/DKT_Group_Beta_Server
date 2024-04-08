@@ -30,11 +30,13 @@ public class GameManager {
     public int createGame(PlayerData host, String gameName) {
         Game game = new Game(getFreeId(), host, gameName);
         games.add(game);
+        host.setGameId(game.getId());
         return game.getId();
     }
 
     public void joinGame(int gameId, PlayerData player) {
         getGameById(gameId).joinGame(player);
+        player.setGameId(gameId);
     }
 
     public Game getGameById(int id){
@@ -46,7 +48,7 @@ public class GameManager {
         List<GameInfo> gamesAndPlayer = new ArrayList<>();
         for(Game g: games) {
             gamesAndPlayer.add(
-                    new GameInfo(g.getId(),g.getName(), g.getPlayers().size())
+                    new GameInfo(g.getId(),g.getName(), getPlayerNames(g.getId()))
             );
         }
         return gamesAndPlayer;

@@ -14,6 +14,7 @@ public class PlayerData {
     private WebSocketSession session;
 
     @Getter
+    @Setter
     private int gameId;
     @Getter
     private String username;

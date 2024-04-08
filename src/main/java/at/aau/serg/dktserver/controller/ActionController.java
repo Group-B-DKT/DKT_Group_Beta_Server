@@ -23,10 +23,10 @@ public class ActionController {
         switch (action){
             case ROLL_DICE -> rollDice(gameId, fromUsername);
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
+            case JOIN_GAME -> joinGame(gameId, fromUsername);
 
             /*
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
-            case JOIN_GAME -> gameManager.joinGame(gameId, webSocket.getPlayerByUsername(fromUsername));
              */
         }
     }
@@ -39,17 +39,28 @@ public class ActionController {
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", value), fromUsername);
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
-
         webSocket.sendMessage(gameId, json);
     }
 
     private void createGame(PlayerData playerByUsername, String param) {
         gameManager.createGame(playerByUsername, param);
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY);
-        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername.getUsername());
+        String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(playerByUsername.getGameId(), msg);
         webSocket.sendMessage(-1, msg);
 
+    }
+
+    private void joinGame(int gameId, String fromUsername){
+        PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+        gameManager.joinGame(gameId, player);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_JOINED_SUCCESSFULLY, null, player.getUsername());
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(gameId, msg);
     }
 
 }
