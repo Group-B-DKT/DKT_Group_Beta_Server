@@ -39,7 +39,6 @@ public class ActionController {
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", value), fromUsername);
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
-
         webSocket.sendMessage(gameId, json);
     }
 
