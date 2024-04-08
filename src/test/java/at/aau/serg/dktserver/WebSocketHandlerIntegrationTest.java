@@ -10,6 +10,7 @@ import at.aau.serg.dktserver.communication.enums.Info;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
 import at.aau.serg.dktserver.controller.GameManager;
+import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.WebSocketHandlerClientImpl;
 import com.google.gson.Gson;
@@ -148,11 +149,43 @@ class WebSocketHandlerIntegrationTest {
         assertThat(actionJsonObjectReceived.getAction() == Action.GAME_JOINED_SUCCESSFULLY).isTrue();
     }
 
-    private void connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, "ID" + id, "Player" + id++);
+    @Test
+    public void testWebSocketHandlerReceiveConnectedPlayers() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME);
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
+        String msg = gson.toJson(wrapper);
+
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+
+        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, null);
+        msg = WrapperHelper.toJsonFromObject(1, Request.INFO, infoJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+
+        InfoJsonObject receivedInfoJsonObject = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
+        GameInfo gameInfo = receivedInfoJsonObject.getGameInfoList().get(0);
+
+        assertThat(gameInfo.getConnectedPlayerNames().contains(username));
+    }
+
+    private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
+        String username = "Player" + id;
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, "ID" + id, username);
         Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), gameId, Request.CONNECT, connectJsonObject);
         String msg = gson.toJson(wrapper);
         session.sendMessage(new TextMessage(msg));
+
+        id ++;
+        return username;
     }
 
 
