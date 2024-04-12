@@ -4,8 +4,9 @@ import at.aau.serg.dktserver.model.domain.Field;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 
 public class Chance extends Field {
-    public Chance(String name, int position) {
-        super(name, position);
+
+    public Chance(int id, String name, int position) {
+        super(id, name, position);
     }
 
     @Override

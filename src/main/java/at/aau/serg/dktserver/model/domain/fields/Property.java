@@ -4,8 +4,8 @@ import at.aau.serg.dktserver.model.domain.Field;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 
 public class Property extends Field {
-    public Property(String name, int position) {
-        super(name, position);
+    public Property(int id, String name, int position) {
+        super(id, name, position);
     }
 
     @Override

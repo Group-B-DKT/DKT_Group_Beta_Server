@@ -12,17 +12,19 @@ public class PlayerData {
     @Getter
     @Setter
     private WebSocketSession session;
-
     @Getter
     @Setter
     private int gameId;
     @Getter
     private String username;
-
     @Getter
     private String playerId;
+    @Getter
+    @Setter
     private boolean isReady;
-
+    @Getter
+    @Setter
+    private Field currentField;
     @Getter
     @Setter
     private boolean isConnected;
@@ -78,5 +80,13 @@ public class PlayerData {
     @Override
     public int hashCode() {
         return Objects.hash(session, gameId, username, playerId, isReady, isConnected);
+    }
+
+    public Field getCurrentField() {
+        return currentField;
+    }
+
+    public void setCurrentField(Field currentField) {
+        this.currentField = currentField;
     }
 }
