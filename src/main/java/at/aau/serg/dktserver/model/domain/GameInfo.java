@@ -1,6 +1,5 @@
 package at.aau.serg.dktserver.model.domain;
 
-import com.google.gson.annotations.Expose;
 import lombok.*;
 
 import java.util.List;
