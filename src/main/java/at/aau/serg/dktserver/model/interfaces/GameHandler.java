@@ -9,4 +9,5 @@ public interface GameHandler {
     void setOrder();
 
     void joinGame(PlayerData player);
+    boolean buyField(int fieldId, PlayerData playerData);
 }

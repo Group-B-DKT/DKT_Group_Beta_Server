@@ -74,6 +74,18 @@ public class Game implements GameHandler {
     }
 
     @Override
+    public boolean buyField(int fieldId, PlayerData playerData) {
+        if(fields.get(fieldId).getPrice() > playerData.getMoney()) {
+            return false;
+        }
+        else {
+            fields.get(fieldId).setOwner(playerData);
+            playerData.setMoney(playerData.getMoney()-fields.get(fieldId).getPrice());
+            return true;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

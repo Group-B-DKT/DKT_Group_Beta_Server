@@ -28,6 +28,9 @@ public class PlayerData {
     @Getter
     @Setter
     private boolean isConnected;
+    @Getter
+    @Setter
+    private int money;
 
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;
@@ -88,5 +91,13 @@ public class PlayerData {
 
     public void setCurrentField(Field currentField) {
         this.currentField = currentField;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
     }
 }
