@@ -52,7 +52,6 @@ public class InfoController {
         gameInfos.add(gameInfo);
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, gameInfos);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.INFO, infoJsonObject);
-        System.out.println("ASDFD " + msg);
 
         webSocket.sendToUser(fromPlayername, msg);
     }
