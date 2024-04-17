@@ -7,31 +7,28 @@ public class Field {
     @Getter
     private int id;
     private String name;
-    private int position;
-    private int price;
+    private int price = 0;
     private PlayerData owner;
+    private final boolean ownable;
 
-    public Field(int id, String name, int position) {
+    public Field(int id, String name, boolean ownable) {
         this.id = id;
         this.name = name;
-        this.position = position;
+        this.ownable = ownable;
     }
-    public Field(int id, String name, int position, int price) {
+    public Field(int id, String name, int price, boolean ownable) {
         this.id = id;
         this.name = name;
-        this.position = position;
         this.price = price;
+        this.ownable = ownable;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getPosition() {
-        return position;
-    }
-    public void enterField(PlayerData playerData) {
-        return;
+    public String enterField(PlayerData playerData) {
+        return playerData.getPlayerId();
     }
 
     public int getId() {
@@ -43,5 +40,14 @@ public class Field {
     }
 
     public void setOwner(PlayerData playerData) {
+        owner = playerData;
+    }
+
+    public boolean getOwnable() {
+        return ownable;
+    }
+
+    public PlayerData getOwner() {
+        return owner;
     }
 }

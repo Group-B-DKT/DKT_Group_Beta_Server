@@ -86,6 +86,11 @@ public class Game implements GameHandler {
     }
 
     @Override
+    public void setFields(ArrayList<Field> fields) {
+        this.fields = fields;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
