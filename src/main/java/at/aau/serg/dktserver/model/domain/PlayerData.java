@@ -1,17 +1,21 @@
 package at.aau.serg.dktserver.model.domain;
 
+import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class PlayerData {
+@ToString
+public class PlayerData implements Serializable {
     @Getter
     @Setter
-    private WebSocketSession session;
+    private transient WebSocketSession session;
 
     @Getter
     @Setter
@@ -21,6 +25,7 @@ public class PlayerData {
 
     @Getter
     private String playerId;
+    @Getter
     private boolean isReady;
 
     @Getter
@@ -33,6 +38,8 @@ public class PlayerData {
         this.playerId = playerId;
         this.gameId = gameId;
     }
+
+    public PlayerData(){}
 
     public void sendMsg(String msg) throws IOException {
         if (!isConnected) return;

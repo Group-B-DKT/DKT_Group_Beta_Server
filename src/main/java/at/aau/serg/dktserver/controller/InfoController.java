@@ -9,6 +9,7 @@ import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,10 +48,11 @@ public class InfoController {
 
     private void receiveConnectedPlayers(int gameId, String fromPlayername) {
         List<GameInfo> gameInfos = new ArrayList<>();
-        GameInfo gameInfo = new GameInfo(gameId, null, gameManager.getPlayerNames(gameId));
+        GameInfo gameInfo = new GameInfo(gameId, null, webSocket.getPLayersByGameId(gameId));
         gameInfos.add(gameInfo);
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, gameInfos);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.INFO, infoJsonObject);
+        System.out.println("ASDFD " + msg);
 
         webSocket.sendToUser(fromPlayername, msg);
     }

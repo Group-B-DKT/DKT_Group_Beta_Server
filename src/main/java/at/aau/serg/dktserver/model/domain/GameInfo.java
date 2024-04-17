@@ -1,21 +1,23 @@
 package at.aau.serg.dktserver.model.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import com.google.gson.annotations.Expose;
+import lombok.*;
 
 import java.util.List;
 
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class GameInfo {
     @Getter
+    @Setter
     private int id;
+
     @Getter
+    @Setter
     private String name;
+
     @Getter
-    private List<String> connectedPlayerNames;
-
-
+    @Setter
+    private List<PlayerData> connectedPlayers;
 }

@@ -27,9 +27,11 @@ import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -164,7 +166,6 @@ class WebSocketHandlerIntegrationTest {
 
         session.sendMessage(new TextMessage(msg));
         response = messages.poll(1, TimeUnit.SECONDS);
-
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, null);
         msg = WrapperHelper.toJsonFromObject(1, Request.INFO, infoJsonObject);
 
@@ -174,7 +175,8 @@ class WebSocketHandlerIntegrationTest {
         InfoJsonObject receivedInfoJsonObject = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
         GameInfo gameInfo = receivedInfoJsonObject.getGameInfoList().get(0);
 
-        assertThat(gameInfo.getConnectedPlayerNames().contains(username));
+        Set<PlayerData> players = gameInfo.getConnectedPlayers().stream().filter(p -> p.getUsername().equals(username)).collect(Collectors.toSet());
+        assertThat(players.size() > 0);
     }
 
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
