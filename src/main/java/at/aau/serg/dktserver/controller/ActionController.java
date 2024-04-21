@@ -21,7 +21,7 @@ public class ActionController {
     }
     public void callAction(Action action, int gameId, String fromUsername, String param){
         switch (action){
-            case ROLL_DICE -> rollDice(gameId, fromUsername);
+            case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
 
@@ -31,13 +31,13 @@ public class ActionController {
         }
     }
 
-    private void rollDice(int gameId, String fromUsername) {
+    private void rollDice(int gameId, PlayerData fromPlayer) {
         Game game = gameManager.getGameById(gameId);
 
         if (game == null) return;
         int value = game.roll_dice();
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", value), fromUsername);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", value), fromPlayer);
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         webSocket.sendMessage(gameId, json);
     }
@@ -45,7 +45,7 @@ public class ActionController {
     private void createGame(PlayerData playerByUsername, String param) {
         gameManager.createGame(playerByUsername, param);
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername.getUsername());
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
         String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(playerByUsername.getGameId(), msg);
@@ -57,7 +57,7 @@ public class ActionController {
         PlayerData player = webSocket.getPlayerByUsername(fromUsername);
         gameManager.joinGame(gameId, player);
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_JOINED_SUCCESSFULLY, null, player.getUsername());
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_JOINED_SUCCESSFULLY, null, player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, msg);
