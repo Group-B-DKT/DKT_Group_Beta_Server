@@ -65,6 +65,7 @@ public class ActionController {
     }
 
     private void leaveGame(String fromUsername) {
+        System.out.println(fromUsername);
     PlayerData player = webSocket.getPlayerByUsername(fromUsername);
     if (player == null) return;
 
@@ -76,7 +77,7 @@ public class ActionController {
     ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player.getUsername());
     String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 
-    webSocket.sendMessage(gameId, msg);
+    webSocket.sendMessage(-1, msg);
 
 
     }

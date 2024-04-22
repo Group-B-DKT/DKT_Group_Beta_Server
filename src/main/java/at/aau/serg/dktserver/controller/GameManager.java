@@ -38,6 +38,8 @@ public class GameManager {
         if (game != null) {
             game.removePlayer(player);
             player.setGameId(-1);
+        }else{
+            System.err.println("Spiel mit der ID " + gameId + " wurde nicht gefunden.");
         }
     }
 
@@ -80,8 +82,10 @@ public class GameManager {
     public List<String> getPlayerNames(int gameId) {
         List<String> players = new ArrayList<>();
         Game game = getGameById(gameId);
+        if(game != null) {
         for(PlayerData playerData: game.getPlayers()) {
             players.add(playerData.getUsername());
+        }
         }
         return players;
     }
