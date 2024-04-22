@@ -33,6 +33,13 @@ public class GameManager {
         host.setGameId(game.getId());
         return game.getId();
     }
+    public void leaveGame(int gameId, PlayerData player) {
+        Game game = getGameById(gameId);
+        if (game != null) {
+            game.removePlayer(player);
+            player.setGameId(-1);
+        }
+    }
 
     public void joinGame(int gameId, PlayerData player) {
         getGameById(gameId).joinGame(player);
