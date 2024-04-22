@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class WebSocketHandlerImpl implements WebSocketHandler {
     private List<PlayerData> playerData;
@@ -123,5 +124,9 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     public PlayerData getPlayerByUsername(String fromUsername) {
         return this.playerData.stream().filter(p -> Objects.equals(p.getUsername(), fromUsername)).findFirst().orElse(null);
+    }
+
+    public List<PlayerData> getPLayersByGameId(int gameId){
+        return this.playerData.stream().filter(p -> p.getGameId() == gameId).collect(Collectors.toList());
     }
 }
