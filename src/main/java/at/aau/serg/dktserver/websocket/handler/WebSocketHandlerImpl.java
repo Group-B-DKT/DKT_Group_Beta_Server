@@ -130,8 +130,8 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         return this.playerData.stream().filter(p -> p.getGameId() == gameId).collect(Collectors.toList());
     }
 
-    public PlayerData getPlayerBySessionId(int sessionId){
-        return  this.playerData.stream()
+    public PlayerData getPlayerBySessionId(String sessionId){
+        return this.playerData.stream()
                 .filter(p -> p.getSession().getId().equals(sessionId))
                 .findAny().orElse(null);
     }
