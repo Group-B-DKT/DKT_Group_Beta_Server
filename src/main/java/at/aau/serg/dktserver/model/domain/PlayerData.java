@@ -22,19 +22,25 @@ public class PlayerData implements Serializable {
     private String username;
 
     @Getter
-    private String playerId;
+    private String id;
     @Getter
+    @Setter
     private boolean isReady;
 
     @Getter
     @Setter
     private boolean isConnected;
 
+    @Getter
+    @Setter
+    private boolean isHost;
+
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;
         this.username = username;
-        this.playerId = playerId;
+        this.id = playerId;
         this.gameId = gameId;
+        this.isHost = false;
     }
 
     public PlayerData(){}
@@ -52,8 +58,8 @@ public class PlayerData implements Serializable {
         return username;
     }
 
-    public String getPlayerId() {
-        return playerId;
+    public String getId() {
+        return id;
     }
 
     public int getGameId() {
@@ -77,11 +83,11 @@ public class PlayerData implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PlayerData that = (PlayerData) o;
-        return gameId == that.gameId && isReady == that.isReady && isConnected == that.isConnected && Objects.equals(session, that.session) && Objects.equals(username, that.username) && Objects.equals(playerId, that.playerId);
+        return gameId == that.gameId && isReady == that.isReady && isConnected == that.isConnected && Objects.equals(session, that.session) && Objects.equals(username, that.username) && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(session, gameId, username, playerId, isReady, isConnected);
+        return Objects.hash(session, gameId, username, id, isReady, isConnected);
     }
 }

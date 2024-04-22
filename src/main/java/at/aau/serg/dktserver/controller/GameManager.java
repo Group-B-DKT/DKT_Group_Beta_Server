@@ -28,6 +28,7 @@ public class GameManager {
         games = new ArrayList<>();
     }
     public int createGame(PlayerData host, String gameName) {
+        host.setHost(true);
         Game game = new Game(getFreeId(), host, gameName);
         games.add(game);
         host.setGameId(game.getId());
@@ -86,6 +87,10 @@ public class GameManager {
             players.add(playerData);
         }
         return players;
+    }
+
+    public void setIsReady(PlayerData player, boolean isReady){
+
     }
 
     private int getFreeId() {
