@@ -59,6 +59,9 @@ public class Game implements GameHandler {
             isStarted = true;
             setOrder();
             currentPlayer = players.get(0);
+            for(PlayerData p: players) {
+                p.setCurrentField(fields.get(0));
+            }
         }
     }
 

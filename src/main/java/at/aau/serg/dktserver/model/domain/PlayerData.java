@@ -8,27 +8,20 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.Objects;
 
+@Getter
 public class PlayerData {
-    @Getter
     @Setter
     private WebSocketSession session;
-    @Getter
     @Setter
     private int gameId;
-    @Getter
     private String username;
-    @Getter
     private String playerId;
-    @Getter
     @Setter
     private boolean isReady;
-    @Getter
     @Setter
     private Field currentField;
-    @Getter
     @Setter
     private boolean isConnected;
-    @Getter
     @Setter
     private int money;
 
@@ -44,32 +37,8 @@ public class PlayerData {
         session.sendMessage(new TextMessage(msg));
     }
 
-    public WebSocketSession getSession() {
-        return session;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public int getGameId() {
-        return gameId;
-    }
-
-    public void setConnected(boolean b) {
-        isConnected = b;
-    }
-
     public boolean isConnected() {
         return isConnected;
-    }
-
-    public void setSession(WebSocketSession session) {
-        this.session = session;
     }
 
     @Override
@@ -85,19 +54,4 @@ public class PlayerData {
         return Objects.hash(session, gameId, username, playerId, isReady, isConnected);
     }
 
-    public Field getCurrentField() {
-        return currentField;
-    }
-
-    public void setCurrentField(Field currentField) {
-        this.currentField = currentField;
-    }
-
-    public int getMoney() {
-        return money;
-    }
-
-    public void setMoney(int money) {
-        this.money = money;
-    }
 }

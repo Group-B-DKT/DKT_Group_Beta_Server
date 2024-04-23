@@ -29,6 +29,7 @@ class GameTest {
         fields.add(new Field(5, "Example 4", 200, true));
         fields.add(new Field(6, "Example 5", 220, true));
         fields.add(new Field(7, "Example 6", 400, true));
+        game.setFields(fields);
     }
 
     @Test
@@ -41,6 +42,7 @@ class GameTest {
     void start() {
         game.start(playerData);
         assertTrue(game.isStarted());
+        assertEquals(playerData.getCurrentField(), fields.get(0));
     }
     @Test
     void startWrongUser() {
