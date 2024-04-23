@@ -40,18 +40,6 @@ public class Game implements GameHandler {
     public int roll_dice(){
         return rng.nextInt(6)+1;
     }
-    public int roll_dice(PlayerData playerData) {
-        int dice = rng.nextInt(6)+1;
-        movePlayer(playerData, dice);
-        return dice;
-    }
-
-    private PlayerData movePlayer(PlayerData playerData, int dice) {
-        int newField = playerData.getCurrentField().getId() + dice;
-        newField = newField > playerData.getCurrentField().getId() ? newField % playerData.getCurrentField().getId() + 1 : newField;
-        playerData.setCurrentField(fields.get(newField));
-        return playerData;
-    }
 
     @Override
     public void start(PlayerData player) {

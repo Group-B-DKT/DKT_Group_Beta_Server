@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public interface GameHandler {
     int roll_dice();
-    int roll_dice(PlayerData playerData);
     void start(PlayerData player);
     void setOrder();
 
