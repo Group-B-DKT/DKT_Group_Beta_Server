@@ -6,12 +6,14 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class PlayerData {
+
+public class PlayerData implements Serializable {
     @Getter
     @Setter
-    private WebSocketSession session;
+    private transient WebSocketSession session;
     @Getter
     @Setter
     private int gameId;
@@ -38,6 +40,8 @@ public class PlayerData {
         this.playerId = playerId;
         this.gameId = gameId;
     }
+
+    public PlayerData(){}
 
     public void sendMsg(String msg) throws IOException {
         if (!isConnected) return;
