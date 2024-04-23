@@ -51,7 +51,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-
+        System.out.println("Here");
     }
 
     @Override
@@ -128,5 +128,11 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     public List<PlayerData> getPLayersByGameId(int gameId){
         return this.playerData.stream().filter(p -> p.getGameId() == gameId).collect(Collectors.toList());
+    }
+
+    public PlayerData getPlayerBySessionId(String sessionId){
+        return this.playerData.stream()
+                .filter(p -> p.getSession().getId().equals(sessionId))
+                .findAny().orElse(null);
     }
 }

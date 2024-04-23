@@ -1,6 +1,7 @@
 package at.aau.serg.dktserver.communication;
 
 import at.aau.serg.dktserver.communication.enums.Action;
+import at.aau.serg.dktserver.model.domain.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 
@@ -9,7 +10,7 @@ import lombok.ToString;
 public class ActionJsonObject {
     private Action action;
     private String param;
-    private String fromPlayername;
+    private PlayerData fromPlayer;
 
     public ActionJsonObject(Action action) {
         this.action = action;
@@ -22,6 +23,6 @@ public class ActionJsonObject {
         return param;
     }
 
-    public String getFromPlayername(){return fromPlayername;}
+    public PlayerData getFromPlayer(){return fromPlayer;}
 
 }
