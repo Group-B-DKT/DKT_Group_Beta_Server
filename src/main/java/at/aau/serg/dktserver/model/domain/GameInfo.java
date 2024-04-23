@@ -1,9 +1,6 @@
 package at.aau.serg.dktserver.model.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,11 +8,14 @@ import java.util.List;
 @EqualsAndHashCode
 public class GameInfo {
     @Getter
+    @Setter
     private int id;
+
     @Getter
+    @Setter
     private String name;
+
     @Getter
-    private List<String> connectedPlayerNames;
-
-
+    @Setter
+    private List<PlayerData> connectedPlayers;
 }

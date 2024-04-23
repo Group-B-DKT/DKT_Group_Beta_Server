@@ -48,7 +48,7 @@ public class GameManager {
         List<GameInfo> gamesAndPlayer = new ArrayList<>();
         for(Game g: games) {
             gamesAndPlayer.add(
-                    new GameInfo(g.getId(),g.getName(), getPlayerNames(g.getId()))
+                    new GameInfo(g.getId(),g.getName(), getPlayers(g.getId()))
             );
         }
         return gamesAndPlayer;
@@ -75,6 +75,15 @@ public class GameManager {
         Game game = getGameById(gameId);
         for(PlayerData playerData: game.getPlayers()) {
             players.add(playerData.getUsername());
+        }
+        return players;
+    }
+
+    public List<PlayerData> getPlayers(int gameId) {
+        List<PlayerData> players = new ArrayList<>();
+        Game game = getGameById(gameId);
+        for(PlayerData playerData: game.getPlayers()) {
+            players.add(playerData);
         }
         return players;
     }
