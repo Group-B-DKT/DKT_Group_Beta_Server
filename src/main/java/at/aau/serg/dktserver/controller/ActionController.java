@@ -66,8 +66,7 @@ public class ActionController {
     }
 
     private void setReady(PlayerData fromPlayer) {
-        System.out.println(fromPlayer);
-        PlayerData player = webSocket.getPlayerByPlayerId(fromPlayer.getId());
+        PlayerData player = webSocket.getPlayerByUsername(fromPlayer.getUsername());
         player.setReady(fromPlayer.isReady());
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CHANGED_READY_STATUS, null, player);

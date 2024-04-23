@@ -41,6 +41,7 @@ public class PlayerData implements Serializable {
         this.id = playerId;
         this.gameId = gameId;
         this.isHost = false;
+        this.isReady = false;
     }
 
     public PlayerData(){}
