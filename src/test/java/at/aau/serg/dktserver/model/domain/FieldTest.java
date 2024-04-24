@@ -27,7 +27,7 @@ class FieldTest {
     @Test
     void enterField() {
         Field f1 = new Field(1, "Example 1", 100, true);
-        assertEquals(playerData.getPlayerId(), f1.enterField(playerData));
+        assertEquals(playerData.getId(), f1.enterField(playerData));
     }
 
     @Test
