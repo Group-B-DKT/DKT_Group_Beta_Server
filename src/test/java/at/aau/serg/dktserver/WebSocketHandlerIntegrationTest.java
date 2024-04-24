@@ -13,6 +13,7 @@ import at.aau.serg.dktserver.controller.GameManager;
 import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.WebSocketHandlerClientImpl;
+import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,6 +90,21 @@ class WebSocketHandlerIntegrationTest {
         ConnectJsonObject connectJsonObjectReceived = (ConnectJsonObject) WrapperHelper.getInstanceFromJson(response);
         messages.clear();
         assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED)).isTrue();
+    }
+
+    @Test
+    public void testWebSocketHandlerGetPLayerById() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String  p_id = "100";
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        messages.clear();
+        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(p_id);
+        assertThat(player != null && player.getUsername().equals("Player" + p_id)).isTrue();
     }
 
     @Test
