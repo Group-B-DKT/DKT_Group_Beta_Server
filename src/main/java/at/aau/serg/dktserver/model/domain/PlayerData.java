@@ -20,7 +20,8 @@ public class PlayerData implements Serializable {
     @Getter
     private String username;
     @Getter
-    private String playerId;
+    private String id;
+    @Getter
     @Setter
     private boolean isReady;
     @Getter
@@ -32,11 +33,17 @@ public class PlayerData implements Serializable {
     @Setter
     private int money;
 
+    @Getter
+    @Setter
+    private boolean isHost;
+
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;
         this.username = username;
-        this.playerId = playerId;
+        this.id = playerId;
         this.gameId = gameId;
+        this.isHost = false;
+        this.isReady = false;
     }
 
     public PlayerData(){}
@@ -46,6 +53,27 @@ public class PlayerData implements Serializable {
         session.sendMessage(new TextMessage(msg));
     }
 
+
+    public WebSocketSession getSession() {
+        return session;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public int getGameId() {
+        return gameId;
+    }
+
+    public void setConnected(boolean b) {
+        isConnected = b;
+    }
+  
     public boolean isConnected() {
         return isConnected;
     }
@@ -55,12 +83,12 @@ public class PlayerData implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PlayerData that = (PlayerData) o;
-        return gameId == that.gameId && isReady == that.isReady && isConnected == that.isConnected && Objects.equals(session, that.session) && Objects.equals(username, that.username) && Objects.equals(playerId, that.playerId);
+        return gameId == that.gameId && isReady == that.isReady && isConnected == that.isConnected && Objects.equals(session, that.session) && Objects.equals(username, that.username) && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(session, gameId, username, playerId, isReady, isConnected);
+        return Objects.hash(session, gameId, username, id, isReady, isConnected);
     }
 
 }

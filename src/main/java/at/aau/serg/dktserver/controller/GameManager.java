@@ -3,6 +3,7 @@ package at.aau.serg.dktserver.controller;
 import at.aau.serg.dktserver.model.Game;
 import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
+import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,6 +29,7 @@ public class GameManager {
         games = new ArrayList<>();
     }
     public int createGame(PlayerData host, String gameName) {
+        host.setHost(true);
         Game game = new Game(getFreeId(), host, gameName);
         games.add(game);
         host.setGameId(game.getId());
@@ -86,6 +88,12 @@ public class GameManager {
             players.add(playerData);
         }
         return players;
+    }
+
+    public boolean setIsReady(PlayerData fromPlayer){
+        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByUsername(fromPlayer.getUsername());
+        player.setReady(fromPlayer.isReady());
+        return player.isReady();
     }
 
     private int getFreeId() {
