@@ -6,12 +6,14 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class PlayerData {
+
+public class PlayerData implements Serializable {
     @Getter
     @Setter
-    private WebSocketSession session;
+    private transient WebSocketSession session;
 
     @Getter
     @Setter
@@ -20,19 +22,29 @@ public class PlayerData {
     private String username;
 
     @Getter
-    private String playerId;
+    private String id;
+    @Getter
+    @Setter
     private boolean isReady;
 
     @Getter
     @Setter
     private boolean isConnected;
 
+    @Getter
+    @Setter
+    private boolean isHost;
+
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;
         this.username = username;
-        this.playerId = playerId;
+        this.id = playerId;
         this.gameId = gameId;
+        this.isHost = false;
+        this.isReady = false;
     }
+
+    public PlayerData(){}
 
     public void sendMsg(String msg) throws IOException {
         if (!isConnected) return;
@@ -47,8 +59,8 @@ public class PlayerData {
         return username;
     }
 
-    public String getPlayerId() {
-        return playerId;
+    public String getId() {
+        return id;
     }
 
     public int getGameId() {
@@ -72,11 +84,11 @@ public class PlayerData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PlayerData that = (PlayerData) o;
-        return gameId == that.gameId && isReady == that.isReady && isConnected == that.isConnected && Objects.equals(session, that.session) && Objects.equals(username, that.username) && Objects.equals(playerId, that.playerId);
+        return gameId == that.gameId && isReady == that.isReady && isConnected == that.isConnected && Objects.equals(session, that.session) && Objects.equals(username, that.username) && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(session, gameId, username, playerId, isReady, isConnected);
+        return Objects.hash(session, gameId, username, id, isReady, isConnected);
     }
 }

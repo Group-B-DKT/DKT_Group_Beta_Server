@@ -67,4 +67,5 @@ class GameTest {
         Game game1 = new Game(2, new PlayerData(webSocketSession, "ABC", "1", 2), "");
         assertNotEquals(game, game1);
     }
+
 }

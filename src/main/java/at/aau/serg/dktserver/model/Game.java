@@ -25,7 +25,6 @@ public class Game implements GameHandler {
     private int id;
 
     public Game(int id, PlayerData host, String gameName) {
-
         this.id = id;
         this.host = host;
         this.name = gameName;

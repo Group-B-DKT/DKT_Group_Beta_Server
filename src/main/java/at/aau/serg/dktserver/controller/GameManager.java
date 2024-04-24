@@ -3,6 +3,7 @@ package at.aau.serg.dktserver.controller;
 import at.aau.serg.dktserver.model.Game;
 import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
+import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,6 +29,7 @@ public class GameManager {
         games = new ArrayList<>();
     }
     public int createGame(PlayerData host, String gameName) {
+        host.setHost(true);
         Game game = new Game(getFreeId(), host, gameName);
         games.add(game);
         host.setGameId(game.getId());
@@ -57,7 +59,7 @@ public class GameManager {
         List<GameInfo> gamesAndPlayer = new ArrayList<>();
         for(Game g: games) {
             gamesAndPlayer.add(
-                    new GameInfo(g.getId(),g.getName(), getPlayerNames(g.getId()))
+                    new GameInfo(g.getId(),g.getName(), getPlayers(g.getId()))
             );
         }
         return gamesAndPlayer;
@@ -88,6 +90,21 @@ public class GameManager {
         }
         }
         return players;
+    }
+
+    public List<PlayerData> getPlayers(int gameId) {
+        List<PlayerData> players = new ArrayList<>();
+        Game game = getGameById(gameId);
+        for(PlayerData playerData: game.getPlayers()) {
+            players.add(playerData);
+        }
+        return players;
+    }
+
+    public boolean setIsReady(PlayerData fromPlayer){
+        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByUsername(fromPlayer.getUsername());
+        player.setReady(fromPlayer.isReady());
+        return player.isReady();
     }
 
     private int getFreeId() {
