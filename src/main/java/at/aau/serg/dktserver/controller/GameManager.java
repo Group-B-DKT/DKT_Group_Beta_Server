@@ -35,14 +35,16 @@ public class GameManager {
         host.setGameId(game.getId());
         return game.getId();
     }
-    public void leaveGame(int gameId, PlayerData player) {
+    public PlayerData leaveGame(int gameId, PlayerData player) {
+        PlayerData newHost = null;
         Game game = getGameById(gameId);
         if (game != null) {
-            game.removePlayer(player);
+            newHost = game.removePlayer(player);
             player.setGameId(-1);
         }else{
             System.err.println("Spiel mit der ID " + gameId + " wurde nicht gefunden.");
         }
+        return newHost;
     }
 
     public void joinGame(int gameId, PlayerData player) {

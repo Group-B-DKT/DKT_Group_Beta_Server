@@ -74,16 +74,25 @@ public class ActionController {
         System.out.println(fromUsername);
     PlayerData player = webSocket.getPlayerByUsername(fromUsername);
     if (player == null) return;
-
     int gameId = player.getGameId();
     Game game = gameManager.getGameById(gameId);
 
-    gameManager.leaveGame(gameId, player);
+
+    PlayerData newHost = gameManager.leaveGame(gameId, player);
 
     ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
     String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 
     webSocket.sendMessage(-1, msg);
+    webSocket.sendMessage(gameId, msg);
+
+    if(newHost == null) {
+        return;
+    }
+
+    ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
+    String msg1 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject1);
+    webSocket.sendMessage(gameId, msg1);
 
 
     }

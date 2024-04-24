@@ -60,15 +60,18 @@ public class Game implements GameHandler {
     }
 
     @Override
-    public void removePlayer(PlayerData player) {
+    public PlayerData removePlayer(PlayerData player) {
         players.remove(player);
         if(player.equals(host)) {
+            player.setHost(false);
             if(!players.isEmpty()) {
                 host = players.get(0);
+                host.setHost(true);
             } else {
                 host = null;
             }
         }
+        return host;
     }
 
     @Override
