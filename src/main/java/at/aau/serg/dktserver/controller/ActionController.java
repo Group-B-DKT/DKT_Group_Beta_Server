@@ -19,17 +19,18 @@ public class ActionController {
         this.webSocket = WebSocketHandlerImpl.getInstance();
         this.gson = new Gson();
     }
-    public void callAction(Action action, int gameId, String fromUsername, String param){
+    public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer){
         switch (action){
             case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
-
+            case READY, NOT_READY -> setReady(fromPlayer);
             /*
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
              */
         }
     }
+
 
     private void rollDice(int gameId, PlayerData fromPlayer) {
         Game game = gameManager.getGameById(gameId);
@@ -63,4 +64,12 @@ public class ActionController {
         webSocket.sendMessage(gameId, msg);
     }
 
+    private void setReady(PlayerData fromPlayer) {
+        gameManager.setIsReady(fromPlayer);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CHANGED_READY_STATUS, null, fromPlayer);
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
+    }
 }

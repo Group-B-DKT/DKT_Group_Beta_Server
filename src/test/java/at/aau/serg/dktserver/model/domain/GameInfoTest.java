@@ -56,6 +56,6 @@ public class GameInfoTest {
         List<PlayerData> players = new ArrayList<>();
         players.add(new PlayerData(null, "Test", "ID1", -1));
         gameInfo.setConnectedPlayers(players);
-        assertTrue(gameInfo.getConnectedPlayers().get(0).getPlayerId().equals("ID1"));
+        assertTrue(gameInfo.getConnectedPlayers().get(0).getId().equals("ID1"));
     }
 }

@@ -51,7 +51,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        System.out.println("Here");
     }
 
     @Override
@@ -68,7 +67,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     public void reconnectPlayer(String playerId){
         PlayerData player = this.playerData.stream()
-                .filter(p -> p.getPlayerId() != null && p.getPlayerId().equals(playerId))
+                .filter(p -> p.getId() != null && p.getId().equals(playerId))
                 .findAny().orElse(null);
         if (player != null) {
             player.setConnected(true);
@@ -107,12 +106,12 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     public void setSessionOfPlayer(String playerId, WebSocketSession session){
         this.playerData.stream()
-                .filter(p -> p.getPlayerId().equals(playerId))
+                .filter(p -> p.getId().equals(playerId))
                 .forEach(p -> p.setSession(session));
     }
 
     public List<String> getPlayerIds() {
-        return this.playerData.stream().map(PlayerData::getPlayerId).toList();
+        return this.playerData.stream().map(PlayerData::getId).toList();
     }
 
 
@@ -130,9 +129,9 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         return this.playerData.stream().filter(p -> p.getGameId() == gameId).collect(Collectors.toList());
     }
 
-    public PlayerData getPlayerBySessionId(String sessionId){
+    public PlayerData getPlayerByPlayerId(String playerId){
         return this.playerData.stream()
-                .filter(p -> p.getSession().getId().equals(sessionId))
+                .filter(p -> p.getId().equals(playerId))
                 .findAny().orElse(null);
     }
 }
