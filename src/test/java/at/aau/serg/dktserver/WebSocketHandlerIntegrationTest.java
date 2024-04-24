@@ -122,6 +122,7 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         connectToWebsocket(session, 1);
+        GameManager.getInstance().createGame(new PlayerData(), "Test");
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, null);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.INFO, infoJsonObject);
 
@@ -132,7 +133,7 @@ class WebSocketHandlerIntegrationTest {
         InfoJsonObject infoJsonObject1 = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
         messages.clear();
 
-        assertThat(infoJsonObject1.getGameInfoList().isEmpty()).isTrue();
+        assertThat(infoJsonObject1.getGameInfoList().isEmpty()).isFalse();
     }
 
     @Test
