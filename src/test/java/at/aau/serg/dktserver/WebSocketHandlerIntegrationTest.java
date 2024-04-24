@@ -28,6 +28,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +65,27 @@ class WebSocketHandlerIntegrationTest {
         connectToWebsocket(session, 1);
 
         String response = messages.poll(1, TimeUnit.SECONDS);
+        ConnectJsonObject connectJsonObjectReceived = (ConnectJsonObject) WrapperHelper.getInstanceFromJson(response);
+        messages.clear();
+        assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED)).isTrue();
+    }
+
+    @Test
+    public void testWebSocketHandlerReConnect() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String  p_id = "100";
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        session = initStompSession();
+
+        session.sendMessage(new TextMessage(msg));
+
+
+        response = messages.poll(1, TimeUnit.SECONDS);
         ConnectJsonObject connectJsonObjectReceived = (ConnectJsonObject) WrapperHelper.getInstanceFromJson(response);
         messages.clear();
         assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED)).isTrue();
