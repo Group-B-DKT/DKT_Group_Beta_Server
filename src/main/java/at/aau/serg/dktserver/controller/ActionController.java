@@ -25,7 +25,6 @@ public class ActionController {
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
             case READY, NOT_READY -> setReady(fromPlayer);
-
             /*
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
              */
@@ -66,12 +65,11 @@ public class ActionController {
     }
 
     private void setReady(PlayerData fromPlayer) {
-        PlayerData player = webSocket.getPlayerByUsername(fromPlayer.getUsername());
-        player.setReady(fromPlayer.isReady());
+        gameManager.setIsReady(fromPlayer);
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CHANGED_READY_STATUS, null, player);
-        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CHANGED_READY_STATUS, null, fromPlayer);
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
 
-        webSocket.sendMessage(player.getGameId(), msg);
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
 }

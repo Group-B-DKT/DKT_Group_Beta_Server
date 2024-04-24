@@ -3,6 +3,7 @@ package at.aau.serg.dktserver.controller;
 import at.aau.serg.dktserver.model.Game;
 import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
+import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -89,8 +90,10 @@ public class GameManager {
         return players;
     }
 
-    public void setIsReady(PlayerData player, boolean isReady){
-
+    public boolean setIsReady(PlayerData fromPlayer){
+        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByUsername(fromPlayer.getUsername());
+        player.setReady(fromPlayer.isReady());
+        return player.isReady();
     }
 
     private int getFreeId() {
