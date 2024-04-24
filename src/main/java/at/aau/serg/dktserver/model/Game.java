@@ -74,6 +74,8 @@ public class Game implements GameHandler {
         return host;
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

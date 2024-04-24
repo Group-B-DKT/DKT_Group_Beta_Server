@@ -9,4 +9,5 @@ public interface GameHandler {
 
     void joinGame(PlayerData player);
     PlayerData removePlayer(PlayerData player);
+
 }

@@ -80,19 +80,24 @@ public class ActionController {
 
     PlayerData newHost = gameManager.leaveGame(gameId, player);
 
-    ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
-    String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+    ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.LEAVE_GAME, null, player);
+    String msg1 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject1);
 
-    webSocket.sendMessage(-1, msg);
-    webSocket.sendMessage(gameId, msg);
+    webSocket.sendMessage(-1, msg1);
+    webSocket.sendMessage(gameId, msg1);
 
     if(newHost == null) {
+        if(gameManager.removeGame(gameId)) {
+            ActionJsonObject actionJsonObject2 = new ActionJsonObject(Action.GAME_DELETED, null, null);
+            String msg2 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject2);
+            webSocket.sendMessage(-1, msg2);
+        }
         return;
     }
 
-    ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
-    String msg1 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject1);
-    webSocket.sendMessage(gameId, msg1);
+    ActionJsonObject actionJsonObject3 = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
+    String msg3 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject3);
+    webSocket.sendMessage(gameId, msg3);
 
 
     }

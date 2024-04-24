@@ -55,6 +55,15 @@ public class GameManager {
     public Game getGameById(int id){
         return games.stream().filter(g -> g.getId() == id).findFirst().orElse(null);
     }
+    public boolean removeGame(int gameId) {
+        boolean result = false;
+        Game game = getGameById(gameId);
+        if(game!=null) {
+            result = this.games.remove(game);
+        }
+        return result;
+
+    }
 
 
     public List<GameInfo> getGamesAndPlayerCount2() {
