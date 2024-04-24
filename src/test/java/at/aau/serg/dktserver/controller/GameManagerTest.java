@@ -100,4 +100,15 @@ class GameManagerTest {
         Map<Integer, Integer> map = new HashMap<>();
         assertEquals(map, gameManager.getFreeGamesAndPlayerCount());
     }
+    @Test
+    void removeGameTrue() {
+        int gameId = gameManager.createGame(playerData, "");
+        boolean result = gameManager.removeGame(gameId);
+        assertTrue(result);
+    }
+    @Test
+    void removeGameFalse() {
+        boolean result = gameManager.removeGame(1);
+        assertFalse(result);
+    }
 }

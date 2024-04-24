@@ -75,8 +75,6 @@ public class ActionController {
     PlayerData player = webSocket.getPlayerByUsername(fromUsername);
     if (player == null) return;
     int gameId = player.getGameId();
-    Game game = gameManager.getGameById(gameId);
-
 
     PlayerData newHost = gameManager.leaveGame(gameId, player);
 

@@ -266,6 +266,37 @@ class WebSocketHandlerIntegrationTest {
         assertThat(actionJsonObjectReceived.getAction() == Action.LEAVE_GAME).isTrue();
         assertThat(GameManager.getInstance().getGameById(gameId).getPlayers().size()==1).isTrue();
     }
+    @Test
+    public void testWebSocketHandlerActionLeaveGameNoHostLeft() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String  p_id = "300";
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, "Player" + p_id, p_id, -1);
+
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, null, player);
+        msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+
+        int gameId = actionJsonObjectReceived.getFromPlayer().getGameId();
+
+        player.setGameId(gameId);
+        actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION , actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+        actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assertThat(actionJsonObjectReceived.getAction() == Action.LEAVE_GAME).isTrue();
+        assertThat(GameManager.getInstance().getGameById(gameId) == null).isTrue();
+    }
 
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
         String username = "Player" + id;
