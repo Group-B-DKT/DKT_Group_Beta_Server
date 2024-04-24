@@ -10,6 +10,7 @@ import at.aau.serg.dktserver.communication.enums.Info;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
 import at.aau.serg.dktserver.controller.GameManager;
+import at.aau.serg.dktserver.model.Game;
 import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.WebSocketHandlerClientImpl;
@@ -70,6 +71,7 @@ class WebSocketHandlerIntegrationTest {
         messages.clear();
         assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED)).isTrue();
     }
+
 
     @Test
     public void testWebSocketHandlerReConnect() throws Exception {
@@ -235,6 +237,34 @@ class WebSocketHandlerIntegrationTest {
 
         Set<PlayerData> players = gameInfo.getConnectedPlayers().stream().filter(p -> p.getUsername().equals(username)).collect(Collectors.toSet());
         assertThat(players.size() > 0);
+    }
+    @Test
+    public void testWebSocketHandlerActionLeaveGame() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String  p_id = "200";
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, "Player" + p_id, p_id, -1);
+        int gameId = GameManager.getInstance().createGame(player, "MyGame");
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+
+        player.setGameId(gameId);
+        actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION , actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assertThat(actionJsonObjectReceived.getAction() == Action.LEAVE_GAME).isTrue();
+        assertThat(GameManager.getInstance().getGameById(gameId).getPlayers().size()==1).isTrue();
     }
 
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {

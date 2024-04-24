@@ -2,6 +2,7 @@ package at.aau.serg.dktserver.model;
 
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.model.interfaces.GameHandler;
+import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import lombok.Getter;
 
 import java.security.SecureRandom;
@@ -61,9 +62,10 @@ public class Game implements GameHandler {
 
     @Override
     public PlayerData removePlayer(PlayerData player) {
-        players.remove(player);
-        if(player.equals(host)) {
-            player.setHost(false);
+        PlayerData player1 = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(player.getId());
+        players.remove(player1);
+        if(player1.equals(host)) {
+            player1.setHost(false);
             if(!players.isEmpty()) {
                 host = players.get(0);
                 host.setHost(true);
