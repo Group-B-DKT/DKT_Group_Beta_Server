@@ -28,7 +28,7 @@ public class Field {
     }
 
     public String enterField(PlayerData playerData) {
-        return playerData.getPlayerId();
+        return playerData.getId();
     }
 
     public int getId() {

@@ -53,23 +53,6 @@ public class PlayerData implements Serializable {
         session.sendMessage(new TextMessage(msg));
     }
 
-
-    public WebSocketSession getSession() {
-        return session;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public int getGameId() {
-        return gameId;
-    }
-
     public void setConnected(boolean b) {
         isConnected = b;
     }

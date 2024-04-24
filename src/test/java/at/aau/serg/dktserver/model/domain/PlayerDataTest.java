@@ -38,7 +38,7 @@ class PlayerDataTest {
 
     @Test
     void getPlayerId() {
-        assertEquals("1", playerData.getPlayerId());
+        assertEquals("1", playerData.getId());
     }
 
     @Test
