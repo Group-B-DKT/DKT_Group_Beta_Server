@@ -16,7 +16,7 @@ public class CSVReader {
             String path = "fields.csv";
             String line = "";
             try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-                br.readLine();
+                System.out.println(br.readLine());
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(";");
                     list.add(new Field(Integer.parseInt(values[0]), values[1], Boolean.parseBoolean(values[2])));
