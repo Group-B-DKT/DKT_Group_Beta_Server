@@ -8,4 +8,6 @@ public interface GameHandler {
     void setOrder();
 
     void joinGame(PlayerData player);
+    PlayerData removePlayer(PlayerData player);
+
 }
