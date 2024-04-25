@@ -1,6 +1,10 @@
 package at.aau.serg.dktserver.model.domain;
 
+import at.aau.serg.dktserver.model.io.CSVReader;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class Field {
 
@@ -22,6 +26,7 @@ public class Field {
         this.price = price;
         this.ownable = ownable;
     }
+
 
     public String getName() {
         return name;
@@ -49,5 +54,22 @@ public class Field {
 
     public PlayerData getOwner() {
         return owner;
+    }
+
+    public static ArrayList<Field> loadFields() {
+        return CSVReader.readFields();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Field field = (Field) o;
+        return id == field.id && price == field.price && ownable == field.ownable && Objects.equals(name, field.name) && Objects.equals(owner, field.owner);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, price, owner, ownable);
     }
 }

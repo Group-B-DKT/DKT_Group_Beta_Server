@@ -42,6 +42,7 @@ public class Game implements GameHandler {
 
     @Override
     public void start(PlayerData player) {
+        fields = Field.loadFields();
         if(!isStarted && player.equals(host)) {
             isStarted = true;
             setOrder();
