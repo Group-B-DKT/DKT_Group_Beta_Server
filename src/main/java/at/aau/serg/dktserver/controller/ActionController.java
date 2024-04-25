@@ -24,7 +24,12 @@ public class ActionController {
             case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
+
+            case LEAVE_GAME -> leaveGame(fromUsername);
+
+
             case READY, NOT_READY -> setReady(fromPlayer);
+
             /*
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
              */
@@ -64,6 +69,37 @@ public class ActionController {
         webSocket.sendMessage(gameId, msg);
     }
 
+
+    private void leaveGame(String fromUsername) {
+        System.out.println(fromUsername);
+    PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+    if (player == null) return;
+    int gameId = player.getGameId();
+
+    PlayerData newHost = gameManager.leaveGame(gameId, player);
+
+    ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.LEAVE_GAME, null, player);
+    String msg1 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject1);
+
+    webSocket.sendMessage(-1, msg1);
+    webSocket.sendMessage(gameId, msg1);
+
+    if(newHost == null) {
+        if(gameManager.removeGame(gameId)) {
+            ActionJsonObject actionJsonObject2 = new ActionJsonObject(Action.GAME_DELETED, null, null);
+            String msg2 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject2);
+            webSocket.sendMessage(-1, msg2);
+        }
+        return;
+    }
+
+    ActionJsonObject actionJsonObject3 = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
+    String msg3 = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject3);
+    webSocket.sendMessage(gameId, msg3);
+
+
+    }
+
     private void setReady(PlayerData fromPlayer) {
         gameManager.setIsReady(fromPlayer);
 
@@ -72,4 +108,5 @@ public class ActionController {
 
         webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
+
 }

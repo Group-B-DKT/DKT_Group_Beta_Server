@@ -35,6 +35,17 @@ public class GameManager {
         host.setGameId(game.getId());
         return game.getId();
     }
+    public PlayerData leaveGame(int gameId, PlayerData player) {
+        PlayerData newHost = null;
+        Game game = getGameById(gameId);
+        if (game != null) {
+            newHost = game.removePlayer(player);
+            player.setGameId(-1);
+        }else{
+            System.err.println("Spiel mit der ID " + gameId + " wurde nicht gefunden.");
+        }
+        return newHost;
+    }
 
     public void joinGame(int gameId, PlayerData player) {
         getGameById(gameId).joinGame(player);
@@ -43,6 +54,15 @@ public class GameManager {
 
     public Game getGameById(int id){
         return games.stream().filter(g -> g.getId() == id).findFirst().orElse(null);
+    }
+    public boolean removeGame(int gameId) {
+        boolean result = false;
+        Game game = getGameById(gameId);
+        if(game!=null) {
+            result = this.games.remove(game);
+        }
+        return result;
+
     }
 
 
@@ -75,8 +95,10 @@ public class GameManager {
     public List<String> getPlayerNames(int gameId) {
         List<String> players = new ArrayList<>();
         Game game = getGameById(gameId);
+        if(game != null) {
         for(PlayerData playerData: game.getPlayers()) {
             players.add(playerData.getUsername());
+        }
         }
         return players;
     }
