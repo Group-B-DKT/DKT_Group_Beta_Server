@@ -14,4 +14,5 @@ public interface GameHandler {
     boolean buyField(int fieldId, PlayerData playerData);
 
     void setFields(ArrayList<Field> fields);
+    PlayerData removePlayer(PlayerData player);
 }
