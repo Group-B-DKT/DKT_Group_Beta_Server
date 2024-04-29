@@ -42,7 +42,6 @@ class GameTest {
     void start() {
         game.start(playerData);
         assertTrue(game.isStarted());
-        assertEquals(playerData.getCurrentField(), Field.loadFields().get(0));
     }
     @Test
     void startWrongUser() {

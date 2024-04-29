@@ -1,9 +1,7 @@
 package at.aau.serg.dktserver.model.domain;
 
-import at.aau.serg.dktserver.model.io.CSVReader;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Field {
@@ -54,10 +52,6 @@ public class Field {
 
     public PlayerData getOwner() {
         return owner;
-    }
-
-    public static ArrayList<Field> loadFields() {
-        return CSVReader.readFields();
     }
 
     @Override
