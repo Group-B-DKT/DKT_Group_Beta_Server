@@ -22,6 +22,7 @@ public class Game implements GameHandler {
     private PlayerData currentPlayer;
     @Getter
     private String name;
+    @Getter
     private ArrayList<Field> fields = new ArrayList<>();
     @Getter
     private int id;
