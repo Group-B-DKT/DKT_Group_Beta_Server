@@ -60,4 +60,23 @@ class FieldTest {
         assertFalse(f1.getOwnable());
     }
 
+    @Test
+    void testEqualsTrue() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f2 = new Field(1, "Example 1", 100, true);
+        assertEquals(f1, f2);
+    }
+    @Test
+    void testEqualsFalse() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f2 = new Field(1, "Example 2", 100, true);
+        assertNotEquals(f1, f2);
+    }
+
+    @Test
+    void testHashCode() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f2 = new Field(1, "Example 1", 100, true);
+        assertEquals(f1.hashCode(), f2.hashCode());
+    }
 }
