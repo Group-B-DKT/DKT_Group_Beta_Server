@@ -114,6 +114,26 @@ class FieldTest {
         Field f1 = new Field(1, "Example 1", 100, true);
         assertNotEquals(f1, playerData);
     }
+    @Test
+    void testEqualsDifferentNames() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f2 = new Field(1, "Example 2", 100, true);
+        assertNotEquals(f1, f2);
+    }
+    @Test
+    void testEqualsDifferentOwners() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        f1.setOwner(playerData);
+        Field f2 = new Field(1, "Example 1", 100, true);
+        f2.setOwner(new PlayerData(socketSession, "Player 2", "2", 1));
+        assertNotEquals(f1, f2);
+    }
+    @Test
+    void testEqualsDifferentOwnable() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f2 = new Field(1, "Example 1", 100, false);
+        assertNotEquals(f1, f2);
+    }
 
     @Test
     void testHashCode() {
