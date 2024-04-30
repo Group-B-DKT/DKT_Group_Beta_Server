@@ -29,6 +29,7 @@ import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -296,6 +297,35 @@ class WebSocketHandlerIntegrationTest {
         actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
         assertThat(actionJsonObjectReceived.getAction() == Action.LEAVE_GAME).isTrue();
         assertThat(GameManager.getInstance().getGameById(gameId) == null).isTrue();
+    }
+    @Test
+    public void testWebSocketHandlerActionInitFields() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        ArrayList<Game> games = new ArrayList<>();
+        games.add(new Game(1, null, "game"));
+
+        GameManager.getInstance().setGames(games);
+
+        String json = "[{\"id\":1,\"name\":\"Los!\",\"ownable\":false,\"price\":0},{\"id\":2,\"name\":\"Hafnersee\",\"ownable\":true,\"price\":0},{\"id\":3,\"name\":\"Ereignisfeld\",\"ownable\":false,\"price\":0},{\"id\":4,\"name\":\"Pyramidenkogel\",\"ownable\":true,\"price\":0},{\"id\":5,\"name\":\"Reifnitz\",\"ownable\":true,\"price\":0},{\"id\":6,\"name\":\"Dellach\",\"ownable\":true,\"price\":0},{\"id\":7,\"name\":\"Wörtherseeschifffahrt\",\"ownable\":true,\"price\":0},{\"id\":8,\"name\":\"Gemeinschaftsfeld\",\"ownable\":false,\"price\":0},{\"id\":9,\"name\":\"Kathreinkogel\",\"ownable\":true,\"price\":0},{\"id\":10,\"name\":\"Gesetzesverletzung\",\"ownable\":false,\"price\":0},{\"id\":11,\"name\":\"Auen\",\"ownable\":true,\"price\":0},{\"id\":12,\"name\":\"Kraftwerk Forstsee\",\"ownable\":true,\"price\":0},{\"id\":13,\"name\":\"Tierpark Rosegg\",\"ownable\":true,\"price\":0},{\"id\":14,\"name\":\"Casinoplatz\",\"ownable\":true,\"price\":0},{\"id\":15,\"name\":\"Seecorso\",\"ownable\":true,\"price\":0},{\"id\":16,\"name\":\"Gemeinschaftsfeld\",\"ownable\":false,\"price\":0},{\"id\":17,\"name\":\"Töschling\",\"ownable\":true,\"price\":0},{\"id\":18,\"name\":\"Urlaubsgeld\",\"ownable\":false,\"price\":0},{\"id\":19,\"name\":\"St. Martin\",\"ownable\":true,\"price\":0},{\"id\":20,\"name\":\"Ereignisfeld\",\"ownable\":false,\"price\":0},{\"id\":21,\"name\":\"Seeuferstraße\",\"ownable\":true,\"price\":0},{\"id\":22,\"name\":\"Annastraße\",\"ownable\":true,\"price\":0},{\"id\":23,\"name\":\"Gemeinschaftsfeld\",\"ownable\":false,\"price\":0},{\"id\":24,\"name\":\"Koschatweg\",\"ownable\":true,\"price\":0},{\"id\":25,\"name\":\"Knast\",\"ownable\":false,\"price\":0},{\"id\":26,\"name\":\"Römerweg\",\"ownable\":true,\"price\":0},{\"id\":27,\"name\":\"Reptilienzoo\",\"ownable\":true,\"price\":0},{\"id\":28,\"name\":\"Lorettoweg\",\"ownable\":true,\"price\":0},{\"id\":29,\"name\":\"Süduferstraße\",\"ownable\":true,\"price\":0},{\"id\":30,\"name\":\"Lorettoweg\",\"ownable\":true,\"price\":0}]";
+
+        connectToWebsocket(session, 1);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.INIT_FIELDS, json, null);
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
+        String msg = gson.toJson(wrapper);
+
+        session.sendMessage(new TextMessage(msg));
+
+
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        response = messages.poll(1, TimeUnit.SECONDS);
+        response = messages.poll(1, TimeUnit.SECONDS);
+        GameManager gm = GameManager.getInstance();
+        Game game = gm.getInstance().getGameById(1);
+
+        assertThat(game.getFields().size() == 30);
+
     }
 
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {

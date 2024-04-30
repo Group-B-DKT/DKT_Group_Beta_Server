@@ -14,22 +14,24 @@ public class PlayerData implements Serializable {
     @Getter
     @Setter
     private transient WebSocketSession session;
-
     @Getter
     @Setter
     private int gameId;
     @Getter
     private String username;
-
     @Getter
     private String id;
     @Getter
     @Setter
     private boolean isReady;
-
     @Getter
     @Setter
+    private Field currentField;
+    @Setter
     private boolean isConnected;
+    @Getter
+    @Setter
+    private int money;
 
     @Getter
     @Setter
@@ -51,32 +53,12 @@ public class PlayerData implements Serializable {
         session.sendMessage(new TextMessage(msg));
     }
 
-    public WebSocketSession getSession() {
-        return session;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public int getGameId() {
-        return gameId;
-    }
-
     public void setConnected(boolean b) {
         isConnected = b;
     }
-
+  
     public boolean isConnected() {
         return isConnected;
-    }
-
-    public void setSession(WebSocketSession session) {
-        this.session = session;
     }
 
     @Override
@@ -91,4 +73,5 @@ public class PlayerData implements Serializable {
     public int hashCode() {
         return Objects.hash(session, gameId, username, id, isReady, isConnected);
     }
+
 }

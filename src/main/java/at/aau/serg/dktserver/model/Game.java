@@ -1,5 +1,6 @@
 package at.aau.serg.dktserver.model;
 
+import at.aau.serg.dktserver.model.domain.Field;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.model.interfaces.GameHandler;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
@@ -21,7 +22,8 @@ public class Game implements GameHandler {
     private PlayerData currentPlayer;
     @Getter
     private String name;
-
+    @Getter
+    private ArrayList<Field> fields = new ArrayList<>();
     @Getter
     private int id;
 
@@ -46,6 +48,9 @@ public class Game implements GameHandler {
             isStarted = true;
             setOrder();
             currentPlayer = players.get(0);
+            for(PlayerData p: players) {
+                p.setCurrentField(fields.get(0));
+            }
         }
     }
 
@@ -61,6 +66,21 @@ public class Game implements GameHandler {
     }
 
     @Override
+    public boolean buyField(int fieldId, PlayerData playerData) {
+        if(fields.get(fieldId).getPrice() > playerData.getMoney()) {
+            return false;
+        }
+        else {
+            fields.get(fieldId).setOwner(playerData);
+            playerData.setMoney(playerData.getMoney()-fields.get(fieldId).getPrice());
+            return true;
+        }
+    }
+
+    @Override
+    public void setFields(ArrayList<Field> fields) {
+        this.fields = fields;
+    }
     public PlayerData removePlayer(PlayerData player) {
         PlayerData player1 = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(player.getId());
         players.remove(player1);
@@ -75,7 +95,6 @@ public class Game implements GameHandler {
         }
         return host;
     }
-
 
 
     @Override

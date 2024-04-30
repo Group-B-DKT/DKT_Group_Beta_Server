@@ -5,9 +5,14 @@ import at.aau.serg.dktserver.communication.enums.Action;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
 import at.aau.serg.dktserver.model.Game;
+import at.aau.serg.dktserver.model.domain.Field;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class ActionController {
     private GameManager gameManager;
@@ -26,7 +31,7 @@ public class ActionController {
             case JOIN_GAME -> joinGame(gameId, fromUsername);
 
             case LEAVE_GAME -> leaveGame(fromUsername);
-
+            case INIT_FIELDS -> initFields(gameId, param);
 
             case READY, NOT_READY -> setReady(fromPlayer);
 
@@ -34,6 +39,13 @@ public class ActionController {
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
              */
         }
+    }
+
+    private void initFields(int gameId, String param) {
+        Game game = gameManager.getGameById(gameId);
+        Type listType = new TypeToken<ArrayList<Field>>(){}.getType();
+        ArrayList<Field> fields = gson.fromJson(param, listType);
+        game.setFields(fields);
     }
 
 

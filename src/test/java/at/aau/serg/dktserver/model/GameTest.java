@@ -1,5 +1,6 @@
 package at.aau.serg.dktserver.model;
 
+import at.aau.serg.dktserver.model.domain.Field;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +17,19 @@ class GameTest {
     PlayerData playerData;
     @Mock
     WebSocketSession webSocketSession;
+    ArrayList<Field> fields = new ArrayList<>();
     @BeforeEach
     void setUp() {
         playerData = new PlayerData(webSocketSession, "Example", "1", 1);
         game = new Game(1, playerData, "");
+        fields.add(new Field(1, "Start", false));
+        fields.add(new Field(2, "Example 1", 100, true));
+        fields.add(new Field(3, "Example 2", 120, true));
+        fields.add(new Field(4, "Example 3", 150, true));
+        fields.add(new Field(5, "Example 4", 200, true));
+        fields.add(new Field(6, "Example 5", 220, true));
+        fields.add(new Field(7, "Example 6", 400, true));
+        game.setFields(fields);
     }
 
     @Test
@@ -68,4 +78,18 @@ class GameTest {
         assertNotEquals(game, game1);
     }
 
+    @Test
+    void buyField() {
+        Field f = fields.get(1);
+        playerData.setMoney(1500);
+        game.setFields(fields);
+        assertTrue(game.buyField(f.getId(), playerData));
+    }
+    @Test
+    void buyFieldNoMoney() {
+        Field f = fields.get(1);
+        playerData.setMoney(50);
+        game.setFields(fields);
+        assertFalse(game.buyField(f.getId(), playerData));
+    }
 }
