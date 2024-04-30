@@ -69,7 +69,13 @@ class FieldTest {
     @Test
     void testEqualsFalse() {
         Field f1 = new Field(1, "Example 1", 100, true);
-        Field f2 = new Field(1, "Example 2", 100, true);
+        Field f2 = new Field(2, "Example 2", 150, true);
+        assertNotEquals(f1, f2);
+    }
+    @Test
+    void testEqualsFalse2() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f2 = new Field(2, "Example 2",  false);
         assertNotEquals(f1, f2);
     }
 
@@ -77,6 +83,12 @@ class FieldTest {
     void testEqualsNull() {
         Field f1 = new Field(1, "Example 1", 100, true);
         assertNotEquals(f1, null);
+    }
+
+    @Test
+    void testEqualsWrongObject() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        assertNotEquals(f1, playerData);
     }
 
     @Test
