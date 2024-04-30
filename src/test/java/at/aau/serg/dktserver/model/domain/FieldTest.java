@@ -86,6 +86,14 @@ class FieldTest {
         f2.setOwner(new PlayerData());
         assertNotEquals(f1, f2);
     }
+    @Test
+    void testEqualsFalse4() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f2 = new Field(2, "Example 2", 150, true);
+        f1.setOwner(playerData);
+        f2.setOwner(playerData);
+        assertNotEquals(f1, f2);
+    }
 
     @Test
     void testEqualsNull() {
