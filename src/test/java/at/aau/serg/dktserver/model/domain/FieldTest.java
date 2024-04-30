@@ -74,6 +74,12 @@ class FieldTest {
     }
 
     @Test
+    void testEqualsNull() {
+        Field f1 = new Field(1, "Example 1", 100, true);
+        assertNotEquals(f1, null);
+    }
+
+    @Test
     void testHashCode() {
         Field f1 = new Field(1, "Example 1", 100, true);
         Field f2 = new Field(1, "Example 1", 100, true);
