@@ -29,10 +29,9 @@ public class ActionController {
             case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
-
             case LEAVE_GAME -> leaveGame(fromUsername);
+            case BUY_FIELD -> buyField(fromUsername, gson.fromJson(param, Field.class));
             case INIT_FIELDS -> initFields(gameId, param);
-
             case READY, NOT_READY -> setReady(fromPlayer);
 
             /*
@@ -69,6 +68,22 @@ public class ActionController {
         webSocket.sendMessage(playerByUsername.getGameId(), msg);
         webSocket.sendMessage(-1, msg);
 
+    }
+
+    private void buyField(String fromUsername, Field field) {
+        PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+        if(player == null) return;
+        Game game = gameManager.getGameById(player.getGameId());
+        if(game == null) return;
+
+        boolean success = game.buyField(field.getId(), player);
+        if(success) {
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            webSocket.sendMessage(player.getGameId(), msg);
+        }else {
+
+        }
     }
 
     private void joinGame(int gameId, String fromUsername){
