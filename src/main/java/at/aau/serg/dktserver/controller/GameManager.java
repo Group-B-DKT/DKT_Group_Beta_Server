@@ -41,10 +41,22 @@ public class GameManager {
         if (game != null) {
             newHost = game.removePlayer(player);
             player.setGameId(-1);
+            //distributeMoney(game, player);
         }else{
             System.err.println("Spiel mit der ID " + gameId + " wurde nicht gefunden.");
         }
         return newHost;
+    }
+    public void distributeMoney(Game game, PlayerData disconnectedPlayer) {
+        int totalPlayers = game.getPlayers().size()-1;
+        int disconntectedPlayerMoney = disconnectedPlayer.getMoney();
+        int moneyPerPlayer = disconntectedPlayerMoney / totalPlayers;
+
+        for (PlayerData player : game.getPlayers()) {
+            if(!player.equals(disconnectedPlayer)) {
+                player.setMoney(player.getMoney() + moneyPerPlayer);
+            }
+        }
     }
 
     public void joinGame(int gameId, PlayerData player) {
