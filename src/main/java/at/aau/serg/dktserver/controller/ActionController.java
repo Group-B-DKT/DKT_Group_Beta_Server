@@ -76,7 +76,7 @@ public class ActionController {
         Game game = gameManager.getGameById(player.getGameId());
         if(game == null) return;
 
-        boolean success = game.buyField(field.getId(), player);
+        boolean success = gameManager.setField(player.getGameId(), field);
         if(success) {
             ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player);
             String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);

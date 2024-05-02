@@ -1,6 +1,7 @@
 package at.aau.serg.dktserver.controller;
 
 import at.aau.serg.dktserver.model.Game;
+import at.aau.serg.dktserver.model.domain.Field;
 import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
@@ -63,6 +64,20 @@ public class GameManager {
         }
         return result;
 
+    }
+    public boolean setField(int gameId, Field updatedField) {
+        Game game = getGameById(gameId);
+        if(game!=null) {
+            List<Field> fields = getGameById(gameId).getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                Field field = fields.get(i);
+                if(field.getId() == updatedField.getId()) {
+                    fields.set(i, updatedField);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
