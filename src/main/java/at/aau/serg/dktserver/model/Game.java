@@ -96,6 +96,20 @@ public class Game implements GameHandler {
         return host;
     }
 
+    @Override
+    public void updateField(Field field) {
+        Field savedField = this.fields.stream()
+                                      .filter(f -> f.getId() == field.getId())
+                                      .findAny().orElse(null);
+        if (savedField == null){
+            this.fields.add(field);
+        }else{
+            int index = this.fields.indexOf(savedField);
+            this.fields.set(index, field);
+        }
+        System.out.println(fields);
+    }
+
 
     @Override
     public boolean equals(Object o) {

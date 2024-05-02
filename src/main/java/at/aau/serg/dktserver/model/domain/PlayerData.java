@@ -29,6 +29,7 @@ public class PlayerData implements Serializable {
     private Field currentField;
     @Setter
     private boolean isConnected;
+
     @Getter
     @Setter
     private int money;
@@ -36,6 +37,11 @@ public class PlayerData implements Serializable {
     @Getter
     @Setter
     private boolean isHost;
+
+    @Getter
+    @Setter
+    private boolean isOnTurn;
+
 
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;

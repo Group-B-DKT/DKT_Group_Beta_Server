@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ActionController {
     private GameManager gameManager;
@@ -24,7 +25,7 @@ public class ActionController {
         this.webSocket = WebSocketHandlerImpl.getInstance();
         this.gson = new Gson();
     }
-    public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer){
+    public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer, List<Field> fields){
         switch (action){
             case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
@@ -34,11 +35,21 @@ public class ActionController {
             case INIT_FIELDS -> initFields(gameId, param);
 
             case READY, NOT_READY -> setReady(fromPlayer);
+            case GAME_STARTED -> initGame(gameId, fields);
 
             /*
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
              */
         }
+    }
+    static int i = 0;
+    private void initGame(int gameId, List<Field> fields) {
+        gameManager.updateField(gameId, fields.get(i++));
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(gameId, msg);
     }
 
     private void initFields(int gameId, String param) {

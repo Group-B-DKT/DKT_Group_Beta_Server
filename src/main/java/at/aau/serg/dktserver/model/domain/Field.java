@@ -1,9 +1,11 @@
 package at.aau.serg.dktserver.model.domain;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Objects;
 
+@ToString
 public class Field {
 
     @Getter
