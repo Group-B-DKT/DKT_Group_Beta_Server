@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,12 @@ public class ActionController {
         for (Field field: fields) {
             gameManager.updateField(gameId, field);
         }
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
+        SecureRandom random = new SecureRandom();
+        List<PlayerData> players = gameManager.getGameById(gameId).getPlayers();
+        PlayerData isOnTurnPlayer = players.get(random.nextInt(players.size()));
+        isOnTurnPlayer.setOnTurn(true);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, isOnTurnPlayer, fields);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, msg);
