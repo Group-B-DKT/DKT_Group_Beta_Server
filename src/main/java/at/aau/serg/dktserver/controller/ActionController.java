@@ -42,10 +42,11 @@ public class ActionController {
              */
         }
     }
-    static int i = 0;
     private void initGame(int gameId, List<Field> fields) {
-        gameManager.updateField(gameId, fields.get(i++));
-
+        System.out.println(gameManager.getGameById(gameId).getPlayers());
+        for (Field field: fields) {
+            gameManager.updateField(gameId, field);
+        }
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 

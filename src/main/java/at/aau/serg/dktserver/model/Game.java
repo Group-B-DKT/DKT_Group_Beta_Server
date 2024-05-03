@@ -107,7 +107,6 @@ public class Game implements GameHandler {
             int index = this.fields.indexOf(savedField);
             this.fields.set(index, field);
         }
-        System.out.println(fields);
     }
 
 

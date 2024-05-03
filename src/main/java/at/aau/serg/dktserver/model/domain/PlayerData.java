@@ -2,6 +2,7 @@ package at.aau.serg.dktserver.model.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -9,8 +10,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 
-
+@ToString
 public class PlayerData implements Serializable {
+    private static final int START_MONEY = 1200;
+
     @Getter
     @Setter
     private transient WebSocketSession session;
@@ -50,6 +53,7 @@ public class PlayerData implements Serializable {
         this.gameId = gameId;
         this.isHost = false;
         this.isReady = false;
+        this.money = START_MONEY;
     }
 
     public PlayerData(){}
@@ -79,5 +83,4 @@ public class PlayerData implements Serializable {
     public int hashCode() {
         return Objects.hash(session, gameId, username, id, isReady, isConnected);
     }
-
 }
