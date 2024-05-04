@@ -23,4 +23,10 @@ public class GameInfo {
     @Setter
     boolean isStarted;
 
+    public GameInfo(int id, String name, List<PlayerData> connectedPlayers) {
+        this.id = id;
+        this.name = name;
+        this.connectedPlayers = connectedPlayers;
+        this.isStarted = false;
+    }
 }
