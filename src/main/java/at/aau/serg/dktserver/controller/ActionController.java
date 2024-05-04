@@ -99,6 +99,7 @@ public class ActionController {
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, msg);
+        webSocket.sendMessage(-1, msg);
     }
 
 
