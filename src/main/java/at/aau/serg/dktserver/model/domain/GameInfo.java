@@ -18,4 +18,9 @@ public class GameInfo {
     @Getter
     @Setter
     private List<PlayerData> connectedPlayers;
+
+    @Getter
+    @Setter
+    boolean isStarted;
+
 }

@@ -44,10 +44,10 @@ public class ActionController {
         }
     }
     private void initGame(int gameId, List<Field> fields) {
-        System.out.println(gameManager.getGameById(gameId).getPlayers());
         for (Field field: fields) {
             gameManager.updateField(gameId, field);
         }
+        gameManager.getGameById(gameId).setStarted(true);
         SecureRandom random = new SecureRandom();
         List<PlayerData> players = gameManager.getGameById(gameId).getPlayers();
         PlayerData isOnTurnPlayer = players.get(random.nextInt(players.size()));
@@ -55,8 +55,10 @@ public class ActionController {
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, isOnTurnPlayer, fields);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        String msg2 = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, msg);
+        webSocket.sendMessage(-1, msg2);
     }
 
     private void initFields(int gameId, String param) {
@@ -101,7 +103,6 @@ public class ActionController {
 
 
     private void leaveGame(String fromUsername) {
-        System.out.println(fromUsername);
     PlayerData player = webSocket.getPlayerByUsername(fromUsername);
     if (player == null) return;
     int gameId = player.getGameId();

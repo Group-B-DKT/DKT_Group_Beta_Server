@@ -77,7 +77,7 @@ public class GameManager {
         List<GameInfo> gamesAndPlayer = new ArrayList<>();
         for(Game g: games) {
             gamesAndPlayer.add(
-                    new GameInfo(g.getId(),g.getName(), getPlayers(g.getId()))
+                    new GameInfo(g.getId(),g.getName(), getPlayers(g.getId()), g.isStarted())
             );
         }
         return gamesAndPlayer;

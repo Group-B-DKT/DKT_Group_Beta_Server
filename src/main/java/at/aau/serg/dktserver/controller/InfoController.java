@@ -48,7 +48,7 @@ public class InfoController {
 
     private void receiveConnectedPlayers(int gameId, String fromPlayername) {
         List<GameInfo> gameInfos = new ArrayList<>();
-        GameInfo gameInfo = new GameInfo(gameId, null, webSocket.getPLayersByGameId(gameId));
+        GameInfo gameInfo = new GameInfo(gameId, null, webSocket.getPLayersByGameId(gameId), gameManager.getGameById(gameId).isStarted());
         gameInfos.add(gameInfo);
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, gameInfos);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.INFO, infoJsonObject);
