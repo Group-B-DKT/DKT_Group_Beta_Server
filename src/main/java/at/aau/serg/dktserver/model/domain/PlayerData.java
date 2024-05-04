@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 
-@ToString
 public class PlayerData implements Serializable {
     private static final int START_MONEY = 1200;
 

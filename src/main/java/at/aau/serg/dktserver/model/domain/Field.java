@@ -6,7 +6,6 @@ import lombok.ToString;
 
 import java.util.Objects;
 
-@ToString
 public class Field {
 
     @Getter
