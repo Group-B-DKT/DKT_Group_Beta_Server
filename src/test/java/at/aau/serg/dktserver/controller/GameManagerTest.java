@@ -71,7 +71,7 @@ class GameManagerTest {
         gameManager.createGame(playerData, "Game1");
         List<GameInfo> gameInfoList = new ArrayList<>();
         List<PlayerData> players = List.of(playerData);
-        gameInfoList.add(new GameInfo(1, "Game1", players));
+        gameInfoList.add(new GameInfo(1, "Game1", players, false));
         assertEquals(gameInfoList, gameManager.getGamesAndPlayerCount2());
     }
 

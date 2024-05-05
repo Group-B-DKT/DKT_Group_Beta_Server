@@ -12,7 +12,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ActionController {
     private GameManager gameManager;
@@ -24,7 +26,7 @@ public class ActionController {
         this.webSocket = WebSocketHandlerImpl.getInstance();
         this.gson = new Gson();
     }
-    public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer){
+    public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer, List<Field> fields){
         switch (action){
             case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
@@ -34,11 +36,29 @@ public class ActionController {
             case INIT_FIELDS -> initFields(gameId, param);
 
             case READY, NOT_READY -> setReady(fromPlayer);
+            case GAME_STARTED -> initGame(gameId, fields);
 
             /*
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
              */
         }
+    }
+    private void initGame(int gameId, List<Field> fields) {
+        for (Field field: fields) {
+            gameManager.updateField(gameId, field);
+        }
+        gameManager.getGameById(gameId).setStarted(true);
+        SecureRandom random = new SecureRandom();
+        List<PlayerData> players = gameManager.getGameById(gameId).getPlayers();
+        PlayerData isOnTurnPlayer = players.get(random.nextInt(players.size()));
+        isOnTurnPlayer.setOnTurn(true);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, isOnTurnPlayer, fields);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        String msg2 = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(gameId, msg);
+        webSocket.sendMessage(-1, msg2);
     }
 
     private void initFields(int gameId, String param) {
@@ -79,11 +99,11 @@ public class ActionController {
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, msg);
+        webSocket.sendMessage(-1, msg);
     }
 
 
     private void leaveGame(String fromUsername) {
-        System.out.println(fromUsername);
     PlayerData player = webSocket.getPlayerByUsername(fromUsername);
     if (player == null) return;
     int gameId = player.getGameId();
