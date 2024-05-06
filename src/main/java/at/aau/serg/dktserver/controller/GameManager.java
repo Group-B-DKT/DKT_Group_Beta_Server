@@ -1,6 +1,7 @@
 package at.aau.serg.dktserver.controller;
 
 import at.aau.serg.dktserver.model.Game;
+import at.aau.serg.dktserver.model.domain.Field;
 import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
@@ -41,6 +42,7 @@ public class GameManager {
         if (game != null) {
             newHost = game.removePlayer(player);
             player.setGameId(-1);
+            player.setReady(false);
         }else{
             System.err.println("Spiel mit der ID " + gameId + " wurde nicht gefunden.");
         }
@@ -65,12 +67,17 @@ public class GameManager {
 
     }
 
+    public void updateField(int gameId, Field field){
+        Game game = getGameById(gameId);
+        game.updateField(field);
+    }
+
 
     public List<GameInfo> getGamesAndPlayerCount2() {
         List<GameInfo> gamesAndPlayer = new ArrayList<>();
         for(Game g: games) {
             gamesAndPlayer.add(
-                    new GameInfo(g.getId(),g.getName(), getPlayers(g.getId()))
+                    new GameInfo(g.getId(),g.getName(), getPlayers(g.getId()), g.isStarted())
             );
         }
         return gamesAndPlayer;

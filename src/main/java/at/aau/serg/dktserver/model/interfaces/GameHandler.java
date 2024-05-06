@@ -15,4 +15,6 @@ public interface GameHandler {
 
     void setFields(ArrayList<Field> fields);
     PlayerData removePlayer(PlayerData player);
+
+    void updateField(Field field);
 }
