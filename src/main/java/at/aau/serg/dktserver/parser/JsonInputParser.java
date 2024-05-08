@@ -55,7 +55,7 @@ public class JsonInputParser implements InputParser {
         ActionJsonObject actionJsonObject = jsonObject instanceof ActionJsonObject ? (ActionJsonObject) jsonObject : null;
 
         if (actionJsonObject == null) return;
-        actionController.callAction(actionJsonObject.getAction(), wrapper.getGameId(), fromPLayername, actionJsonObject.getParam(), actionJsonObject.getFromPlayer());
+        actionController.callAction(actionJsonObject.getAction(), wrapper.getGameId(), fromPLayername, actionJsonObject.getParam(), actionJsonObject.getFromPlayer(), actionJsonObject.getFields());
     }
 
     private void parseInfo(Wrapper wrapper, String fromPlayername){

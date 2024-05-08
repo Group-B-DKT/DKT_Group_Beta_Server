@@ -1,5 +1,6 @@
 package at.aau.serg.dktserver.model.domain;
 
+import at.aau.serg.dktserver.model.enums.FieldType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -20,7 +21,7 @@ class FieldTest {
 
     @Test
     void getName() {
-        Field f1 = new Field(1, "Example 1", 100, true);
+        Field f1 = new Field(1, "Example 1", 100, true, FieldType.NORMAL);
         assertEquals("Example 1", f1.getName());
     }
 

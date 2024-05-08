@@ -1,6 +1,8 @@
 package at.aau.serg.dktserver.model.domain;
 
+import at.aau.serg.dktserver.model.enums.FieldType;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Objects;
 
@@ -12,6 +14,17 @@ public class Field {
     private int price = 0;
     private PlayerData owner;
     private final boolean ownable;
+
+    private FieldType fieldType;
+
+    public Field(int id, String name, int price, boolean ownable, FieldType fieldType) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.ownable = ownable;
+        this.fieldType = fieldType;
+    }
+
 
     public Field(int id, String name, boolean ownable) {
         this.id = id;

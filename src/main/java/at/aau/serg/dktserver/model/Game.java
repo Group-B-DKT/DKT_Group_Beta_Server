@@ -5,6 +5,7 @@ import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.model.interfaces.GameHandler;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class Game implements GameHandler {
     private ArrayList<PlayerData> players;
     private PlayerData host;
     @Getter
+    @Setter
     private boolean isStarted = false;
     private PlayerData currentPlayer;
     @Getter
@@ -94,6 +96,19 @@ public class Game implements GameHandler {
             }
         }
         return host;
+    }
+
+    @Override
+    public void updateField(Field field) {
+        Field savedField = this.fields.stream()
+                                      .filter(f -> f.getId() == field.getId())
+                                      .findAny().orElse(null);
+        if (savedField == null){
+            this.fields.add(field);
+        }else{
+            int index = this.fields.indexOf(savedField);
+            this.fields.set(index, field);
+        }
     }
 
 
