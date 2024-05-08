@@ -71,7 +71,7 @@ public class ActionController {
 
     private void rollDice(int gameId, PlayerData fromPlayer) {
         Game game = gameManager.getGameById(gameId);
-
+        
         if (game == null) return;
         int value = game.roll_dice();
 

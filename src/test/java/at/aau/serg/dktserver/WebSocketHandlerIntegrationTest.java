@@ -81,7 +81,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "100";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData player = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, player);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -102,7 +103,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "100";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData playerOne = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -246,7 +248,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "200";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData playerOne = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -274,7 +277,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "300";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData playerOne = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -362,7 +366,8 @@ class WebSocketHandlerIntegrationTest {
 
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
         String username = "Player" + id;
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, "ID" + id, username);
+        PlayerData playerOne = new PlayerData(null, username , "ID" + id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), gameId, Request.CONNECT, connectJsonObject);
         String msg = gson.toJson(wrapper);
         session.sendMessage(new TextMessage(msg));
