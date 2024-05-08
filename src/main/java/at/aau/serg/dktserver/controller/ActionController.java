@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ActionController {
@@ -32,7 +33,7 @@ public class ActionController {
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
             case LEAVE_GAME -> leaveGame(fromUsername);
-            case BUY_FIELD -> buyField(fromUsername, gson.fromJson(param, Field.class));
+            case BUY_FIELD -> buyField(fromUsername, fields.get(0));
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
@@ -96,14 +97,14 @@ public class ActionController {
         Game game = gameManager.getGameById(player.getGameId());
         if(game == null) return;
 
-        boolean success = gameManager.setField(player.getGameId(), field);
-        if(success) {
-            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player);
+
+
+        gameManager.updateField(player.getGameId(), field);
+
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player, Collections.singletonList(field));
             String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
             webSocket.sendMessage(player.getGameId(), msg);
-        }else {
 
-        }
     }
 
     private void joinGame(int gameId, String fromUsername){

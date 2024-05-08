@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class Game implements GameHandler {
@@ -109,6 +110,10 @@ public class Game implements GameHandler {
             int index = this.fields.indexOf(savedField);
             this.fields.set(index, field);
         }
+    }
+    public List<Field> getFields () {
+        return fields;
+
     }
 
 
