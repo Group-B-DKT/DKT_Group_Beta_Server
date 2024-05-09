@@ -28,7 +28,7 @@ public class ActionController {
     }
     public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer, List<Field> fields){
         switch (action){
-            case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
+            case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByUsername(fromUsername), param);
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
 
@@ -79,7 +79,11 @@ public class ActionController {
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         webSocket.sendMessage(gameId, json);
     }
-
+    private void rollDice2(int gameId, PlayerData fromPlayer, String param) {
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE,param ,fromPlayer);
+        String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(gameId, json);
+    }
     private void createGame(PlayerData playerByUsername, String param) {
         gameManager.createGame(playerByUsername, param);
 
