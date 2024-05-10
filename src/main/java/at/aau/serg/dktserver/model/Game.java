@@ -17,12 +17,12 @@ public class Game implements GameHandler {
     public static final int maxPlayer = 6;
 
     public static List<Integer> PLAYER_COLORS = List.of(
-            0xFF00FF00, // Grün
-            0xFFFF0000, // Rot
-            0xFF0000FF, // Blau
-            0xFFFFFF00, // Gelb
-            0xFFFFA500, // Orange
-            0xFF800080  // Violett
+            0xFF66FF66, // Hellgrün
+            0xFFFF6666, // Hellrot
+            0xFF6666FF, // Hellblau
+            0xFFFFFF99, // Hellgelb
+            0xFFFFCC66, // Hellorange
+            0xFFCC99FF  // Hellviolett
     );
     private SecureRandom rng;
     @Getter
