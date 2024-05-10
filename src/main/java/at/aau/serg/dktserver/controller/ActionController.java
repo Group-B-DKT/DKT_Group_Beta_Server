@@ -85,7 +85,8 @@ public class ActionController {
         webSocket.sendMessage(gameId, json);
     }
     private void createGame(PlayerData playerByUsername, String param) {
-        gameManager.createGame(playerByUsername, param);
+        int gameId = gameManager.createGame(playerByUsername, param);
+        playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
         String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
@@ -97,6 +98,7 @@ public class ActionController {
 
     private void joinGame(int gameId, String fromUsername){
         PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+        player.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
         gameManager.joinGame(gameId, player);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_JOINED_SUCCESSFULLY, null, player);

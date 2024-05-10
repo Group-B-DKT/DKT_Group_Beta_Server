@@ -44,6 +44,7 @@ public class PlayerData implements Serializable {
     @Setter
     private boolean isOnTurn;
 
+    @Setter
     @Getter
     private int color;
 
