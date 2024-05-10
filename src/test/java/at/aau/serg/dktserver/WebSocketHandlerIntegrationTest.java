@@ -184,7 +184,7 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         connectToWebsocket(session, -1);
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, "TEST", null);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, "TEST", new PlayerData());
         Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), -1, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
 
@@ -202,10 +202,10 @@ class WebSocketHandlerIntegrationTest {
 
         connectToWebsocket(session, -1);
 
-        GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME);
-        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), gameId, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
 
         session.sendMessage(new TextMessage(msg));
@@ -243,10 +243,10 @@ class WebSocketHandlerIntegrationTest {
         String username = connectToWebsocket(session, -1);
         String response = messages.poll(1, TimeUnit.SECONDS);
 
-        GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME);
-        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), gameId, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
 
         session.sendMessage(new TextMessage(msg));
@@ -378,7 +378,7 @@ class WebSocketHandlerIntegrationTest {
         msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
-
+        System.out.println("111111 " + response);
         ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
         assertThat(actionJsonObjectReceived.getAction() == Action.GAME_STARTED).isTrue();
         assertThat(GameManager.getInstance().getGameById(gameId).getFields().size() == fields.size()).isTrue();
