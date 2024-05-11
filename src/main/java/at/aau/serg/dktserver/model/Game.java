@@ -10,10 +10,20 @@ import lombok.Setter;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class Game implements GameHandler {
     public static final int maxPlayer = 6;
+
+    public static List<Integer> PLAYER_COLORS = List.of(
+            0xFF66FF66, // Hellgrün
+            0xFFFF6666, // Hellrot
+            0xFF6666FF, // Hellblau
+            0xFFFFFF99, // Hellgelb
+            0xFFFFCC66, // Hellorange
+            0xFFCC99FF  // Hellviolett
+    );
     private SecureRandom rng;
     @Getter
     private ArrayList<PlayerData> players;
@@ -109,6 +119,16 @@ public class Game implements GameHandler {
             int index = this.fields.indexOf(savedField);
             this.fields.set(index, field);
         }
+    }
+
+    @Override
+    public int getFreePlayerColor() {
+        List<Integer> freeColors = new ArrayList<>(PLAYER_COLORS);
+        for (PlayerData p: players) {
+            freeColors.remove((Integer) p.getColor());
+        }
+        Collections.shuffle(freeColors);
+        return freeColors.size() > 0 ? freeColors.get(0) : -1;
     }
 
 

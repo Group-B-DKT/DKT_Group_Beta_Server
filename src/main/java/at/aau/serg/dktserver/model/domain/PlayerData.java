@@ -44,6 +44,12 @@ public class PlayerData implements Serializable {
     @Setter
     private boolean isOnTurn;
 
+    @Setter
+    @Getter
+    private int color;
+
+
+
 
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;

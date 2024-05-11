@@ -78,7 +78,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "100";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData player = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, player);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -99,7 +100,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "100";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData playerOne = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -182,7 +184,7 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         connectToWebsocket(session, -1);
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, "TEST", null);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, "TEST", new PlayerData());
         Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), -1, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
 
@@ -200,10 +202,10 @@ class WebSocketHandlerIntegrationTest {
 
         connectToWebsocket(session, -1);
 
-        GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME);
-        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), gameId, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
 
         session.sendMessage(new TextMessage(msg));
@@ -241,10 +243,10 @@ class WebSocketHandlerIntegrationTest {
         String username = connectToWebsocket(session, -1);
         String response = messages.poll(1, TimeUnit.SECONDS);
 
-        GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME);
-        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), gameId, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
 
         session.sendMessage(new TextMessage(msg));
@@ -266,7 +268,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "200";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData playerOne = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -294,7 +297,8 @@ class WebSocketHandlerIntegrationTest {
         WebSocketSession session = initStompSession();
 
         String  p_id = "300";
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, p_id, "Player" + p_id);
+        PlayerData playerOne = new PlayerData(null, "Player" + p_id, p_id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         String msg = WrapperHelper.toJsonFromObject(-1, Request.CONNECT, connectJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
@@ -374,7 +378,7 @@ class WebSocketHandlerIntegrationTest {
         msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
-
+        System.out.println("111111 " + response);
         ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
         assertThat(actionJsonObjectReceived.getAction() == Action.GAME_STARTED).isTrue();
         assertThat(GameManager.getInstance().getGameById(gameId).getFields().size() == fields.size()).isTrue();
@@ -382,7 +386,8 @@ class WebSocketHandlerIntegrationTest {
 
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
         String username = "Player" + id;
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, "ID" + id, username);
+        PlayerData playerOne = new PlayerData(null, username , "ID" + id, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), gameId, Request.CONNECT, connectJsonObject);
         String msg = gson.toJson(wrapper);
         session.sendMessage(new TextMessage(msg));

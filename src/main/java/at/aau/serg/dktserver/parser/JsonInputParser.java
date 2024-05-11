@@ -43,10 +43,10 @@ public class JsonInputParser implements InputParser {
     private void parseConnect(Wrapper wrapper, WebSocketSession session){
         Object jsonObject = WrapperHelper.getInstanceFromWrapper(wrapper);
         ConnectJsonObject connectJsonObject = jsonObject instanceof ConnectJsonObject ? (ConnectJsonObject) jsonObject : null;
-
+        System.out.println(connectJsonObject.getPlayer());
         if (connectJsonObject == null) return;
         switch (connectJsonObject.getConnectType()){
-            case NEW_CONNECT -> connectController.connectUser(connectJsonObject.getUsername(), connectJsonObject.getPlayerId(), wrapper.getGameId(), session);
+            case NEW_CONNECT -> connectController.connectUser(connectJsonObject.getPlayer(), wrapper.getGameId(), session);
         }
     }
 

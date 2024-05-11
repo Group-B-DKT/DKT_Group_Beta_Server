@@ -71,7 +71,7 @@ public class ActionController {
 
     private void rollDice(int gameId, PlayerData fromPlayer) {
         Game game = gameManager.getGameById(gameId);
-
+        
         if (game == null) return;
         int value = game.roll_dice();
 
@@ -85,7 +85,10 @@ public class ActionController {
         webSocket.sendMessage(gameId, json);
     }
     private void createGame(PlayerData playerByUsername, String param) {
-        gameManager.createGame(playerByUsername, param);
+        int gameId = gameManager.createGame(playerByUsername, param);
+
+        if (playerByUsername != null)
+            playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
         String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
@@ -97,6 +100,10 @@ public class ActionController {
 
     private void joinGame(int gameId, String fromUsername){
         PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+
+        if (player != null)
+            player.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
+
         gameManager.joinGame(gameId, player);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_JOINED_SUCCESSFULLY, null, player);

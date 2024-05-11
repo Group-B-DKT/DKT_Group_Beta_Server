@@ -1,6 +1,7 @@
 package at.aau.serg.dktserver.communication;
 
 import at.aau.serg.dktserver.communication.enums.ConnectType;
+import at.aau.serg.dktserver.model.domain.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,24 +9,12 @@ import lombok.Getter;
 public class ConnectJsonObject {
     @Getter
     private ConnectType connectType;
+
     @Getter
-    private String playerId;
-    @Getter
-    private String username;
+    private PlayerData player;
 
     public ConnectJsonObject(ConnectType connectType) {
         this.connectType = connectType;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public ConnectType getConnectType() {
-        return connectType;
-    }
 }
