@@ -97,8 +97,7 @@ public class ActionController {
     private void createGame(PlayerData playerByUsername, String param) {
         int gameId = gameManager.createGame(playerByUsername, param);
 
-        if (playerByUsername != null)
-            playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
+        playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
         String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
