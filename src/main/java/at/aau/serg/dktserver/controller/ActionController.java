@@ -93,7 +93,7 @@ public class ActionController {
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
         String msg = WrapperHelper.toJsonFromObject(playerByUsername != null ? playerByUsername.getGameId() : null, Request.ACTION, actionJsonObject);
 
-        webSocket.sendMessage(playerByUsername.getGameId(), msg);
+        webSocket.sendMessage(playerByUsername != null ? playerByUsername.getGameId() : null, msg);
         webSocket.sendMessage(-1, msg);
 
     }
