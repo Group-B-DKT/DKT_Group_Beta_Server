@@ -91,7 +91,7 @@ public class ActionController {
             playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
-        String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
+        String msg = WrapperHelper.toJsonFromObject(playerByUsername != null ? playerByUsername.getGameId() : null, Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(playerByUsername.getGameId(), msg);
         webSocket.sendMessage(-1, msg);
@@ -123,7 +123,7 @@ public class ActionController {
         gameManager.joinGame(gameId, player);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_JOINED_SUCCESSFULLY, null, player);
-        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        String msg = WrapperHelper.toJsonFromObject(player != null ? player.getGameId() : null, Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, msg);
         webSocket.sendMessage(-1, msg);
