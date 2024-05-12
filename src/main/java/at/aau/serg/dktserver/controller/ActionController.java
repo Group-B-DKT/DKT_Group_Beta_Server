@@ -37,10 +37,6 @@ public class ActionController {
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
-
-            /*
-            case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
-             */
         }
     }
     private void initGame(int gameId, List<Field> fields) {
