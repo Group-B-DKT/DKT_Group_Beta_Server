@@ -149,4 +149,9 @@ public class GameManager {
         return game.setPlayerPosition(playerId, amount);
 
     }
+
+    public PlayerData getNextPlayer(PlayerData playerByUsername) {
+        Game game = getGameById(playerByUsername.getGameId());
+        PlayerData nextPlayer = game.getNextPlayer(playerByUsername);
+    }
 }

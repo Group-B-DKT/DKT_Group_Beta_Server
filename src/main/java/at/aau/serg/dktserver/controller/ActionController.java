@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ActionController {
@@ -31,25 +32,28 @@ public class ActionController {
             case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByUsername(fromUsername), param);
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
-
             case LEAVE_GAME -> leaveGame(fromUsername);
             case INIT_FIELDS -> initFields(gameId, param);
-
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
-
-            /*
-            case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
-             */
+            case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
         }
     }
+
+    private void endTurn(PlayerData playerByUsername) {
+        PlayerData playerData = gameManager.getNextPlayer(playerByUsername);
+    }
+
     private void initGame(int gameId, List<Field> fields) {
         for (Field field: fields) {
             gameManager.updateField(gameId, field);
         }
         gameManager.getGameById(gameId).setStarted(true);
+        gameManager.getGameById(gameId).getPlayers().sort(Comparator.comparing(PlayerData::getId));
+
         SecureRandom random = new SecureRandom();
+
         List<PlayerData> players = gameManager.getGameById(gameId).getPlayers();
         PlayerData isOnTurnPlayer = players.get(random.nextInt(players.size()));
         isOnTurnPlayer.setOnTurn(true);
