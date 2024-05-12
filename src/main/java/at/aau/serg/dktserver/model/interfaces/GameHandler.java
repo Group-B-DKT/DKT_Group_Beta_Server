@@ -19,4 +19,7 @@ public interface GameHandler {
     void updateField(Field field);
 
     int getFreePlayerColor();
+
+    boolean setPlayerPosition(String playerId, int amount);
+
 }

@@ -69,8 +69,6 @@ class WebSocketHandlerIntegrationTest {
         String response = messages.poll(1, TimeUnit.SECONDS);
         ConnectJsonObject connectJsonObjectReceived = (ConnectJsonObject) WrapperHelper.getInstanceFromJson(response);
         messages.clear();
-
-
         assertThat(connectJsonObjectReceived.getConnectType().equals(ConnectType.CONNECTION_ESTABLISHED)).isTrue();
     }
 
@@ -219,25 +217,26 @@ class WebSocketHandlerIntegrationTest {
 
         String username = connectToWebsocket(session, -1);
         String response = messages.poll(1, TimeUnit.SECONDS);
-        PlayerData playerData = new PlayerData(null, username, "ID100", -1);
-        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "ASD", "ID100", -1), "MyGame100");
+
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME);
-        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
-        session.sendMessage(new TextMessage(msg));
-        response = messages.poll(1, TimeUnit.SECONDS);
+        Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), gameId, Request.ACTION, actionJsonObject);
+        String msg = gson.toJson(wrapper);
 
-        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, null);
-        msg = WrapperHelper.toJsonFromObject(gameId, Request.INFO, infoJsonObject);
         session.sendMessage(new TextMessage(msg));
         response = messages.poll(1, TimeUnit.SECONDS);
-        System.out.println(response);
+        InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, null);
+        msg = WrapperHelper.toJsonFromObject(1, Request.INFO, infoJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
 
         InfoJsonObject receivedInfoJsonObject = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
         GameInfo gameInfo = receivedInfoJsonObject.getGameInfoList().get(0);
 
         Set<PlayerData> players = gameInfo.getConnectedPlayers().stream().filter(p -> p.getUsername().equals(username)).collect(Collectors.toSet());
-        assertThat(response != null);
+        assertThat(players.size() > 0);
     }
     @Test
     public void testWebSocketHandlerActionLeaveGame() throws Exception {
@@ -300,7 +299,6 @@ class WebSocketHandlerIntegrationTest {
         assertThat(actionJsonObjectReceived.getAction() == Action.LEAVE_GAME).isTrue();
         assertThat(GameManager.getInstance().getGameById(gameId) == null).isTrue();
     }
-
     @Test
     public void testWebSocketHandlerActionInitFields() throws Exception {
         WebSocketSession session = initStompSession();
@@ -446,6 +444,30 @@ class WebSocketHandlerIntegrationTest {
     }
 
 
+    @Test
+    public void testWebSocketHandlerActionMovePlayerNotNull() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, null, player);
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+
+        actionJsonObject = new ActionJsonObject(Action.MOVE_PLAYER, "2", null, null);
+        msg = WrapperHelper.toJsonFromObject(actionJsonObjectReceived.getFromPlayer().getGameId(), Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+        actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+
+        assertThat(actionJsonObjectReceived.getParam().equals("2")).isTrue();
+    }
 
 
 }

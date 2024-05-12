@@ -37,6 +37,7 @@ public class ActionController {
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
+            case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
         }
     }
     private void initGame(int gameId, List<Field> fields) {
@@ -151,6 +152,21 @@ public class ActionController {
         String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(fromPlayer.getGameId(), msg);
+    }
+
+    private void movePlayer(PlayerData player, String param){
+        int diceResult = Integer.parseInt(param);
+
+        boolean positionSet = gameManager.setPlayerPosition(player.getId(), player.getGameId(), diceResult);
+
+        if(positionSet == false){
+
+            return;
+        }
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.MOVE_PLAYER, param, player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
     }
 
 }

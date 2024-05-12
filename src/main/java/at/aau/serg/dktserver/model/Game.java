@@ -136,6 +136,25 @@ public class Game implements GameHandler {
     }
 
 
+    public boolean setPlayerPosition(String playerId, int amount){
+
+        PlayerData player = getPlayers().stream()
+                .filter(playerData -> playerData.getId().equals(playerId))
+                .findFirst().orElse(null);
+
+
+        int newPostion = player.getCurrentPosition() + amount;
+
+        if(newPostion > fields.size() - 2){
+            newPostion -= (fields.size()-2);
+        }
+
+        player.setCurrentPosition(newPostion);
+
+        return true;
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -148,4 +167,8 @@ public class Game implements GameHandler {
     public int hashCode() {
         return Objects.hash(rng, players, host, isStarted, currentPlayer, id);
     }
+
+
+
+
 }
