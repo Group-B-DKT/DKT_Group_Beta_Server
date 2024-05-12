@@ -58,11 +58,11 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         return false;
     }
 
-    public void connectAndAddPlayer(String username, int gameId, String playerId, WebSocketSession session){
-        System.out.println(String.format("%s connects to server...", playerId));
-        PlayerData player = new PlayerData(session, username, playerId, gameId);
+    public void connectAndAddPlayer(PlayerData player, int gameId, WebSocketSession session){
+        System.out.println(String.format("%s connects to server...", player.getId()));
+        player.setSession(session);
         this.playerData.add(player);
-        reconnectPlayer(playerId);
+        reconnectPlayer(player.getId());
     }
 
     public void reconnectPlayer(String playerId){

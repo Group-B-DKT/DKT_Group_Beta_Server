@@ -1,5 +1,6 @@
 package at.aau.serg.dktserver.controller;
 
+import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.websocket.handler.WebSocketHandlerImpl;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -12,15 +13,15 @@ public class ConnectController {
     public ConnectController(){
         webSocket = WebSocketHandlerImpl.getInstance();
     }
-    public void connectUser(String username, String playerId,  int gameId, WebSocketSession session){
+    public void connectUser(PlayerData player,  int gameId, WebSocketSession session){
         List<String> playerIds = webSocket.getPlayerIds();
 
-        if (playerIds.contains(playerId)){
-            System.out.println(String.format("Player: %s tries reconnecting to server...", username));
-            webSocket.setSessionOfPlayer(playerId, session);
-            webSocket.reconnectPlayer(playerId);
+        if (playerIds.contains(player.getId())){
+            System.out.println(String.format("Player: %s tries reconnecting to server...", player.getUsername()));
+            webSocket.setSessionOfPlayer(player.getId(), session);
+            webSocket.reconnectPlayer(player.getId());
             return;
         }
-        webSocket.connectAndAddPlayer(username, gameId, playerId, session);
+        webSocket.connectAndAddPlayer(player, gameId, session);
     }
 }

@@ -29,7 +29,7 @@ public class ActionController {
     }
     public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer, List<Field> fields){
         switch (action){
-            case ROLL_DICE -> rollDice(gameId, webSocket.getPlayerByUsername(fromUsername));
+            case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByUsername(fromUsername), param);
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
             case LEAVE_GAME -> leaveGame(fromUsername);
@@ -71,7 +71,7 @@ public class ActionController {
 
     private void rollDice(int gameId, PlayerData fromPlayer) {
         Game game = gameManager.getGameById(gameId);
-
+        
         if (game == null) return;
         int value = game.roll_dice();
 
@@ -79,9 +79,16 @@ public class ActionController {
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         webSocket.sendMessage(gameId, json);
     }
-
+    private void rollDice2(int gameId, PlayerData fromPlayer, String param) {
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE,param ,fromPlayer);
+        String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(gameId, json);
+    }
     private void createGame(PlayerData playerByUsername, String param) {
-        gameManager.createGame(playerByUsername, param);
+        int gameId = gameManager.createGame(playerByUsername, param);
+
+        if (playerByUsername != null)
+            playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
         String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
@@ -109,6 +116,10 @@ public class ActionController {
 
     private void joinGame(int gameId, String fromUsername){
         PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+
+        if (player != null)
+            player.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
+
         gameManager.joinGame(gameId, player);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_JOINED_SUCCESSFULLY, null, player);

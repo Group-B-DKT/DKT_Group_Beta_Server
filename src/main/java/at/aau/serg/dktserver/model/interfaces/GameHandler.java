@@ -17,4 +17,6 @@ public interface GameHandler {
     PlayerData removePlayer(PlayerData player);
 
     void updateField(Field field);
+
+    int getFreePlayerColor();
 }

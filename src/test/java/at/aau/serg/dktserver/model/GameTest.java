@@ -64,6 +64,23 @@ class GameTest {
     }
 
     @Test
+    public void testGetFreePlayerColorCorrect() {
+        int freeColor1 = game.getFreePlayerColor();
+        assertTrue(freeColor1 != -1);
+    }
+
+    @Test
+    public void testGetFreePlayerColorFailed() {
+        for (int i = 0; i < 6; i++) {
+            PlayerData player = new PlayerData(null, "User" + i, "ID" + i, game.getId());
+            player.setColor(game.getFreePlayerColor());
+            game.joinGame(player);
+        }
+        int freeColor1 = game.getFreePlayerColor();
+        assertTrue(freeColor1 == -1);
+    }
+
+    @Test
     void getId() {
         assertEquals(1, game.getId());
     }
