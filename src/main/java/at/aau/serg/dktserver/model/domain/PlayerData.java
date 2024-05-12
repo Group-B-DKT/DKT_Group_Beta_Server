@@ -49,6 +49,11 @@ public class PlayerData implements Serializable {
     private int color;
 
 
+    @Setter
+    @Getter
+    private int currentPosition;
+
+
 
 
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
@@ -59,6 +64,7 @@ public class PlayerData implements Serializable {
         this.isHost = false;
         this.isReady = false;
         this.money = START_MONEY;
+        this.currentPosition = 0;
     }
 
     public PlayerData(){}
