@@ -37,7 +37,7 @@ public class ActionController {
 
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
-            case MOVE_PLAYER -> movePlayer(fromPlayer, param);
+            case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
 
             /*
             case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
