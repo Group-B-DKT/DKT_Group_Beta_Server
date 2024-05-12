@@ -152,6 +152,6 @@ public class GameManager {
 
     public PlayerData getNextPlayer(PlayerData playerByUsername) {
         Game game = getGameById(playerByUsername.getGameId());
-        PlayerData nextPlayer = game.getNextPlayer(playerByUsername);
+        return game.getNextPlayer(playerByUsername);
     }
 }

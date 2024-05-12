@@ -43,6 +43,11 @@ public class ActionController {
 
     private void endTurn(PlayerData playerByUsername) {
         PlayerData playerData = gameManager.getNextPlayer(playerByUsername);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
+        String msg = WrapperHelper.toJsonFromObject(playerData.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(playerData.getGameId(), msg);
     }
 
     private void initGame(int gameId, List<Field> fields) {
@@ -76,7 +81,7 @@ public class ActionController {
 
     private void rollDice(int gameId, PlayerData fromPlayer) {
         Game game = gameManager.getGameById(gameId);
-        
+
         if (game == null) return;
         int value = game.roll_dice();
 
