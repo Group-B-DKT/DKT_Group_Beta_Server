@@ -8,6 +8,8 @@ import at.aau.serg.dktserver.communication.enums.Request;
 import com.google.gson.Gson;
 
 public class WrapperHelper {
+
+    private WrapperHelper(){}
     private static Gson gson = new Gson();
 
     public static Object getInstanceFromWrapper(Wrapper wrapper){
