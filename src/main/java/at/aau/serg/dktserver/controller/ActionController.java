@@ -111,8 +111,9 @@ public class ActionController {
     private void joinGame(int gameId, String fromUsername){
         PlayerData player = webSocket.getPlayerByUsername(fromUsername);
 
-        if (player != null)
-            player.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
+        if (player == null) return;
+
+        player.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         gameManager.joinGame(gameId, player);
 
