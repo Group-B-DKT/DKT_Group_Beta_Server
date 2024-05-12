@@ -88,12 +88,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>**/at.aau.serg.dktserver.DktServerApplication</exclude>
-                        <exclude>**/at.aau.serg.dktserver.websocket.handler.WebSocketHandlerConfig</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
