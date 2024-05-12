@@ -137,9 +137,7 @@ public class Game implements GameHandler {
         PlayerData player = getPlayers().stream()
                 .filter(playerData -> playerData.getId().equals(playerId))
                 .findFirst().orElse(null);
-        if(player == null){
-            return false;
-        }
+
 
         int newPostion = player.getCurrentPosition() + amount;
 

@@ -412,4 +412,31 @@ class WebSocketHandlerIntegrationTest {
         return session;
     }
 
+
+    @Test
+    public void testWebSocketHandlerActionMovePlayerNotNull() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CREATE_GAME, null, player);
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+
+        actionJsonObject = new ActionJsonObject(Action.MOVE_PLAYER, "2", null, null);
+        msg = WrapperHelper.toJsonFromObject(actionJsonObjectReceived.getFromPlayer().getGameId(), Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(1, TimeUnit.SECONDS);
+        actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+
+        assertThat(actionJsonObjectReceived.getParam().equals("2")).isTrue();
+    }
+
+
 }
