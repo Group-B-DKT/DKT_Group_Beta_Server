@@ -111,31 +111,6 @@ class WebSocketHandlerIntegrationTest {
         assertThat(player != null && player.getUsername().equals("Player" + p_id)).isTrue();
     }
 
-//    @Test
-//    public void testWebSocketHandlerActionRollDice() throws Exception {
-//        WebSocketSession session = initStompSession();
-//
-//        connectToWebsocket(session, -1);
-//        String response = messages.poll(1, TimeUnit.SECONDS);
-//
-//        GameManager.getInstance().createGame(new PlayerData(null, "", "", -1), "Game1");
-//
-//        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, null);
-//        String msg = WrapperHelper.toJsonFromObject(1, Request.ACTION, actionJsonObject);
-//        session.sendMessage(new TextMessage(msg));
-//        response = messages.poll(1, TimeUnit.SECONDS);
-//
-//        ActionJsonObject actionJsonObject2 = new ActionJsonObject(Action.ROLL_DICE);
-//        msg = WrapperHelper.toJsonFromObject(1, Request.ACTION, actionJsonObject2);
-//        session.sendMessage(new TextMessage(msg));
-//        response = messages.poll(1, TimeUnit.SECONDS);
-//
-//        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
-//        int number = Integer.parseInt(actionJsonObjectReceived.getParam());
-//        messages.clear();
-//
-//        assertThat(1 <= number && number <= 6).isTrue();
-//    }
     @Test
     public void testWebSocketHandlerActionRollDice2() throws Exception {
         WebSocketSession session = initStompSession();

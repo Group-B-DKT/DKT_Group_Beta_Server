@@ -68,18 +68,6 @@ public class ActionController {
         game.setFields(fields);
     }
 
-
-//    private void rollDice(int gameId, PlayerData fromPlayer) {
-//        Game game = gameManager.getGameById(gameId);
-//
-//        if (game == null) return;
-//        int value = game.roll_dice();
-//
-//        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", value), fromPlayer);
-//        String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
-//        webSocket.sendMessage(gameId, json);
-//    }
-
     private void rollDice2(int gameId, PlayerData fromPlayer, String param) {
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE,param ,fromPlayer);
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
