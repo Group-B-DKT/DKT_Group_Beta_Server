@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ActionController {
@@ -31,25 +32,33 @@ public class ActionController {
             case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByUsername(fromUsername), param);
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
-
             case LEAVE_GAME -> leaveGame(fromUsername);
             case INIT_FIELDS -> initFields(gameId, param);
-
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
-
-            /*
-            case START_GAME -> gameManager.getGameById(gameId).start(webSocket.getPlayerByUsername(fromUsername));
-             */
+            case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
         }
     }
+
+    private void endTurn(PlayerData playerByUsername) {
+        PlayerData playerData = gameManager.getNextPlayer(playerByUsername);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
+        String msg = WrapperHelper.toJsonFromObject(playerData.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(playerData.getGameId(), msg);
+    }
+
     private void initGame(int gameId, List<Field> fields) {
         for (Field field: fields) {
             gameManager.updateField(gameId, field);
         }
         gameManager.getGameById(gameId).setStarted(true);
+        gameManager.getGameById(gameId).getPlayers().sort(Comparator.comparing(PlayerData::getId));
+
         SecureRandom random = new SecureRandom();
+
         List<PlayerData> players = gameManager.getGameById(gameId).getPlayers();
         PlayerData isOnTurnPlayer = players.get(random.nextInt(players.size()));
         isOnTurnPlayer.setOnTurn(true);
@@ -72,7 +81,7 @@ public class ActionController {
 
     private void rollDice(int gameId, PlayerData fromPlayer) {
         Game game = gameManager.getGameById(gameId);
-        
+
         if (game == null) return;
         int value = game.roll_dice();
 
@@ -88,8 +97,7 @@ public class ActionController {
     private void createGame(PlayerData playerByUsername, String param) {
         int gameId = gameManager.createGame(playerByUsername, param);
 
-        if (playerByUsername != null)
-            playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
+        playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
         String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
@@ -102,8 +110,9 @@ public class ActionController {
     private void joinGame(int gameId, String fromUsername){
         PlayerData player = webSocket.getPlayerByUsername(fromUsername);
 
-        if (player != null)
-            player.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
+        if (player == null) return;
+
+        player.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
         gameManager.joinGame(gameId, player);
 

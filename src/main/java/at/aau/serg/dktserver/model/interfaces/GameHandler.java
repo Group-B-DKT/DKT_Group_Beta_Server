@@ -22,4 +22,5 @@ public interface GameHandler {
 
     boolean setPlayerPosition(String playerId, int amount);
 
+    PlayerData getNextPlayer(PlayerData playerByUsername);
 }

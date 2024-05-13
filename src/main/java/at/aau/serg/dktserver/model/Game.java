@@ -152,6 +152,15 @@ public class Game implements GameHandler {
     }
 
     @Override
+    public PlayerData getNextPlayer(PlayerData playerByUsername) {
+        int index = this.players.indexOf(playerByUsername);
+        if (index + 1 >= this.players.size()){
+            return this.players.get(0);
+        }
+        return this.players.get(index + 1);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
