@@ -371,12 +371,14 @@ class WebSocketHandlerIntegrationTest {
         List<Field> fields = List.of(new Field(0, "Field1", true));
 
 
-        int gameId = GameManager.getInstance().createGame(new PlayerData(null, username, "ID1", -1), "Game200");
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "U1", "ID1", -1), "Game200");
+        player.setGameId(gameId);
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 
         session.sendMessage(new TextMessage(msg));
         messages.poll(1, TimeUnit.SECONDS);
+
 
         actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
         msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
