@@ -120,6 +120,10 @@ public class Game implements GameHandler {
             this.fields.set(index, field);
         }
     }
+    public List<Field> getFields () {
+        return fields;
+
+    }
 
     @Override
     public int getFreePlayerColor() {

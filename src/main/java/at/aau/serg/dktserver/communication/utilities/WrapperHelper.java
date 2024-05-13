@@ -8,10 +8,12 @@ import at.aau.serg.dktserver.communication.enums.Request;
 import com.google.gson.Gson;
 
 public class WrapperHelper {
+
+    private WrapperHelper(){}
     private static Gson gson = new Gson();
 
     public static Object getInstanceFromWrapper(Wrapper wrapper){
-        if (wrapper.getClassname() == null || wrapper.getClassname().isEmpty())
+        if (wrapper == null || wrapper.getClassname() == null || wrapper.getClassname().isEmpty())
             return null;
 
         String object = gson.toJson(wrapper.getObject());

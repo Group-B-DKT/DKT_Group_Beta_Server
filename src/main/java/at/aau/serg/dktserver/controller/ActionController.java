@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class ActionController {
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
             case LEAVE_GAME -> leaveGame(fromUsername);
+            case BUY_FIELD -> buyField(fromUsername, fields.get(0));
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
@@ -78,17 +80,6 @@ public class ActionController {
         game.setFields(fields);
     }
 
-
-    private void rollDice(int gameId, PlayerData fromPlayer) {
-        Game game = gameManager.getGameById(gameId);
-
-        if (game == null) return;
-        int value = game.roll_dice();
-
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, String.format("%d", value), fromPlayer);
-        String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
-        webSocket.sendMessage(gameId, json);
-    }
     private void rollDice2(int gameId, PlayerData fromPlayer, String param) {
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE,param ,fromPlayer);
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
@@ -104,6 +95,22 @@ public class ActionController {
 
         webSocket.sendMessage(playerByUsername.getGameId(), msg);
         webSocket.sendMessage(-1, msg);
+
+    }
+
+    private void buyField(String fromUsername, Field field) {
+        PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+        if(player == null) return;
+        Game game = gameManager.getGameById(player.getGameId());
+        if(game == null) return;
+
+
+
+        gameManager.updateField(player.getGameId(), field);
+
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player, Collections.singletonList(field));
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            webSocket.sendMessage(player.getGameId(), msg);
 
     }
 
