@@ -75,7 +75,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
             ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
             String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
 
-            sendToUser(player.getUsername(), connectJson);
+            sendToUser(player.getId(), connectJson);
         }
     }
 
@@ -119,10 +119,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         if (webSocket != null) return webSocket;
         webSocket = new WebSocketHandlerImpl();
         return webSocket;
-    }
-
-    public PlayerData getPlayerByUsername(String fromUsername) {
-        return this.playerData.stream().filter(p -> Objects.equals(p.getUsername(), fromUsername)).findFirst().orElse(null);
     }
 
     public List<PlayerData> getPLayersByGameId(int gameId){
