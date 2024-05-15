@@ -26,33 +26,33 @@ public class InfoController {
         this.webSocket = WebSocketHandlerImpl.getInstance();
         this.gson = new Gson();
     }
-    public void receiveInfo(Info info, int gameId, String fromPlayername){
+    public void receiveInfo(Info info, int gameId, String fromPlayerId){
         switch (info){
-            case GAME_LIST -> receiveGameList(fromPlayername);
-            case CONNECTED_PLAYERNAMES -> receiveConnectedPlayers(gameId, fromPlayername);
+            case GAME_LIST -> receiveGameList(fromPlayerId);
+            case CONNECTED_PLAYERNAMES -> receiveConnectedPlayers(gameId, fromPlayerId);
         }
     }
 
 
-    private void receiveGameList(String fromPlayername){
+    private void receiveGameList(String fromPlayerId){
         System.out.println("receiveGameList() -> called!");
-        // Todo
+
         List<GameInfo> gameInfos = gameManager.getGamesAndPlayerCount2();
 
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.GAME_LIST, gameInfos);
-        PlayerData playerData = webSocket.getPlayerByUsername(fromPlayername);
+        PlayerData playerData = webSocket.getPlayerByPlayerId(fromPlayerId);
         Wrapper wrapper = new Wrapper(infoJsonObject.getClass().getSimpleName(), playerData == null ? -1 : playerData.getGameId(), Request.INFO, infoJsonObject);
 
-        webSocket.sendToUser(fromPlayername, gson.toJson(wrapper));
+        webSocket.sendToUser(fromPlayerId, gson.toJson(wrapper));
     }
 
-    private void receiveConnectedPlayers(int gameId, String fromPlayername) {
+    private void receiveConnectedPlayers(int gameId, String fromPlayerId) {
         List<GameInfo> gameInfos = new ArrayList<>();
         GameInfo gameInfo = new GameInfo(gameId, null, webSocket.getPLayersByGameId(gameId), gameManager.getGameById(gameId).isStarted());
         gameInfos.add(gameInfo);
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, gameInfos);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.INFO, infoJsonObject);
 
-        webSocket.sendToUser(fromPlayername, msg);
+        webSocket.sendToUser(fromPlayerId, msg);
     }
 }
