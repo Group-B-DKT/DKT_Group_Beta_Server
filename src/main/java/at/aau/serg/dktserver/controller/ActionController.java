@@ -40,6 +40,7 @@ public class ActionController {
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
             case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
+            case UPDATE_MONEY -> updateMoney(fromPlayer, param);
         }
     }
 
@@ -179,5 +180,20 @@ public class ActionController {
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
     }
+
+    private void updateMoney(PlayerData player, String param){
+
+        boolean moneySet = gameManager.updatePlayer(player, player.getGameId());
+
+        if(moneySet == false){
+            return;
+        }
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, param, player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
+
+    }
+
 
 }
