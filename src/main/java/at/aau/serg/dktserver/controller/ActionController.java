@@ -40,7 +40,17 @@ public class ActionController {
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
             case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
+            case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(fromPlayer, param, action);
+            default -> System.out.println("Action not found: " + action.toString());
         }
+    }
+
+    private void showSpecialCard(PlayerData fromPlayer, String param, Action action) {
+        //if(fromPlayer == null) return;
+        ActionJsonObject actionJsonObject = new ActionJsonObject(action, param, fromPlayer, null);
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+        System.out.println("SPECIAL_CARD_SHOW "+ param);
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
 
     private void endTurn(PlayerData playerByUsername) {

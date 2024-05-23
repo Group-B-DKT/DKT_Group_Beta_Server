@@ -12,6 +12,9 @@ import java.util.Objects;
 
 public class PlayerData implements Serializable {
     private static final int START_MONEY = 1200;
+    @Setter
+    @Getter
+    private Card currentCard;
 
     @Getter
     @Setter
@@ -65,6 +68,7 @@ public class PlayerData implements Serializable {
         this.isReady = false;
         this.money = START_MONEY;
         this.currentPosition = 0;
+        this.currentCard = null;
     }
 
     public PlayerData(){}
