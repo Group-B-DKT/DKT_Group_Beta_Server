@@ -40,6 +40,7 @@ public class ActionController {
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
         }
     }
 
@@ -180,4 +181,7 @@ public class ActionController {
         webSocket.sendMessage(player.getGameId(), msg);
     }
 
+    private void submitCheat(PlayerData player) {
+        player.setHasCheated(true);
+    }
 }
