@@ -1,6 +1,8 @@
 package at.aau.serg.dktserver.websocket.handler;
 
+import at.aau.serg.dktserver.communication.ActionJsonObject;
 import at.aau.serg.dktserver.communication.ConnectJsonObject;
+import at.aau.serg.dktserver.communication.enums.Action;
 import at.aau.serg.dktserver.communication.enums.ConnectType;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
@@ -51,6 +53,17 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+        PlayerData player = this.playerData.stream()
+                                           .filter(p -> p.getSession().getId().equals(session.getId()))
+                                           .findAny().orElse(null);
+
+        if (player == null) return;
+        player.setConnected(false);
+        player.setReady(false);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        inputParser.parseInput(msg, null, player.getUsername());
+
     }
 
     @Override
