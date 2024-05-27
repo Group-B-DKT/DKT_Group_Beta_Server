@@ -13,10 +13,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.*;
 
 public class ActionController {
     private GameManager gameManager;
@@ -48,7 +46,7 @@ public class ActionController {
         PlayerData player = webSocket.getPlayerByUsername(fromUsername);
         if (player == null) return;
 
-        ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.CONNECTION_LOST, null, player);
+        ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
         String msg1 = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject1);
 
         webSocket.sendMessage(player.getGameId(), msg1);
