@@ -33,7 +33,8 @@ public class ActionController {
             case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByUsername(fromUsername), param);
             case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
             case JOIN_GAME -> joinGame(gameId, fromUsername);
-            case LEAVE_GAME -> leaveGame(fromUsername);
+            case LEAVE_GAME -> leaveLobby(fromUsername);
+            case CONNECTION_LOST -> leaveGame(fromUsername);
             case BUY_FIELD -> buyField(fromPlayer, fields.get(0));
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
@@ -41,6 +42,16 @@ public class ActionController {
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
             case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
         }
+    }
+
+    private void leaveGame(String fromUsername) {
+        PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+        if (player == null) return;
+
+        ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.CONNECTION_LOST, null, player);
+        String msg1 = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject1);
+
+        webSocket.sendMessage(player.getGameId(), msg1);
     }
 
     private void endTurn(PlayerData playerByUsername) {
@@ -127,7 +138,7 @@ public class ActionController {
     }
 
 
-    private void leaveGame(String fromUsername) {
+    private void leaveLobby(String fromUsername) {
     PlayerData player = webSocket.getPlayerByUsername(fromUsername);
     if (player == null) return;
     int gameId = player.getGameId();

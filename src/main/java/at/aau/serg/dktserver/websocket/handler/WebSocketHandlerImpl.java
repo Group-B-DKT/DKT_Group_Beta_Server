@@ -6,6 +6,8 @@ import at.aau.serg.dktserver.communication.enums.Action;
 import at.aau.serg.dktserver.communication.enums.ConnectType;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
+import at.aau.serg.dktserver.controller.GameManager;
+import at.aau.serg.dktserver.model.Game;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.parser.JsonInputParser;
 import at.aau.serg.dktserver.parser.interfaces.InputParser;
@@ -60,9 +62,19 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         if (player == null) return;
         player.setConnected(false);
         player.setReady(false);
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
-        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
-        inputParser.parseInput(msg, null, player.getUsername());
+
+        Game game = GameManager.getInstance().getGameById(player.getGameId());
+
+        if (game != null && !game.isStarted()) {
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            inputParser.parseInput(msg, null, player.getUsername());
+        }
+        else if (game != null && game.isStarted()){
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, null, player);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            inputParser.parseInput(msg, null, player.getUsername());
+        }
 
     }
 
