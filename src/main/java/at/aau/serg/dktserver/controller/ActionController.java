@@ -183,5 +183,8 @@ public class ActionController {
 
     private void submitCheat(PlayerData player) {
         player.setHasCheated(true);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, "", player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
     }
 }
