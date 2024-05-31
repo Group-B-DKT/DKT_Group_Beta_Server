@@ -427,7 +427,7 @@ class WebSocketHandlerIntegrationTest {
 
 
 
-        actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, null, player, fields);
+        actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, "500", player, fields);
         msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(2, TimeUnit.SECONDS);
@@ -435,6 +435,7 @@ class WebSocketHandlerIntegrationTest {
         assert actionJsonObjectReceived != null;
         assertThat(actionJsonObjectReceived.getAction() == Action.SUBMIT_CHEAT).isTrue();
         assertThat(actionJsonObjectReceived.getFromPlayer().isHasCheated()).isTrue();
+        assertThat(actionJsonObjectReceived.getFromPlayer().getMoney() - player.getMoney() == 500);
 
     }
 
