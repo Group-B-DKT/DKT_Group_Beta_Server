@@ -40,7 +40,7 @@ public class ActionController {
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
-            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId), param);
         }
     }
 
@@ -181,9 +181,17 @@ public class ActionController {
         webSocket.sendMessage(player.getGameId(), msg);
     }
 
-    private void submitCheat(PlayerData player) {
+    private void submitCheat(PlayerData player, String param) {
+        int money;
+        try {
+            money = Integer.parseInt(param);
+        }
+        catch (Exception e) {
+            return;
+        }
         player.setHasCheated(true);
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, "", player);
+        player.setMoney(player.getMoney() + money);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, param, player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
     }
