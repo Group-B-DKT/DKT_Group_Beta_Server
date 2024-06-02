@@ -103,10 +103,13 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
         }else{
             Game game = GameManager.getInstance().getGameById(player.getGameId());
-            if (!game.isStarted()) setPlayerDefaultsAndCreateMessage(player);
-
-            GameInfo gameInfo = new GameInfo(game.getId(), game.getName(), game.getPlayers(), game.isStarted());
-            setPlayerGameIdAndCreateMessage(player, gameInfo, ConnectType.RECONNECT_TO_GAME);
+            if (!game.isStarted()) {
+                msg = setPlayerDefaultsAndCreateMessage(player);
+            }
+            else {
+                GameInfo gameInfo = new GameInfo(game.getId(), game.getName(), game.getPlayers(), game.isStarted());
+                msg = setPlayerGameIdAndCreateMessage(player, gameInfo, ConnectType.RECONNECT_TO_GAME);
+            }
         }
 
         sendToUser(player.getUsername(), msg);
