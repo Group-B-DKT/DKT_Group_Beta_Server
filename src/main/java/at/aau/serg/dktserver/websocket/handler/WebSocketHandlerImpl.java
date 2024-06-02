@@ -94,14 +94,34 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         PlayerData player = this.playerData.stream()
                 .filter(p -> p.getId() != null && p.getId().equals(playerId))
                 .findAny().orElse(null);
-        if (player != null) {
-            player.setConnected(true);
-            player.setGameId(-1);
-            ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
-            String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
+        if (player == null) return;
 
-            sendToUser(player.getUsername(), connectJson);
+        String msg = "";
+        if (player.getGameId() == -1) {
+            msg = setPlayerDefaultsAndCreateMessage(player);
+
+        }else{
+            Game game = GameManager.getInstance().getGameById(player.getGameId());
+            if (!game.isStarted()) setPlayerDefaultsAndCreateMessage(player);
+
+            setPlayerGameIdAndCreateMessage(player, player.getGameId(), ConnectType.RECONNECT_TO_GAME);
         }
+
+        sendToUser(player.getUsername(), msg);
+
+    }
+
+    private String setPlayerGameIdAndCreateMessage(PlayerData player, int gameId, ConnectType connectType) {
+        String msg;
+        player.setConnected(true);
+        player.setGameId(gameId);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(connectType);
+        msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
+        return msg;
+    }
+
+    private String setPlayerDefaultsAndCreateMessage(PlayerData player) {
+        return setPlayerGameIdAndCreateMessage(player, -1, ConnectType.CONNECTION_ESTABLISHED);
     }
 
     public void sendMessage(int gameId, String msg){
