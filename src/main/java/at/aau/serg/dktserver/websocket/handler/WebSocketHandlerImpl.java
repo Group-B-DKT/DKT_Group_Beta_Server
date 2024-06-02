@@ -8,6 +8,7 @@ import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
 import at.aau.serg.dktserver.controller.GameManager;
 import at.aau.serg.dktserver.model.Game;
+import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.parser.JsonInputParser;
 import at.aau.serg.dktserver.parser.interfaces.InputParser;
@@ -104,24 +105,25 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
             Game game = GameManager.getInstance().getGameById(player.getGameId());
             if (!game.isStarted()) setPlayerDefaultsAndCreateMessage(player);
 
-            setPlayerGameIdAndCreateMessage(player, player.getGameId(), ConnectType.RECONNECT_TO_GAME);
+            GameInfo gameInfo = new GameInfo(game.getId(), game.getName(), game.getPlayers(), game.isStarted());
+            setPlayerGameIdAndCreateMessage(player, gameInfo, ConnectType.RECONNECT_TO_GAME);
         }
 
         sendToUser(player.getUsername(), msg);
 
     }
 
-    private String setPlayerGameIdAndCreateMessage(PlayerData player, int gameId, ConnectType connectType) {
+    private String setPlayerGameIdAndCreateMessage(PlayerData player, GameInfo gameInfo, ConnectType connectType) {
         String msg;
         player.setConnected(true);
-        player.setGameId(gameId);
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(connectType);
+        player.setGameId(gameInfo == null ? -1 : gameInfo.getId());
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(connectType, gameInfo);
         msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
         return msg;
     }
 
     private String setPlayerDefaultsAndCreateMessage(PlayerData player) {
-        return setPlayerGameIdAndCreateMessage(player, -1, ConnectType.CONNECTION_ESTABLISHED);
+        return setPlayerGameIdAndCreateMessage(player, null, ConnectType.CONNECTION_ESTABLISHED);
     }
 
     public void sendMessage(int gameId, String msg){
