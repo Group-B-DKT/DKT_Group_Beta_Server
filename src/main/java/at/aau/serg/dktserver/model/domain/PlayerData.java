@@ -56,7 +56,9 @@ public class PlayerData implements Serializable {
     @Getter
     private int currentPosition;
 
-
+    @Getter
+    @Setter
+    private boolean hasCheated = false;
 
 
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {

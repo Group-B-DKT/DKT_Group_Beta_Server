@@ -28,18 +28,20 @@ public class ActionController {
         this.webSocket = WebSocketHandlerImpl.getInstance();
         this.gson = new Gson();
     }
-    public void callAction(Action action, int gameId, String fromUsername, String param, PlayerData fromPlayer, List<Field> fields){
+    public void callAction(Action action, int gameId, String fromPlayerId, String param, PlayerData fromPlayer, List<Field> fields){
         switch (action){
-            case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByUsername(fromUsername), param);
-            case CREATE_GAME -> createGame(webSocket.getPlayerByUsername(fromUsername), param);
-            case JOIN_GAME -> joinGame(gameId, fromUsername);
-            case LEAVE_GAME -> leaveGame(fromUsername);
+            case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByPlayerId(fromPlayerId), param);
+            case CREATE_GAME -> createGame(webSocket.getPlayerByPlayerId(fromPlayerId), param);
+            case JOIN_GAME -> joinGame(gameId, fromPlayerId);
+            case LEAVE_GAME -> leaveGame(fromPlayerId);
             case BUY_FIELD -> buyField(fromPlayer, fields.get(0));
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
-            case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
-            case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
+            case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
+            case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
+
             case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(fromPlayer, param, action);
             default -> System.out.println("Action not found: " + action.toString());
         }
@@ -53,8 +55,8 @@ public class ActionController {
         webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
 
-    private void endTurn(PlayerData playerByUsername) {
-        PlayerData playerData = gameManager.getNextPlayer(playerByUsername);
+    private void endTurn(PlayerData playerById) {
+        PlayerData playerData = gameManager.getNextPlayer(playerById);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
         String msg = WrapperHelper.toJsonFromObject(playerData.getGameId(), Request.ACTION, actionJsonObject);
@@ -95,15 +97,15 @@ public class ActionController {
         String json = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         webSocket.sendMessage(gameId, json);
     }
-    private void createGame(PlayerData playerByUsername, String param) {
-        int gameId = gameManager.createGame(playerByUsername, param);
+    private void createGame(PlayerData playerById, String param) {
+        int gameId = gameManager.createGame(playerById, param);
 
-        playerByUsername.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
+        playerById.setColor(gameManager.getGameById(gameId).getFreePlayerColor());
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerByUsername);
-        String msg = WrapperHelper.toJsonFromObject(playerByUsername.getGameId(), Request.ACTION, actionJsonObject);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_CREATED_SUCCESSFULLY, null, playerById);
+        String msg = WrapperHelper.toJsonFromObject(playerById.getGameId(), Request.ACTION, actionJsonObject);
 
-        webSocket.sendMessage(playerByUsername.getGameId(), msg);
+        webSocket.sendMessage(playerById.getGameId(), msg);
         webSocket.sendMessage(-1, msg);
 
     }
@@ -120,8 +122,8 @@ public class ActionController {
             webSocket.sendMessage(player.getGameId(), msg);
     }
 
-    private void joinGame(int gameId, String fromUsername){
-        PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+    private void joinGame(int gameId, String fromPlayerId){
+        PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
 
         if (player == null) return;
 
@@ -137,8 +139,8 @@ public class ActionController {
     }
 
 
-    private void leaveGame(String fromUsername) {
-    PlayerData player = webSocket.getPlayerByUsername(fromUsername);
+    private void leaveGame(String fromPlayerId) {
+    PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
     if (player == null) return;
     int gameId = player.getGameId();
 
@@ -190,4 +192,10 @@ public class ActionController {
         webSocket.sendMessage(player.getGameId(), msg);
     }
 
+    private void submitCheat(PlayerData player) {
+        player.setHasCheated(true);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, "", player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
+    }
 }
