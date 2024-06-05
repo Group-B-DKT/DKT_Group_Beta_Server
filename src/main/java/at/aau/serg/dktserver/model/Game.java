@@ -31,6 +31,8 @@ public class Game implements GameHandler {
     @Getter
     @Setter
     private boolean isStarted = false;
+    @Getter
+    @Setter
     private PlayerData currentPlayer;
     @Getter
     private String name;

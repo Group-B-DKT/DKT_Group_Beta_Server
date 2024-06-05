@@ -69,12 +69,12 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         if (game != null && !game.isStarted()) {
             ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
             String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
-            inputParser.parseInput(msg, null, player.getUsername());
+            inputParser.parseInput(msg, null, player.getId());
         }
         else if (game != null && game.isStarted()){
             ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, null, player);
             String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
-            inputParser.parseInput(msg, null, player.getUsername());
+            inputParser.parseInput(msg, null, player.getId());
         }
 
     }

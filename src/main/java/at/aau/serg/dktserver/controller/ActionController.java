@@ -40,25 +40,34 @@ public class ActionController {
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
         }
     }
 
-    private void rejoinPlayer() {
+    private void rejoinPlayer(PlayerData player) {
+        Game game = gameManager.getGameById(player.getGameId());
 
+        if (game == null) return;
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RECONNECT_OK, null, game.getCurrentPlayer(), game.getFields());
+        String msg = WrapperHelper.toJsonFromObject(game.getId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(game.getId(), msg);
     }
 
-    private void leaveGame(String fromUsername) {
-        PlayerData player = webSocket.getPlayerByPlayerId(fromUsername);
+    private void leaveGame(String fromPlayerId) {
+        PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
         if (player == null) return;
 
-        ActionJsonObject actionJsonObject1 = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
-        String msg1 = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject1);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
 
-        webSocket.sendMessage(player.getGameId(), msg1);
+        webSocket.sendMessage(player.getGameId(), msg);
     }
 
     private void endTurn(PlayerData playerById) {
         PlayerData playerData = gameManager.getNextPlayer(playerById);
+        gameManager.getGameById(playerById.getGameId()).setCurrentPlayer(playerData);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
         String msg = WrapperHelper.toJsonFromObject(playerData.getGameId(), Request.ACTION, actionJsonObject);
@@ -70,14 +79,16 @@ public class ActionController {
         for (Field field: fields) {
             gameManager.updateField(gameId, field);
         }
-        gameManager.getGameById(gameId).setStarted(true);
-        gameManager.getGameById(gameId).getPlayers().sort(Comparator.comparing(PlayerData::getId));
+        Game game = gameManager.getGameById(gameId);
+        game.setStarted(true);
+        game.getPlayers().sort(Comparator.comparing(PlayerData::getId));
 
         SecureRandom random = new SecureRandom();
 
         List<PlayerData> players = gameManager.getGameById(gameId).getPlayers();
         PlayerData isOnTurnPlayer = players.get(random.nextInt(players.size()));
         isOnTurnPlayer.setOnTurn(true);
+        game.setCurrentPlayer(isOnTurnPlayer);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, isOnTurnPlayer, fields);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
@@ -184,8 +195,7 @@ public class ActionController {
 
         boolean positionSet = gameManager.setPlayerPosition(player.getId(), player.getGameId(), diceResult);
 
-        if(positionSet == false){
-
+        if(!positionSet){
             return;
         }
 
