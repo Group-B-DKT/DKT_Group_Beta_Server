@@ -42,11 +42,11 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         PlayerData fromPlayer = this.playerData.stream()
                 .filter(p -> p.getSession().getId().equals(session.getId()))
                 .findAny().orElse(null);
-        String fromPlayername = fromPlayer != null ? fromPlayer.getUsername() : null;
+        String fromPlayerId = fromPlayer != null ? fromPlayer.getId() : null;
 
         System.out.println("WebSocketHandlerImpl::handleMessage/ " + message.getPayload());
 
-        inputParser.parseInput(message.getPayload().toString(), session, fromPlayername);
+        inputParser.parseInput(message.getPayload().toString(), session, fromPlayerId);
     }
 
     @Override
@@ -112,8 +112,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
             }
         }
 
-        sendToUser(player.getUsername(), msg);
-
+        sendToUser(player.getId(), msg);
     }
 
     private String setPlayerGameIdAndCreateMessage(PlayerData player, GameInfo gameInfo, ConnectType connectType) {
@@ -141,10 +140,10 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
                 });
     }
 
-    public void sendToUser(String username, String msg){
+    public void sendToUser(String id, String msg){
         System.out.println("WebSocketHandlerImpl::sendToUser/ " + msg);
         this.playerData.stream()
-                .filter(p -> p.getUsername() != null && p.getUsername().equals(username))
+                .filter(p -> p.getId() != null && p.getId().equals(id))
                 .forEach(p-> {
                     try {
                         p.sendMsg(msg);
@@ -169,10 +168,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         if (webSocket != null) return webSocket;
         webSocket = new WebSocketHandlerImpl();
         return webSocket;
-    }
-
-    public PlayerData getPlayerByUsername(String fromUsername) {
-        return this.playerData.stream().filter(p -> Objects.equals(p.getUsername(), fromUsername)).findFirst().orElse(null);
     }
 
     public List<PlayerData> getPLayersByGameId(int gameId){

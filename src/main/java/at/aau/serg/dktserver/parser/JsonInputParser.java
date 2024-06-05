@@ -25,7 +25,7 @@ public class JsonInputParser implements InputParser {
     }
 
     @Override
-    public void parseInput(String client_msg, WebSocketSession session, String fromPlayername) {
+    public void parseInput(String client_msg, WebSocketSession session, String fromPlayerId) {
         Wrapper wrapper;
         try {
             wrapper = gson.fromJson(client_msg, Wrapper.class);
@@ -34,8 +34,8 @@ public class JsonInputParser implements InputParser {
         }
         switch (wrapper.getRequest()){
             case CONNECT -> parseConnect(wrapper, session);
-            case ACTION -> parseAction(wrapper, fromPlayername);
-            case INFO -> parseInfo(wrapper, fromPlayername);
+            case ACTION -> parseAction(wrapper, fromPlayerId);
+            case INFO -> parseInfo(wrapper, fromPlayerId);
         }
     }
 
@@ -50,19 +50,18 @@ public class JsonInputParser implements InputParser {
         }
     }
 
-    private void parseAction(Wrapper wrapper, String fromPLayername){
+    private void parseAction(Wrapper wrapper, String fromPlayerId){
         Object jsonObject = WrapperHelper.getInstanceFromWrapper(wrapper);
         ActionJsonObject actionJsonObject = jsonObject instanceof ActionJsonObject ? (ActionJsonObject) jsonObject : null;
 
         if (actionJsonObject == null) return;
-        actionController.callAction(actionJsonObject.getAction(), wrapper.getGameId(), fromPLayername, actionJsonObject.getParam(), actionJsonObject.getFromPlayer(), actionJsonObject.getFields());
+        actionController.callAction(actionJsonObject.getAction(), wrapper.getGameId(), fromPlayerId, actionJsonObject.getParam(), actionJsonObject.getFromPlayer(), actionJsonObject.getFields());
     }
 
-    private void parseInfo(Wrapper wrapper, String fromPlayername){
+    private void parseInfo(Wrapper wrapper, String fromPlayerId){
         Object jsonObject = WrapperHelper.getInstanceFromWrapper(wrapper);
         InfoJsonObject infoJsonObject = jsonObject instanceof InfoJsonObject ? (InfoJsonObject) jsonObject : null;
-
         if (infoJsonObject == null) return;
-        infoController.receiveInfo(infoJsonObject.getInfo(), wrapper.getGameId(), fromPlayername);
+        infoController.receiveInfo(infoJsonObject.getInfo(), wrapper.getGameId(), fromPlayerId);
     }
 }
