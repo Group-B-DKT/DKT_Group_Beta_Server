@@ -39,7 +39,12 @@ public class ActionController {
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
             case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
+            case RECONNECT_OK -> rejoinPlayer();
         }
+    }
+
+    private void rejoinPlayer() {
+
     }
 
     private void leaveGame(String fromUsername) {
