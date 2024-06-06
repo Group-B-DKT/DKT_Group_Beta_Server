@@ -196,16 +196,16 @@ class WebSocketHandlerIntegrationTest {
     public void testWebSocketHandlerActionSetReady() throws Exception {
         WebSocketSession session = initStompSession();
 
-        String username = connectToWebsocket(session, -1);
-        PlayerData player = new PlayerData(null, username, null, -1);
+        String playerId = connectToWebsocket(session, -1);
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, "", playerId, -1);
         player.setReady(true);
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.READY, null, player);
         Wrapper wrapper = new Wrapper(actionJsonObject.getClass().getSimpleName(), 1, Request.ACTION, actionJsonObject);
         String msg = gson.toJson(wrapper);
-        System.out.println(msg);
         session.sendMessage(new TextMessage(msg));
 
-        String response = messages.poll(1, TimeUnit.SECONDS);
         response = messages.poll(1, TimeUnit.SECONDS);
         ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
         assertThat(actionJsonObjectReceived.getFromPlayer().isReady()).isTrue();
@@ -398,6 +398,45 @@ class WebSocketHandlerIntegrationTest {
         assertThat(game.getFields().get(0).getOwner().getUsername().equals(player.getUsername()));
 
     }
+    @Test
+    public void testWebSocketHandlerActionSubmitCheat() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        List<Field> fields = List.of(new Field(0, "Field1", true));
+
+
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "U1", "ID1", -1), "Game200");
+        player.setGameId(gameId);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+
+
+        actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        fields.get(0).setOwner(player);
+
+
+
+        actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, null, player, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(2, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assert actionJsonObjectReceived != null;
+        assertThat(actionJsonObjectReceived.getAction() == Action.SUBMIT_CHEAT).isTrue();
+        assertThat(actionJsonObjectReceived.getFromPlayer().isHasCheated()).isTrue();
+
+    }
 
     @Test
     public void testWebSocketHandlerActionBuyFieldNoGameFound() throws Exception {
@@ -419,14 +458,15 @@ class WebSocketHandlerIntegrationTest {
 
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
         String username = "Player" + id;
-        PlayerData playerOne = new PlayerData(null, username , "ID" + id, -1);
+        String playerId = "ID" + id;
+        PlayerData playerOne = new PlayerData(null, username , playerId, -1);
         ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
         Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), gameId, Request.CONNECT, connectJsonObject);
         String msg = gson.toJson(wrapper);
         session.sendMessage(new TextMessage(msg));
 
         id ++;
-        return username;
+        return playerId;
     }
 
 
@@ -494,6 +534,64 @@ class WebSocketHandlerIntegrationTest {
 
         ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
         assertThat(actionJsonObjectReceived.getAction() == Action.END_TURN).isTrue();
+    }
+
+
+    @Test
+    public void testWebSocketHandlerActionUpdatePlayerNotNull() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        int gameId = GameManager.getInstance().createGame(player, "game1");
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        player.setMoney(200);
+        player.setGameId(gameId);
+
+        actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, null, player, null);
+        msg = WrapperHelper.toJsonFromObject(gameId,  Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        System.out.println(response);
+
+       assertThat(actionJsonObjectReceived.getFromPlayer().getMoney()).isEqualTo(200);
+    }
+
+
+    @Test
+    public void testWebSocketHandlerActionUpdatePlayerNull() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        int gameId = GameManager.getInstance().createGame(player, "game1");
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        player.setMoney(200);
+        player.setGameId(gameId);
+
+        actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, null, new PlayerData(null, "", "", gameId), null);
+        msg = WrapperHelper.toJsonFromObject(gameId,  Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        assertThat(response).isNull();
     }
 
 

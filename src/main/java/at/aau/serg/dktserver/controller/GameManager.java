@@ -120,7 +120,7 @@ public class GameManager {
     }
 
     public boolean setIsReady(PlayerData fromPlayer){
-        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByUsername(fromPlayer.getUsername());
+        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(fromPlayer.getId());
         player.setReady(fromPlayer.isReady());
         return player.isReady();
     }
@@ -149,6 +149,13 @@ public class GameManager {
         return game.setPlayerPosition(playerId, amount);
 
     }
+
+   public boolean updatePlayer(PlayerData player, int gameId){
+
+        Game game = getGameById(gameId);
+        return game.updatePlayer(player);
+   }
+
 
     public PlayerData getNextPlayer(PlayerData playerByUsername) {
         Game game = getGameById(playerByUsername.getGameId());
