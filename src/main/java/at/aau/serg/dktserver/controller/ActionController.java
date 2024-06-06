@@ -48,6 +48,13 @@ public class ActionController {
 
     private void buyBuilding(PlayerData fromPlayer, Field field) {
         GameManager.getInstance().updateField(fromPlayer.getGameId(), field);
+        GameManager.getInstance().updatePlayer(fromPlayer, fromPlayer.getGameId());
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_BUILDING, null, fromPlayer, Collections.singletonList(field));
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
     }
 
     private void endTurn(PlayerData playerById) {
