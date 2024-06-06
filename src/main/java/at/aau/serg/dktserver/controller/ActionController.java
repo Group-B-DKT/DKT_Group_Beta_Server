@@ -40,7 +40,12 @@ public class ActionController {
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByUsername(fromUsername), param);
             case END_TURN -> endTurn(webSocket.getPlayerByUsername(fromUsername));
+            case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0));
         }
+    }
+
+    private void buyBuilding(PlayerData fromPlayer, Field field) {
+        GameManager.getInstance().updateField(fromPlayer.getGameId(), field);
     }
 
     private void endTurn(PlayerData playerByUsername) {
