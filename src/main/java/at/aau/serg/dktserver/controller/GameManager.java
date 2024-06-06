@@ -120,7 +120,7 @@ public class GameManager {
     }
 
     public boolean setIsReady(PlayerData fromPlayer){
-        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByUsername(fromPlayer.getUsername());
+        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(fromPlayer.getId());
         player.setReady(fromPlayer.isReady());
         return player.isReady();
     }
