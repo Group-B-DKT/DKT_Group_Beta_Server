@@ -498,4 +498,35 @@ class WebSocketHandlerIntegrationTest {
     }
 
 
+    @Test
+    public void testWebSocketHandlerActionUpdatePlayerNotNull() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        int gameId = GameManager.getInstance().createGame(player, "game1");
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        player.setMoney(200);
+        player.setGameId(gameId);
+
+        actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, null, player, null);
+        msg = WrapperHelper.toJsonFromObject(gameId,  Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        System.out.println(response);
+
+       assertThat(actionJsonObjectReceived.getFromPlayer().getMoney()).isEqualTo(200);
+    }
+
+
+
 }
