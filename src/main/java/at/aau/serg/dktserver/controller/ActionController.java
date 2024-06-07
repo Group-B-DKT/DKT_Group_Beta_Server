@@ -55,12 +55,17 @@ public class ActionController {
         if (playerData == null)
             return;
 
+        boolean wasConnected = playerData.isConnected();
         playerData.copyFrom(fromPlayer);
+
+        if (!wasConnected) playerData.setGameId(-1);
+        else playerData.setConnected(true);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RECONNECT_DISCARD, null, fromPlayer, null);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(gameId, msg);
+        webSocket.sendToUser(fromPlayer.getId(), msg);
     }
 
     private void rejoinPlayer(PlayerData player) {
@@ -97,6 +102,7 @@ public class ActionController {
     private void endTurn(PlayerData playerById) {
         PlayerData playerData = gameManager.getNextPlayer(playerById);
         gameManager.getGameById(playerById.getGameId()).setCurrentPlayer(playerData);
+        playerData.setOnTurn(true);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
         String msg = WrapperHelper.toJsonFromObject(playerData.getGameId(), Request.ACTION, actionJsonObject);
