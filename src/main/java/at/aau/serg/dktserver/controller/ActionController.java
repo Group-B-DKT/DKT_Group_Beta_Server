@@ -130,10 +130,11 @@ public class ActionController {
         if(game == null) return;
 
         gameManager.updateField(player.getGameId(), field);
+        gameManager.updatePlayer(player.getGameId(), player);
 
-            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player, Collections.singletonList(field));
-            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
-            webSocket.sendMessage(player.getGameId(), msg);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player, Collections.singletonList(field));
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
     }
 
     private void joinGame(int gameId, String fromPlayerId){

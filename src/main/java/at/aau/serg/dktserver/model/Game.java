@@ -123,6 +123,7 @@ public class Game implements GameHandler {
         }
     }
 
+    @Override
     public boolean updatePlayer(PlayerData player){
         PlayerData searchPlayer = getPlayers().stream()
                 .filter(playerData -> playerData.getId().equals(player.getId()))
@@ -132,7 +133,8 @@ public class Game implements GameHandler {
             return false;
         }
 
-        searchPlayer = player;
+        int index = this.players.indexOf(searchPlayer);
+        this.players.set(index, player);
         return true;
     }
     public List<Field> getFields () {
