@@ -95,6 +95,7 @@ public class Game implements GameHandler {
     public void setFields(ArrayList<Field> fields) {
         this.fields = fields;
     }
+    @Override
     public PlayerData removePlayer(PlayerData player) {
         PlayerData player1 = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(player.getId());
         players.remove(player1);
@@ -109,6 +110,16 @@ public class Game implements GameHandler {
         }
         return host;
     }
+
+    @Override
+    public PlayerData getNewHost(){
+        for (PlayerData player: this.players) {
+            if (player.isHost()) continue;
+            return player;
+        }
+        return null;
+    }
+
 
     @Override
     public void updateField(Field field) {

@@ -50,7 +50,7 @@ public class ActionController {
 
         if (game == null) return;
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RECONNECT_OK, null, game.getCurrentPlayer(), game.getFields());
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RECONNECT_OK, player.getId(), game.getCurrentPlayer(), game.getFields());
         String msg = WrapperHelper.toJsonFromObject(game.getId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(game.getId(), msg);
@@ -60,8 +60,17 @@ public class ActionController {
         PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
         if (player == null) return;
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
+        endTurn(player);
+
+        PlayerData newHost = gameManager.getNewHost(player.getGameId());
+        if (newHost == null) return;
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
+
+        actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
+        msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(player.getGameId(), msg);
     }

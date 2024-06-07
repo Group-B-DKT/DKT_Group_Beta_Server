@@ -49,6 +49,11 @@ public class GameManager {
         return newHost;
     }
 
+    public PlayerData getNewHost(int gameId) {
+        Game game = getGameById(gameId);
+        return game.getNewHost();
+    }
+
     public void joinGame(int gameId, PlayerData player) {
         getGameById(gameId).joinGame(player);
         player.setGameId(gameId);
