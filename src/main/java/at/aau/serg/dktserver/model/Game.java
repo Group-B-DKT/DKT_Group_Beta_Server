@@ -122,6 +122,19 @@ public class Game implements GameHandler {
             this.fields.set(index, field);
         }
     }
+
+    public boolean updatePlayer(PlayerData player){
+        PlayerData searchPlayer = getPlayers().stream()
+                .filter(playerData -> playerData.getId().equals(player.getId()))
+                .findFirst().orElse(null);
+
+        if(searchPlayer == null){
+            return false;
+        }
+
+        searchPlayer = player;
+        return true;
+    }
     public List<Field> getFields () {
         return fields;
 
@@ -144,13 +157,11 @@ public class Game implements GameHandler {
                 .filter(playerData -> playerData.getId().equals(playerId))
                 .findFirst().orElse(null);
 
-
         int newPostion = player.getCurrentPosition() + amount;
 
         if(newPostion > fields.size() - 2){
             newPostion -= (fields.size()-2);
         }
-
         player.setCurrentPosition(newPostion);
 
         return true;

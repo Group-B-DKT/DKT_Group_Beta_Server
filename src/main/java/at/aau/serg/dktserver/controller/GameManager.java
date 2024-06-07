@@ -150,6 +150,13 @@ public class GameManager {
 
     }
 
+   public boolean updatePlayer(int gameId, PlayerData player){
+
+        Game game = getGameById(gameId);
+        return game.updatePlayer(player);
+   }
+
+
     public PlayerData getNextPlayer(PlayerData playerByUsername) {
         Game game = getGameById(playerByUsername.getGameId());
         return game.getNextPlayer(playerByUsername);
