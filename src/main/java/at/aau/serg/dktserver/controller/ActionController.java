@@ -87,7 +87,11 @@ public class ActionController {
             endTurn(player);
 
         PlayerData newHost = gameManager.getNewHost(player.getGameId());
-        if (newHost == null) return;
+        if (newHost == null){
+            player.setGameId(-1);
+            gameManager.removeGame(gameId);
+            return;
+        }
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);

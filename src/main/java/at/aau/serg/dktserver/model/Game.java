@@ -139,11 +139,20 @@ public class Game implements GameHandler {
 
     @Override
     public PlayerData getNewHost(){
+        PlayerData newHost = null;
         for (PlayerData player: this.players) {
-            if (player.isHost()) continue;
-            return player;
+            if (player.isHost()){
+                player.setHost(false);
+                continue;
+            }
+            newHost = player;
         }
-        return null;
+        if (newHost != null) {
+            newHost.setHost(true);
+        }
+        this.host = newHost;
+
+        return newHost;
     }
 
 
