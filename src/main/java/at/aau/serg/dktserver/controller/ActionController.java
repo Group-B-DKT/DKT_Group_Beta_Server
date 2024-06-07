@@ -32,7 +32,7 @@ public class ActionController {
             case CREATE_GAME -> createGame(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case JOIN_GAME -> joinGame(gameId, fromPlayerId);
             case LEAVE_GAME -> leaveLobby(fromPlayerId);
-            case CONNECTION_LOST -> leaveGame(fromPlayerId);
+            case CONNECTION_LOST -> leaveGame(gameId, fromPlayerId);
             case BUY_FIELD -> buyField(fromPlayer, fields.get(0));
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
@@ -42,7 +42,25 @@ public class ActionController {
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
         }
+    }
+
+    private void discardReconnect(int gameId, PlayerData fromPlayer) {
+        if (!gameManager.removePlayerFromGame(gameId, fromPlayer)){
+            return;
+        }
+
+        PlayerData playerData = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(fromPlayer.getId());
+        if (playerData == null)
+            return;
+
+        playerData.copyFrom(fromPlayer);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RECONNECT_DISCARD, null, fromPlayer, null);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(gameId, msg);
     }
 
     private void rejoinPlayer(PlayerData player) {
@@ -56,11 +74,12 @@ public class ActionController {
         webSocket.sendMessage(game.getId(), msg);
     }
 
-    private void leaveGame(String fromPlayerId) {
+    private void leaveGame(int gameId, String fromPlayerId) {
         PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
         if (player == null) return;
 
-        endTurn(player);
+        if (gameManager.isOnTurn(gameId, fromPlayerId))
+            endTurn(player);
 
         PlayerData newHost = gameManager.getNewHost(player.getGameId());
         if (newHost == null) return;

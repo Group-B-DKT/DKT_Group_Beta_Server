@@ -40,7 +40,7 @@ public class GameManager {
         PlayerData newHost = null;
         Game game = getGameById(gameId);
         if (game != null) {
-            newHost = game.removePlayer(player);
+            newHost = game.removePlayerAndChangeHost(player);
             player.setGameId(-1);
             player.setReady(false);
         }else{
@@ -165,5 +165,20 @@ public class GameManager {
     public PlayerData getNextPlayer(PlayerData playerByUsername) {
         Game game = getGameById(playerByUsername.getGameId());
         return game.getNextPlayer(playerByUsername);
+    }
+
+    public boolean removePlayerFromGame(int gameId, PlayerData player) {
+        Game game = getGameById(gameId);
+
+        if (game == null) return false;
+
+        game.removeFieldOwner(player.getId());
+
+        return game.removePlayer(player);
+    }
+
+    public boolean isOnTurn(int gameId, String fromPlayerId) {
+        Game game = getGameById(gameId);
+        return game.isOnTurn(fromPlayerId);
     }
 }

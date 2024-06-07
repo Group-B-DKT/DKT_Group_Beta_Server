@@ -96,7 +96,7 @@ public class Game implements GameHandler {
         this.fields = fields;
     }
     @Override
-    public PlayerData removePlayer(PlayerData player) {
+    public PlayerData removePlayerAndChangeHost(PlayerData player) {
         PlayerData player1 = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(player.getId());
         players.remove(player1);
         if(player1.equals(host)) {
@@ -109,6 +109,32 @@ public class Game implements GameHandler {
             }
         }
         return host;
+    }
+
+    @Override
+    public boolean removePlayer(PlayerData player){
+        if (this.players == null) return false;
+
+        return this.players.remove(player);
+    }
+
+    @Override
+    public void removeFieldOwner(String playerId) {
+        this.fields.stream().forEach(f -> {
+            if (f.getOwner() != null && f.getOwner().equals(playerId)){
+                f.setOwner(null);
+            }
+        });
+    }
+
+    @Override
+    public boolean isOnTurn(String fromPlayerId) {
+        PlayerData player = this.players.stream()
+                .filter(p -> p.getId().equals(fromPlayerId))
+                .findAny()
+                .orElse(null);
+        if (player == null) return false;
+        return player.isOnTurn();
     }
 
     @Override

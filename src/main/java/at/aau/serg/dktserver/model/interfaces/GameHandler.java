@@ -18,7 +18,7 @@ public interface GameHandler {
 
     void setFields(ArrayList<Field> fields);
 
-    PlayerData removePlayer(PlayerData player);
+    PlayerData removePlayerAndChangeHost(PlayerData player);
 
     void updateField(Field field);
 
@@ -31,4 +31,10 @@ public interface GameHandler {
     boolean updatePlayer(PlayerData player);
 
     PlayerData getNewHost();
+
+    boolean removePlayer(PlayerData player);
+
+    void removeFieldOwner(String id);
+
+    boolean isOnTurn(String fromPlayerId);
 }
