@@ -42,6 +42,7 @@ public class ActionController {
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case REPORT_CHEAT -> reportCheat(fromPlayer, param);
         }
     }
 
@@ -201,6 +202,11 @@ public class ActionController {
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, "", player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
+    }
+
+
+    private void reportCheat(PlayerData fromPlayer, String param) {
+
     }
 
 }
