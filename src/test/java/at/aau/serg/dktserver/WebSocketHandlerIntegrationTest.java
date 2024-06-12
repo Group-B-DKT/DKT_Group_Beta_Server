@@ -219,14 +219,14 @@ class WebSocketHandlerIntegrationTest {
         session.sendMessage(new TextMessage(msg));
         messages.poll(1, TimeUnit.SECONDS);
         InfoJsonObject infoJsonObject = new InfoJsonObject(Info.CONNECTED_PLAYERNAMES, null);
-        msg = WrapperHelper.toJsonFromObject(1, Request.INFO, infoJsonObject);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.INFO, infoJsonObject);
 
         session.sendMessage(new TextMessage(msg));
         String response = messages.poll(1, TimeUnit.SECONDS);
 
         InfoJsonObject receivedInfoJsonObject = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
         GameInfo gameInfo = receivedInfoJsonObject.getGameInfoList().get(0);
-
+        System.out.println(response);
         Set<PlayerData> players = gameInfo.getConnectedPlayers().stream().filter(p -> p.getId().equals(playerId)).collect(Collectors.toSet());
         assertThat(players).isNotEmpty();
     }
