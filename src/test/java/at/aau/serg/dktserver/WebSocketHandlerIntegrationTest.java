@@ -803,6 +803,7 @@ class WebSocketHandlerIntegrationTest {
 
         PlayerData player = new PlayerData(null, "Player" + (id-1), playerId, -1);
         int gameId = GameManager.getInstance().createGame(player, "G1");
+        WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(playerId).setGameId(gameId);
 
         session.close();
         messages.poll(1, TimeUnit.SECONDS);
@@ -820,7 +821,9 @@ class WebSocketHandlerIntegrationTest {
 
         PlayerData player = new PlayerData(null, "Player" + (id-1), playerId, -1);
         int gameId = GameManager.getInstance().createGame(player, "G1");
+        WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(playerId).setGameId(gameId);
         GameManager.getInstance().getGameById(gameId).setStarted(true);
+
 
         session.close();
         messages.poll(1, TimeUnit.SECONDS);
