@@ -808,8 +808,8 @@ class WebSocketHandlerIntegrationTest {
         session.close();
         messages.poll(1, TimeUnit.SECONDS);
 
-        List<PlayerData> playerServer = GameManager.getInstance().getPlayers(gameId);
-        assertThat(playerServer.size()).isEqualTo(1);
+        Game game = GameManager.getInstance().getGameById(gameId);
+        assertThat(game).isNull();
     }
 
     @Test
