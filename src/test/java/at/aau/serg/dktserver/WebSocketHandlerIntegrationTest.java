@@ -767,4 +767,64 @@ class WebSocketHandlerIntegrationTest {
         assertThat(response).isNull();
     }
 
+    @Test
+    void testAfterConnectionClosedPlayerNoGame() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String playerId = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        session.close();
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(playerId);
+        assertThat(player.isConnected()).isFalse();
+    }
+
+    @Test
+    void testAfterConnectionClosedPlayerNull() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        session.close();
+        messages.poll(1, TimeUnit.SECONDS);
+
+        List<String> player = WebSocketHandlerImpl.getInstance().getPlayerIds();
+        assertThat(player).isEmpty();
+    }
+
+    @Test
+    void testAfterConnectionClosedGameNotStarted() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String playerId = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, "Player" + (id-1), playerId, -1);
+        int gameId = GameManager.getInstance().createGame(player, "G1");
+
+        session.close();
+        messages.poll(1, TimeUnit.SECONDS);
+
+        List<PlayerData> playerServer = GameManager.getInstance().getPlayers(gameId);
+        assertThat(playerServer.size()).isEqualTo(1);
+    }
+
+    @Test
+    void testAfterConnectionClosedGameStarted() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String playerId = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, "Player" + (id-1), playerId, -1);
+        int gameId = GameManager.getInstance().createGame(player, "G1");
+        GameManager.getInstance().getGameById(gameId).setStarted(true);
+
+        session.close();
+        messages.poll(1, TimeUnit.SECONDS);
+
+        List<PlayerData> playerServer = GameManager.getInstance().getPlayers(gameId);
+        assertThat(playerServer.size()).isEqualTo(1);
+    }
+
 }
