@@ -207,7 +207,7 @@ class WebSocketHandlerIntegrationTest {
     void testWebSocketHandlerReceiveConnectedPlayers() throws Exception {
         WebSocketSession session = initStompSession();
 
-        String username = connectToWebsocket(session, -1);
+        String playerId = connectToWebsocket(session, -1);
         messages.poll(1, TimeUnit.SECONDS);
 
         int gameId = GameManager.getInstance().createGame(new PlayerData(null, "User", "ID1", -1), "MyGame");
@@ -227,7 +227,7 @@ class WebSocketHandlerIntegrationTest {
         InfoJsonObject receivedInfoJsonObject = (InfoJsonObject) WrapperHelper.getInstanceFromJson(response);
         GameInfo gameInfo = receivedInfoJsonObject.getGameInfoList().get(0);
 
-        Set<PlayerData> players = gameInfo.getConnectedPlayers().stream().filter(p -> p.getUsername().equals(username)).collect(Collectors.toSet());
+        Set<PlayerData> players = gameInfo.getConnectedPlayers().stream().filter(p -> p.getId().equals(playerId)).collect(Collectors.toSet());
         assertThat(players).isNotEmpty();
     }
     @Test
