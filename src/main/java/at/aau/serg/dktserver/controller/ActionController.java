@@ -97,14 +97,16 @@ public class ActionController {
                 gameManager.removeGame(gameId);
                 return;
             }
+
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            webSocket.sendMessage(player.getGameId(), msg);
         }
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
-        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
-        webSocket.sendMessage(player.getGameId(), msg);
 
-        actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
-        msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(player.getGameId(), msg);
     }
