@@ -80,17 +80,23 @@ public class ActionController {
     }
 
     private void leaveGame(int gameId, String fromPlayerId) {
+        if (fromPlayerId == null){
+            return;
+        }
+
         PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
-        if (player == null) return;
 
         if (gameManager.isOnTurn(gameId, fromPlayerId))
             endTurn(player);
 
-        PlayerData newHost = gameManager.getNewHost(player.getGameId());
-        if (newHost == null){
-            player.setGameId(-1);
-            gameManager.removeGame(gameId);
-            return;
+        PlayerData newHost = null;
+        if (player.isHost()) {
+            newHost = gameManager.getNewHost(player.getGameId());
+            if (newHost == null) {
+                player.setGameId(-1);
+                gameManager.removeGame(gameId);
+                return;
+            }
         }
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
