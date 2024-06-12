@@ -785,11 +785,13 @@ class WebSocketHandlerIntegrationTest {
     void testAfterConnectionClosedPlayerNull() throws Exception {
         WebSocketSession session = initStompSession();
 
+        int oldSize = WebSocketHandlerImpl.getInstance().getPlayerIds().size();
+
         session.close();
         messages.poll(1, TimeUnit.SECONDS);
 
-        List<String> player = WebSocketHandlerImpl.getInstance().getPlayerIds();
-        assertThat(player).isEmpty();
+        int newSize = WebSocketHandlerImpl.getInstance().getPlayerIds().size();
+        assertThat(newSize).isEqualTo(oldSize);
     }
 
     @Test
