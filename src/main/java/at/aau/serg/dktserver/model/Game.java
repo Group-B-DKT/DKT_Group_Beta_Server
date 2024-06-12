@@ -121,7 +121,7 @@ public class Game implements GameHandler {
     @Override
     public void removeFieldOwner(String playerId) {
         this.fields.stream().forEach(f -> {
-            if (f.getOwner() != null && f.getOwner().equals(playerId)){
+            if (f.getOwner() != null && f.getOwner().getId().equals(playerId)){
                 f.setOwner(null);
             }
         });
