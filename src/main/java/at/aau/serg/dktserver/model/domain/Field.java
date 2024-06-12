@@ -4,6 +4,8 @@ import at.aau.serg.dktserver.model.enums.FieldType;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Field {
@@ -15,6 +17,8 @@ public class Field {
     private PlayerData owner;
     private final boolean ownable;
 
+    private transient List<Building> buildings;
+
     private FieldType fieldType;
 
     public Field(int id, String name, int price, boolean ownable, FieldType fieldType) {
@@ -23,21 +27,16 @@ public class Field {
         this.price = price;
         this.ownable = ownable;
         this.fieldType = fieldType;
+        this.buildings = new ArrayList<>();
     }
 
 
     public Field(int id, String name, boolean ownable) {
-        this.id = id;
-        this.name = name;
-        this.ownable = ownable;
+        this(id, name, -1,ownable, FieldType.NORMAL);
     }
     public Field(int id, String name, int price, boolean ownable) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.ownable = ownable;
+        this(id, name, price, ownable, FieldType.NORMAL);
     }
-
 
     public String getName() {
         return name;
@@ -65,6 +64,14 @@ public class Field {
 
     public PlayerData getOwner() {
         return owner;
+    }
+
+    public List<Building> getBuildings(){
+        return this.buildings;
+    }
+
+    public void addBuilding(Building building){
+        buildings.add(building);
     }
 
     @Override
