@@ -179,9 +179,8 @@ public class Game implements GameHandler {
             return false;
         }
 
-        int index = this.players.indexOf(searchPlayer);
-        this.players.set(index, player);
-        return true;
+        searchPlayer.copyFrom(player);
+         return true;
     }
     public List<Field> getFields () {
         return fields;
