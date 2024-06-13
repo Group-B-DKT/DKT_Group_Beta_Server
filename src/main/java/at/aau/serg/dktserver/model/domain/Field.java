@@ -16,6 +16,7 @@ public class Field {
     private final boolean ownable;
 
     private FieldType fieldType;
+    private int rent;
 
     public Field(int id, String name, int price, boolean ownable, FieldType fieldType) {
         this.id = id;
@@ -38,6 +39,12 @@ public class Field {
         this.ownable = ownable;
     }
 
+    public int getRent() {
+        return rent;
+    }
+    public void setRent(int rent) {
+        this.rent = rent;
+    }
 
     public String getName() {
         return name;
