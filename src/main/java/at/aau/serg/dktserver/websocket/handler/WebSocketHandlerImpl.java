@@ -1,9 +1,14 @@
 package at.aau.serg.dktserver.websocket.handler;
 
+import at.aau.serg.dktserver.communication.ActionJsonObject;
 import at.aau.serg.dktserver.communication.ConnectJsonObject;
+import at.aau.serg.dktserver.communication.enums.Action;
 import at.aau.serg.dktserver.communication.enums.ConnectType;
 import at.aau.serg.dktserver.communication.enums.Request;
 import at.aau.serg.dktserver.communication.utilities.WrapperHelper;
+import at.aau.serg.dktserver.controller.GameManager;
+import at.aau.serg.dktserver.model.Game;
+import at.aau.serg.dktserver.model.domain.GameInfo;
 import at.aau.serg.dktserver.model.domain.PlayerData;
 import at.aau.serg.dktserver.parser.JsonInputParser;
 import at.aau.serg.dktserver.parser.interfaces.InputParser;
@@ -51,6 +56,27 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+        PlayerData player = this.playerData.stream()
+                                           .filter(p -> p.getSession().getId().equals(session.getId()))
+                                           .findAny().orElse(null);
+
+        if (player == null) return;
+        player.setConnected(false);
+        player.setReady(false);
+
+        Game game = GameManager.getInstance().getGameById(player.getGameId());
+
+        if (game != null && !game.isStarted()) {
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.LEAVE_GAME, null, player);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            inputParser.parseInput(msg, null, player.getId());
+        }
+        else if (game != null && game.isStarted()){
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, null, player);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            inputParser.parseInput(msg, null, player.getId());
+        }
+
     }
 
     @Override
@@ -69,14 +95,37 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         PlayerData player = this.playerData.stream()
                 .filter(p -> p.getId() != null && p.getId().equals(playerId))
                 .findAny().orElse(null);
-        if (player != null) {
-            player.setConnected(true);
-            player.setGameId(-1);
-            ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.CONNECTION_ESTABLISHED);
-            String connectJson = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
+        if (player == null) return;
 
-            sendToUser(player.getId(), connectJson);
+        String msg = "";
+        if (player.getGameId() == -1) {
+            msg = setPlayerDefaultsAndCreateMessage(player);
+
+        }else{
+            Game game = GameManager.getInstance().getGameById(player.getGameId());
+            if (!game.isStarted()) {
+                msg = setPlayerDefaultsAndCreateMessage(player);
+            }
+            else {
+                GameInfo gameInfo = new GameInfo(game.getId(), game.getName(), game.getPlayers(), game.isStarted());
+                msg = setPlayerGameIdAndCreateMessage(player, gameInfo, ConnectType.RECONNECT_TO_GAME);
+            }
         }
+
+        sendToUser(player.getId(), msg);
+    }
+
+    private String setPlayerGameIdAndCreateMessage(PlayerData player, GameInfo gameInfo, ConnectType connectType) {
+        String msg;
+        player.setConnected(true);
+        player.setGameId(gameInfo == null ? -1 : gameInfo.getId());
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(connectType, gameInfo);
+        msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.CONNECT, connectJsonObject);
+        return msg;
+    }
+
+    private String setPlayerDefaultsAndCreateMessage(PlayerData player) {
+        return setPlayerGameIdAndCreateMessage(player, null, ConnectType.CONNECTION_ESTABLISHED);
     }
 
     public void sendMessage(int gameId, String msg){
