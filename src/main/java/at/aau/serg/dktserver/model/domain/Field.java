@@ -17,7 +17,8 @@ public class Field {
     private PlayerData owner;
     private final boolean ownable;
 
-    private transient List<Building> buildings;
+    private List<House> houses;
+    private Hotel hotel;
 
     private FieldType fieldType;
 
@@ -27,7 +28,6 @@ public class Field {
         this.price = price;
         this.ownable = ownable;
         this.fieldType = fieldType;
-        this.buildings = new ArrayList<>();
     }
 
 
@@ -66,12 +66,19 @@ public class Field {
         return owner;
     }
 
-    public List<Building> getBuildings(){
-        return this.buildings;
+    public Hotel getHotel() {
+        return hotel;
+    }
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
     }
 
-    public void addBuilding(Building building){
-        buildings.add(building);
+    public List<House> getHouses(){
+        return this.houses;
+    }
+
+    public void addHouse(House house){
+        getHouses().add(house);
     }
 
     @Override
