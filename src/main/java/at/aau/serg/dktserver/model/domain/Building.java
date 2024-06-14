@@ -3,7 +3,7 @@ package at.aau.serg.dktserver.model.domain;
 
 
 
-public abstract class Building {
+public class Building {
     private int price;
     private int position;
 
