@@ -25,4 +25,6 @@ public interface GameHandler {
     PlayerData getNextPlayer(PlayerData playerByUsername);
 
     boolean updatePlayer(PlayerData player);
+
+    void goToPrison(PlayerData player);
 }

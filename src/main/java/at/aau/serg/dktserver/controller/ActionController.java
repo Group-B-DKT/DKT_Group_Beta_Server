@@ -206,7 +206,12 @@ public class ActionController {
 
 
     private void reportCheat(PlayerData fromPlayer, String param) {
-
+        PlayerData player = webSocket.getPlayerByPlayerId(param);
+        if(player.isHasCheated()) {
+            player.setMoney(200);
+            Game game = gameManager.getGameById(player.getGameId());
+            game.goToPrison(player);
+        }
     }
 
 }
