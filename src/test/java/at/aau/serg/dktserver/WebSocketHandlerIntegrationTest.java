@@ -425,8 +425,6 @@ class WebSocketHandlerIntegrationTest {
         messages.poll(1, TimeUnit.SECONDS);
         fields.get(0).setOwner(player);
 
-
-
         actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, null, player, fields);
         msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
         session.sendMessage(new TextMessage(msg));
@@ -435,6 +433,53 @@ class WebSocketHandlerIntegrationTest {
         assert actionJsonObjectReceived != null;
         assertThat(actionJsonObjectReceived.getAction() == Action.SUBMIT_CHEAT).isTrue();
         assertThat(actionJsonObjectReceived.getFromPlayer().isHasCheated()).isTrue();
+
+    }
+    @Test
+    public void testWebSocketHandlerActionReportCheat() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        List<Field> fields = List.of(new Field(0, "Field1", true), new Field(1, "Knast", false));
+
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "U1", "ID1", -1), "Game200");
+        player.setGameId(gameId);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+
+
+        actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        fields.get(0).setOwner(player);
+
+        actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, null, player, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(2, TimeUnit.SECONDS);
+        WrapperHelper.getInstanceFromJson(response);
+        ActionJsonObject actionJsonObjectReceived;
+
+        actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, player.getId(), player, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        response = messages.poll(5, TimeUnit.SECONDS);
+        actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assert actionJsonObjectReceived != null;
+        PlayerData reportedPlayer = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(actionJsonObjectReceived.getParam());
+
+        assertThat(actionJsonObjectReceived.getAction() == Action.REPORT_CHEAT).isTrue();
+        assertThat(reportedPlayer.isHasCheated()).isFalse();
+        assertThat(reportedPlayer.getMoney() == 200).isTrue();
+        assertThat(Objects.equals(reportedPlayer.getCurrentField().getName(), "Knast")).isTrue();
 
     }
 

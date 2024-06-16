@@ -209,9 +209,13 @@ public class ActionController {
         PlayerData player = webSocket.getPlayerByPlayerId(param);
         if(player.isHasCheated()) {
             player.setMoney(200);
+            player.setHasCheated(false);
             Game game = gameManager.getGameById(player.getGameId());
             game.goToPrison(player);
         }
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
 
 }
