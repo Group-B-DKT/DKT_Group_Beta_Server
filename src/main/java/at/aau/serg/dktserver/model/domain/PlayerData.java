@@ -57,6 +57,9 @@ public class PlayerData implements Serializable {
     @Setter
     private boolean hasCheated = false;
 
+    @Getter
+    @Setter
+    private int roundsToSkip;
 
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;
@@ -67,6 +70,7 @@ public class PlayerData implements Serializable {
         this.isReady = false;
         this.money = START_MONEY;
         this.currentPosition = 0;
+        this.roundsToSkip = 0;
     }
 
     public PlayerData(){}
