@@ -41,7 +41,7 @@ public class ActionController {
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
-            case REPORT_CHEAT -> reportCheat(fromPlayer, param);
+            case REPORT_CHEAT -> reportCheat(gameId, fromPlayer, param);
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
         }
@@ -275,12 +275,12 @@ public class ActionController {
     }
 
 
-    private void reportCheat(PlayerData fromPlayer, String param) {
-        PlayerData player = webSocket.getPlayerByPlayerId(param);
+    private void reportCheat(int gameId, PlayerData fromPlayer, String param) {
+        Game game = gameManager.getGameById(gameId);
+        PlayerData player = game.getPlayers().stream().filter(playerData -> playerData.getId().equals(param)).findFirst().orElse(null);
         if(player.isHasCheated()) {
             player.setMoney(200);
             player.setHasCheated(false);
-            Game game = gameManager.getGameById(player.getGameId());
             game.goToPrison(player);
         }
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);

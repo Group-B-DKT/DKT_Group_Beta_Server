@@ -435,12 +435,13 @@ class WebSocketHandlerIntegrationTest {
         String username = connectToWebsocket(session, -1);
         messages.poll(1, TimeUnit.SECONDS);
 
-        PlayerData player = new PlayerData(null, username, "ID1", -1);
+        PlayerData player = new PlayerData(null, username, "ID17", -1);
 
         List<Field> fields = List.of(new Field(0, "Field1", true), new Field(1, "Knast", false));
 
         int gameId = GameManager.getInstance().createGame(new PlayerData(null, "U1", "ID1", -1), "Game200");
         player.setGameId(gameId);
+        player.setHasCheated(true);
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
 
