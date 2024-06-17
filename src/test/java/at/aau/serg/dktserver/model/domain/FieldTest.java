@@ -142,4 +142,35 @@ class FieldTest {
         Field f2 = new Field(1, "Example 1", 100, true);
         assertEquals(f1.hashCode(), f2.hashCode());
     }
+    @Test
+    void testGetHotel() {
+        Field field = new Field(1, "Example 1", 100, true);
+        Hotel hotel = new Hotel(500, 1);
+        field.setHotel(hotel);
+        assertEquals(hotel, field.getHotel());
+    }
+
+    @Test
+    void testSetHotel() {
+        Field field = new Field(1, "Example 1", 100, true);
+        Hotel hotel = new Hotel(400, 1);
+        field.setHotel(hotel);
+        assertEquals(hotel, field.getHotel());
+    }
+
+    @Test
+    void testGetHouses() {
+        Field field = new Field(1, "Example 1", 100, true);
+        House house = new House(400,1);
+        field.addHouse(house);
+        assertTrue(field.getHouses().contains(house));
+    }
+
+    @Test
+    void testAddHouse() {
+        Field field = new Field(1, "Example 1", 100, true);
+        House house = new House(400, 1);
+        field.addHouse(house);
+        assertTrue(field.getHouses().contains(house));
+    }
 }

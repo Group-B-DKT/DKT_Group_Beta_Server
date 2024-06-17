@@ -28,6 +28,7 @@ public class Field {
         this.price = price;
         this.ownable = ownable;
         this.fieldType = fieldType;
+        this.houses = new ArrayList<>();
     }
 
 
