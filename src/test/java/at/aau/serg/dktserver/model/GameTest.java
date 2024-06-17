@@ -128,15 +128,5 @@ class GameTest {
                 .collect(Collectors.toSet());
         assertEquals(0, playerFields.size());
     }
-    @Test
-    void testSetRent() {
-        Field field = new Field(1, "Test Field", 100, true, 40);
-        field.setRent(150);
-        assertEquals(150, field.getRent());
-    }
-    @Test
-    void testGetRent() {
-        Field field = new Field(1, "Test Field", 100, true, 40);
-        assertEquals(field.getRent(), 50);
-    }
+
 }

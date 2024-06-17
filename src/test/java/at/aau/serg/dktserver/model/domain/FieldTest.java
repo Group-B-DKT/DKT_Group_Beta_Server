@@ -142,4 +142,15 @@ class FieldTest {
         Field f2 = new Field(1, "Example 1", 100, true);
         assertEquals(f1.hashCode(), f2.hashCode());
     }
+    @Test
+    void testSetRent() {
+        Field field = new Field(1, "Test Field", 100, true, 40);
+        field.setRent(150);
+        assertEquals(150, field.getRent());
+    }
+    @Test
+    void testGetRent() {
+        Field field = new Field(1, "Test Field", 100, true, 40);
+        assertEquals(field.getRent(), 50);
+    }
 }
