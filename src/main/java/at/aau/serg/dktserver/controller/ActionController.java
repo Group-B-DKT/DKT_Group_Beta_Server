@@ -42,7 +42,7 @@ public class ActionController {
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
-            case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(fromPlayer, param, action);
+            case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(webSocket.getPlayerByPlayerId(fromPlayerId), param, action);
             default -> System.out.println("Action not found: " + action.toString());
         }
     }
