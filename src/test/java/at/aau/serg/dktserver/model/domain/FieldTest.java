@@ -151,6 +151,6 @@ class FieldTest {
     @Test
     void testGetRent() {
         Field field = new Field(1, "Test Field", 100, true, 40);
-        assertEquals(field.getRent(), 50);
+        assertEquals(field.getRent(), 40);
     }
 }
