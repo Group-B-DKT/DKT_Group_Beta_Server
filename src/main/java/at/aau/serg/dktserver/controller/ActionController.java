@@ -42,7 +42,6 @@ public class ActionController {
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
-
             case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(fromPlayer, param, action);
             default -> System.out.println("Action not found: " + action.toString());
         }
@@ -213,5 +212,4 @@ public class ActionController {
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
     }
-
 }

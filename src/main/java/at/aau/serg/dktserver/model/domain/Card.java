@@ -2,7 +2,9 @@ package at.aau.serg.dktserver.model.domain;
 
 import at.aau.serg.dktserver.model.enums.CardType;
 
-public class Card {
+import java.io.Serializable;
+
+public class Card implements Serializable {
     private int id;
     private int amount;
     private String imageResource;
