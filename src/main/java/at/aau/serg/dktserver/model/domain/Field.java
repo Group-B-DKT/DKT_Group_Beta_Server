@@ -25,6 +25,13 @@ public class Field {
         this.ownable = ownable;
         this.fieldType = fieldType;
     }
+    public Field(int id, String name, int price, boolean ownable, int rent) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.ownable = ownable;
+        this.rent = rent;
+    }
 
 
     public Field(int id, String name, boolean ownable) {
