@@ -41,6 +41,7 @@ public class ActionController {
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
+            case PAY_TAXES -> payTaxes(fromPlayer);
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
         }
@@ -260,6 +261,20 @@ public class ActionController {
             return;
         }
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, param, player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
+
+    }
+    private void payTaxes(PlayerData player){
+
+        int oldMoney = gameManager.getPlayers(player.getGameId()).stream().filter(p -> p.getId().equals(player.getId())).findAny().orElse(null).getMoney();
+        boolean moneySet = gameManager.updatePlayer(player.getGameId(), player);
+
+        if(moneySet == false){
+            return;
+        }
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.PAY_TAXES,Integer.toString(Math.abs(oldMoney- player.getMoney())) , player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
 
