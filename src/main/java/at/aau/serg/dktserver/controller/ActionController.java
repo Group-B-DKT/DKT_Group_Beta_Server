@@ -269,7 +269,7 @@ public class ActionController {
     }
     private void payTaxes(PlayerData player){
 
-        int oldMoney = gameManager.getPlayers(player.getGameId()).stream().filter(p -> p.getId().equals(player.getId())).findAny().orElse(null).getMoney();
+        int oldMoney = Objects.requireNonNull(gameManager.getPlayers(player.getGameId()).stream().filter(p -> p.getId().equals(player.getId())).findAny().orElse(null)).getMoney();
         boolean moneySet = gameManager.updatePlayer(player.getGameId(), player);
 
         if(moneySet == false){
