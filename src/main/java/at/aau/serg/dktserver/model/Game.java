@@ -16,6 +16,8 @@ import java.util.Objects;
 public class Game implements GameHandler {
     public static final int maxPlayer = 6;
 
+    private static final int NUMBER_OF_FIELDS = 30;
+
     public static List<Integer> PLAYER_COLORS = List.of(
             0xFF66FF66, // Hellgrün
             0xFFFF6666, // Hellrot
@@ -207,8 +209,8 @@ public class Game implements GameHandler {
 
         int newPostion = player.getCurrentPosition() + amount;
 
-        if(newPostion > fields.size() - 2){
-            newPostion -= (fields.size()-2);
+        if(newPostion >= NUMBER_OF_FIELDS){
+            newPostion -= NUMBER_OF_FIELDS;
         }
         player.setCurrentPosition(newPostion);
 
