@@ -182,6 +182,7 @@ public class Game implements GameHandler {
         searchPlayer.copyFrom(player);
          return true;
     }
+
     public List<Field> getFields () {
         return fields;
 
@@ -223,6 +224,11 @@ public class Game implements GameHandler {
             return this.players.get(0);
         }
         return this.players.get(index + 1);
+    }
+
+    @Override
+    public void goToPrison(PlayerData player) {
+        player.setCurrentField(fields.stream().filter(field -> Objects.equals(field.getName(), "Knast")).findFirst().orElse(null));
     }
 
     @Override
