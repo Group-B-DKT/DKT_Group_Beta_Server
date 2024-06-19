@@ -300,7 +300,7 @@ public class ActionController {
     private void reportCheat(int gameId, PlayerData fromPlayer, String param) {
         Game game = gameManager.getGameById(gameId);
         PlayerData player = game.getPlayers().stream().filter(playerData -> playerData.getId().equals(param)).findFirst().orElse(null);
-        if(player.isHasCheated()) {
+        if(player != null && player.isHasCheated()) {
             player.setMoney(200);
             player.setHasCheated(false);
             game.goToPrison(player);
