@@ -42,6 +42,7 @@ public class ActionController {
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
             case PAY_TAXES -> payTaxes(fromPlayer);
+            case REPORT_CHEAT -> reportCheat(gameId, fromPlayer, param);
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
         }
@@ -267,7 +268,7 @@ public class ActionController {
     }
     private void payTaxes(PlayerData player){
 
-        int oldMoney = gameManager.getPlayers(player.getGameId()).stream().filter(p -> p.getId().equals(player.getId())).findAny().orElse(null).getMoney();
+        int oldMoney = Objects.requireNonNull(gameManager.getPlayers(player.getGameId()).stream().filter(p -> p.getId().equals(player.getId())).findAny().orElse(null)).getMoney();
         boolean moneySet = gameManager.updatePlayer(player.getGameId(), player);
 
         if(moneySet == false){
@@ -293,6 +294,20 @@ public class ActionController {
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, param, player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
+    }
+
+
+    private void reportCheat(int gameId, PlayerData fromPlayer, String param) {
+        Game game = gameManager.getGameById(gameId);
+        PlayerData player = game.getPlayers().stream().filter(playerData -> playerData.getId().equals(param)).findFirst().orElse(null);
+        if(player.isHasCheated()) {
+            player.setMoney(200);
+            player.setHasCheated(false);
+            game.goToPrison(player);
+        }
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
 
 }
