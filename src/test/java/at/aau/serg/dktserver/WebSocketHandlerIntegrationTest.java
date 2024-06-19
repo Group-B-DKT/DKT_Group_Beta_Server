@@ -474,7 +474,7 @@ class WebSocketHandlerIntegrationTest {
         String username = connectToWebsocket(session, -1);
         messages.poll(1, TimeUnit.SECONDS);
 
-        PlayerData player = new PlayerData(null, username, "ID18", -1);
+        PlayerData player = new PlayerData(null, username, "ID19", -1);
 
         List<Field> fields = List.of(new Field(0, "Field1", true), new Field(1, "Knast", false));
 
