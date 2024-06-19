@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class Game implements GameHandler {
-    public static final int maxPlayer = 6;
+    public static final int MAX_PLAYER = 6;
 
     private static final int NUMBER_OF_FIELDS = 30;
 
-    public static List<Integer> PLAYER_COLORS = List.of(
+    public static final List<Integer> PLAYER_COLORS = List.of(
             0xFF66FF66, // Hellgrün
             0xFFFF6666, // Hellrot
             0xFF6666FF, // Hellblau
@@ -197,7 +197,7 @@ public class Game implements GameHandler {
             freeColors.remove((Integer) p.getColor());
         }
         Collections.shuffle(freeColors);
-        return freeColors.size() > 0 ? freeColors.get(0) : -1;
+        return !freeColors.isEmpty() ? freeColors.get(0) : -1;
     }
 
 
