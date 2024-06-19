@@ -291,7 +291,7 @@ public class ActionController {
         }
         player.setHasCheated(true);
         player.setMoney(player.getMoney() + money);
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, param, player);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, null, player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
     }
@@ -303,10 +303,13 @@ public class ActionController {
         if(player != null && player.isHasCheated()) {
             player.setMoney(200);
             player.setHasCheated(false);
-            game.goToPrison(player);
         }
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, null, player);
         String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
+        actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);
+        msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
 
