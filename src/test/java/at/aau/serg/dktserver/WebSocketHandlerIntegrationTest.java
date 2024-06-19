@@ -555,6 +555,64 @@ class WebSocketHandlerIntegrationTest {
 
         assertThat(response).isNull();
     }
+    @Test
+    void testWebSocketHandlerActionPayTaxes() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        int gameId = GameManager.getInstance().createGame(player, "game1");
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        PlayerData player1 = new PlayerData();
+        player1.copyFrom(player);
+        player1.setMoney(200);
+        player1.setGameId(gameId);
+
+        actionJsonObject = new ActionJsonObject(Action.PAY_TAXES, null, player1, null);
+        msg = WrapperHelper.toJsonFromObject(gameId,  Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        System.out.println(response);
+
+        assertThat(actionJsonObjectReceived.getFromPlayer().getMoney()).isEqualTo(200);
+        assertThat(Integer.parseInt(actionJsonObjectReceived.getParam())).isEqualTo(1300);
+    }
+
+    @Test
+    void testWebSocketHandlerActionPlayerActionPlayerIsNull() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        int gameId = GameManager.getInstance().createGame(player, "game1");
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        player.setMoney(200);
+        player.setGameId(gameId);
+
+        actionJsonObject = new ActionJsonObject(Action.PAY_TAXES, null, new PlayerData(null, "", "", gameId), null);
+        msg = WrapperHelper.toJsonFromObject(gameId,  Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        assertThat(response).isNull();
+    }
 
     @Test
     void testWebSocketHandlerActionLeaveGameNotEmpty() throws Exception {

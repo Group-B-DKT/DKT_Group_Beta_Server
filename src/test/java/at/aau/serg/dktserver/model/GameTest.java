@@ -128,4 +128,5 @@ class GameTest {
                 .collect(Collectors.toSet());
         assertEquals(0, playerFields.size());
     }
+
 }
