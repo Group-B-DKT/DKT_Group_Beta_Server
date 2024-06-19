@@ -39,9 +39,9 @@ public class ActionController {
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
             case PAY_TAXES -> payTaxes(fromPlayer);
-            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
             case REPORT_CHEAT -> reportCheat(gameId, fromPlayer, param);
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
@@ -254,7 +254,6 @@ public class ActionController {
         webSocket.sendMessage(player.getGameId(), msg);
     }
 
-
     private void updateMoney(PlayerData player, String param){
 
         boolean moneySet = gameManager.updatePlayer(player.getGameId(), player);
@@ -282,9 +281,17 @@ public class ActionController {
 
     }
 
-    private void submitCheat(PlayerData player) {
+    private void submitCheat(PlayerData player, String param) {
+        int money;
+        try {
+            money = Integer.parseInt(param);
+        }
+        catch (Exception e) {
+            return;
+        }
         player.setHasCheated(true);
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, "", player);
+        player.setMoney(player.getMoney() + money);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, param, player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
     }
@@ -293,7 +300,7 @@ public class ActionController {
     private void reportCheat(int gameId, PlayerData fromPlayer, String param) {
         Game game = gameManager.getGameById(gameId);
         PlayerData player = game.getPlayers().stream().filter(playerData -> playerData.getId().equals(param)).findFirst().orElse(null);
-        if(player.isHasCheated()) {
+        if(player != null && player.isHasCheated()) {
             player.setMoney(200);
             player.setHasCheated(false);
             game.goToPrison(player);
