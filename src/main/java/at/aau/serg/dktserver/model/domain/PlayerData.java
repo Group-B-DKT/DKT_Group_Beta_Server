@@ -1,5 +1,6 @@
 package at.aau.serg.dktserver.model.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
-
+@AllArgsConstructor
 public class PlayerData implements Serializable {
     private static final int START_MONEY = 1200;
 
