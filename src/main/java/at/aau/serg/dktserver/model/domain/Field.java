@@ -23,30 +23,24 @@ public class Field {
     private FieldType fieldType;
     private int rent;
 
-    public Field(int id, String name, int price, boolean ownable, FieldType fieldType) {
+    public Field(int id, String name, int price, boolean ownable, FieldType fieldType, int rent) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.ownable = ownable;
         this.fieldType = fieldType;
         this.houses = new ArrayList<>();
-    }
-    public Field(int id, String name, int price, boolean ownable, int rent) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.ownable = ownable;
         this.rent = rent;
     }
-
-
+    public Field(int id, String name, int price, boolean ownable,FieldType fieldType) {
+        this(id, name, price, ownable, FieldType.NORMAL, -1);
+    }
     public Field(int id, String name, boolean ownable) {
-        this(id, name, -1,ownable, FieldType.NORMAL);
+        this(id, name, -1,ownable, FieldType.NORMAL, -1);
     }
     public Field(int id, String name, int price, boolean ownable) {
-        this(id, name, price, ownable, FieldType.NORMAL);
+        this(id, name, price, ownable, FieldType.NORMAL, -1);
     }
-
     public int getRent() {
         return rent;
     }

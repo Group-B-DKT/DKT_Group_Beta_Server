@@ -145,13 +145,13 @@ class FieldTest {
     }
     @Test
     void testSetRent() {
-        Field field = new Field(1, "Test Field", 100, true, 40);
+        Field field = new Field(1, "Test Field", 100, true, FieldType.NORMAL, 40);
         field.setRent(150);
         assertEquals(150, field.getRent());
     }
     @Test
     void testGetRent() {
-        Field field = new Field(1, "Test Field", 100, true, 40);
+        Field field = new Field(1, "Test Field", 100, true, FieldType.NORMAL, 40);
         assertEquals(field.getRent(), 40);
     }
     @Test
@@ -172,7 +172,7 @@ class FieldTest {
 
     @Test
     void testGetHouses() {
-        Field field = new Field(1, "Example 1", 100, true, FieldType.NORMAL);
+        Field field = new Field(1, "Example 1", 100, true);
         House house = new House(400,1);
         field.getHouses().add(house);
         assertTrue(field.getHouses().contains(house));
