@@ -45,6 +45,7 @@ public class ActionController {
             case REPORT_CHEAT -> reportCheat(gameId, fromPlayer, param);
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
+            case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0));
         }
     }
 
@@ -111,6 +112,17 @@ public class ActionController {
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
 
         webSocket.sendMessage(player.getGameId(), msg);
+    }
+
+    private void buyBuilding(PlayerData fromPlayer, Field field) {
+        GameManager.getInstance().updateField(fromPlayer.getGameId(), field);
+        GameManager.getInstance().updatePlayer(fromPlayer.getGameId(), fromPlayer);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_BUILDING, null, fromPlayer, Collections.singletonList(field));
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
     }
 
     private void endTurn(PlayerData playerById) {
