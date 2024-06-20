@@ -21,6 +21,7 @@ public class Field {
     private Hotel hotel;
 
     private FieldType fieldType;
+    private int rent;
 
     public Field(int id, String name, int price, boolean ownable, FieldType fieldType) {
         this.id = id;
@@ -30,6 +31,13 @@ public class Field {
         this.fieldType = fieldType;
         this.houses = new ArrayList<>();
     }
+    public Field(int id, String name, int price, boolean ownable, int rent) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.ownable = ownable;
+        this.rent = rent;
+    }
 
 
     public Field(int id, String name, boolean ownable) {
@@ -37,6 +45,13 @@ public class Field {
     }
     public Field(int id, String name, int price, boolean ownable) {
         this(id, name, price, ownable, FieldType.NORMAL);
+    }
+
+    public int getRent() {
+        return rent;
+    }
+    public void setRent(int rent) {
+        this.rent = rent;
     }
 
     public String getName() {
@@ -78,9 +93,7 @@ public class Field {
         return this.houses;
     }
 
-    public void addHouse(House house){
-        getHouses().add(house);
-    }
+
 
     @Override
     public boolean equals(Object o) {
