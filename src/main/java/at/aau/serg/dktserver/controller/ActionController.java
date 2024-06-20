@@ -43,7 +43,20 @@ public class ActionController {
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
+            case UPDATE_ROUNDS_TO_SKIP -> updateRoundsToSkip(fromPlayer, param);
         }
+    }
+
+    private void updateRoundsToSkip(PlayerData fromPlayer, String param) {
+        PlayerData player = gameManager.getPlayers(fromPlayer.getGameId()).stream()
+                .filter(p->p.getId().equals(fromPlayer.getId()))
+                .findAny().orElse(null);
+        player.setRoundsToSkip(fromPlayer.getRoundsToSkip());
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_ROUNDS_TO_SKIP, param, player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
+
     }
 
     private void discardReconnect(int gameId, PlayerData fromPlayer) {
@@ -113,6 +126,10 @@ public class ActionController {
 
     private void endTurn(PlayerData playerById) {
         PlayerData playerData = gameManager.getNextPlayer(playerById);
+
+     /*   if(playerData.getRoundsToSkip() > 0){ //skipping the player which is in jail
+            playerData.setOnTurn(false);
+        }*/
         gameManager.getGameById(playerById.getGameId()).setCurrentPlayer(playerData);
         playerData.setOnTurn(true);
 
@@ -244,7 +261,7 @@ public class ActionController {
         if(player.getRoundsToSkip() > 0){
             player.setRoundsToSkip(player.getRoundsToSkip() - 1);
 
-            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SKIP_TURN, param, player);
+           ActionJsonObject actionJsonObject = new ActionJsonObject(Action.MOVE_PLAYER, param, player);
             String msg = WrapperHelper.toJsonFromObject(player.getGameId(),Request.ACTION, actionJsonObject);
             webSocket.sendMessage(player.getGameId(), msg);
             return;
