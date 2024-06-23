@@ -141,7 +141,7 @@ class GameTest {
     void testSetPlayerPositionFullRound() {
         PlayerData player = new PlayerData(null, "P1", "ID1", 1000);
         game.joinGame(player);
-        player.setCurrentPosition(fields.size()-2);
+        player.setCurrentPosition(5);
         game.setPlayerPosition(player.getId(), 2);
         assertEquals(2, player.getCurrentPosition());
     }
