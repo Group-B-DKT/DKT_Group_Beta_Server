@@ -99,11 +99,26 @@ public class PlayerData implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PlayerData that = (PlayerData) o;
-        return gameId == that.gameId && isReady == that.isReady && isConnected == that.isConnected && Objects.equals(session, that.session) && Objects.equals(username, that.username) && Objects.equals(id, that.id);
+        return Objects.equals(username, that.username) && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(session, gameId, username, id, isReady, isConnected);
+    }
+
+    public void copyFrom(PlayerData fromPlayer) {
+        gameId = fromPlayer.gameId;
+        username = fromPlayer.username;
+        id = fromPlayer.id;
+        isReady = fromPlayer.isReady;
+        currentField = fromPlayer.currentField;
+        isConnected = fromPlayer.isConnected;
+        money = fromPlayer.money;
+        isHost = fromPlayer.isHost;
+        isOnTurn = fromPlayer.isOnTurn;
+        color = fromPlayer.color;
+        currentPosition = fromPlayer.currentPosition;
+        hasCheated = fromPlayer.hasCheated;
     }
 }

@@ -31,6 +31,8 @@ public class Game implements GameHandler {
     @Getter
     @Setter
     private boolean isStarted = false;
+    @Getter
+    @Setter
     private PlayerData currentPlayer;
     @Getter
     private String name;
@@ -93,7 +95,8 @@ public class Game implements GameHandler {
     public void setFields(ArrayList<Field> fields) {
         this.fields = fields;
     }
-    public PlayerData removePlayer(PlayerData player) {
+    @Override
+    public PlayerData removePlayerAndChangeHost(PlayerData player) {
         PlayerData player1 = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(player.getId());
         players.remove(player1);
         if(player1.equals(host)) {
@@ -109,6 +112,51 @@ public class Game implements GameHandler {
     }
 
     @Override
+    public boolean removePlayer(PlayerData player){
+        if (this.players == null) return false;
+
+        return this.players.remove(player);
+    }
+
+    @Override
+    public void removeFieldOwner(String playerId) {
+        this.fields.stream().forEach(f -> {
+            if (f.getOwner() != null && f.getOwner().getId().equals(playerId)){
+                f.setOwner(null);
+            }
+        });
+    }
+
+    @Override
+    public boolean isOnTurn(String fromPlayerId) {
+        PlayerData player = this.players.stream()
+                .filter(p -> p.getId().equals(fromPlayerId))
+                .findAny()
+                .orElse(null);
+        if (player == null) return false;
+        return player.isOnTurn();
+    }
+
+    @Override
+    public PlayerData getNewHost(){
+        PlayerData newHost = null;
+        for (PlayerData player: this.players) {
+            if (player.isHost()){
+                player.setHost(false);
+                continue;
+            }
+            newHost = player;
+        }
+        if (newHost != null) {
+            newHost.setHost(true);
+        }
+        this.host = newHost;
+
+        return newHost;
+    }
+
+
+    @Override
     public void updateField(Field field) {
         Field savedField = this.fields.stream()
                                       .filter(f -> f.getId() == field.getId())
@@ -121,6 +169,7 @@ public class Game implements GameHandler {
         }
     }
 
+    @Override
     public boolean updatePlayer(PlayerData player){
         PlayerData searchPlayer = getPlayers().stream()
                 .filter(playerData -> playerData.getId().equals(player.getId()))
@@ -130,8 +179,8 @@ public class Game implements GameHandler {
             return false;
         }
 
-        searchPlayer = player;
-        return true;
+        searchPlayer.copyFrom(player);
+         return true;
     }
     public List<Field> getFields () {
         return fields;
@@ -168,6 +217,7 @@ public class Game implements GameHandler {
 
     @Override
     public PlayerData getNextPlayer(PlayerData playerByUsername) {
+        playerByUsername.setOnTurn(false);
         int index = this.players.indexOf(playerByUsername);
         if (index + 1 >= this.players.size()){
             return this.players.get(0);
