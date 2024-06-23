@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -144,13 +145,38 @@ class FieldTest {
     }
     @Test
     void testSetRent() {
-        Field field = new Field(1, "Test Field", 100, true, 40);
+        Field field = new Field(1, "Test Field", 100, true, FieldType.NORMAL, 40);
         field.setRent(150);
         assertEquals(150, field.getRent());
     }
     @Test
     void testGetRent() {
-        Field field = new Field(1, "Test Field", 100, true, 40);
+        Field field = new Field(1, "Test Field", 100, true, FieldType.NORMAL, 40);
         assertEquals(field.getRent(), 40);
     }
+    @Test
+    void testGetHotel() {
+        Field field = new Field(1, "Example 1", 100, true);
+        Hotel hotel = new Hotel(500, 1);
+        field.setHotel(hotel);
+        assertEquals(hotel, field.getHotel());
+    }
+
+    @Test
+    void testSetHotel() {
+        Field field = new Field(1, "Example 1", 100, true);
+        Hotel hotel = new Hotel(400, 1);
+        field.setHotel(hotel);
+        assertEquals(hotel, field.getHotel());
+    }
+
+    @Test
+    void testGetHouses() {
+        Field field = new Field(1, "Example 1", 100, true);
+        House house = new House(400,1);
+        field.getHouses().add(house);
+        assertTrue(field.getHouses().contains(house));
+    }
+
+
 }

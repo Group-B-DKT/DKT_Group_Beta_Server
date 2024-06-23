@@ -392,6 +392,41 @@ class WebSocketHandlerIntegrationTest {
 
     }
     @Test
+    void testWebSocketHandlerActionBuyBuilding() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID1", -1);
+
+        List<Field> fields = List.of(new Field(0, "Field1", true));
+
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "U1", "ID1", -1), "Game200");
+        player.setGameId(gameId);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+
+        actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        fields.get(0).setOwner(player);
+
+        actionJsonObject = new ActionJsonObject(Action.BUY_BUILDING, null, player, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+        Game game = GameManager.getInstance().getGameById(gameId);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assertThat(actionJsonObjectReceived.getAction()).isSameAs(Action.BUY_BUILDING);
+        assertThat(game.getFields().get(0).getOwner().getUsername()).isEqualTo(player.getUsername());
+    }
+
+    @Test
     void testWebSocketHandlerActionSubmitCheat() throws Exception {
         WebSocketSession session = initStompSession();
 
@@ -513,6 +548,43 @@ class WebSocketHandlerIntegrationTest {
         assertThat(playerData.getMoney() == 200).isTrue();
         assertThat(Objects.equals(playerData.getCurrentField().getName(), "Knast")).isTrue();
 
+    }
+    @Test
+    public void testWebSocketHandlerActionReportFalseCheat() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, username, "ID20", -1);
+
+        List<Field> fields = List.of(new Field(0, "Field1", true), new Field(1, "Knast", false));
+        PlayerData playerData = new PlayerData(null, "U1", "ID1", -1);
+        int gameId = GameManager.getInstance().createGame(playerData, "Game200");
+        player.setGameId(gameId);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+
+
+        actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, null, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+        fields.get(0).setOwner(player);
+
+        actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, playerData.getId(), player, fields);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(5, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assert actionJsonObjectReceived != null;
+
+        assertThat(actionJsonObjectReceived.getAction() == Action.REPORT_CHEAT).isTrue();
+        assertThat(playerData.isHasCheated()).isFalse();
+        assertThat(playerData.getMoney() == 200).isFalse();
     }
 
     @Test
