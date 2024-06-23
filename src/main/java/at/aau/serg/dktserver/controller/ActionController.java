@@ -311,18 +311,35 @@ public class ActionController {
 
     private void reportCheat(int gameId, PlayerData fromPlayer, String param) {
         Game game = gameManager.getGameById(gameId);
-        PlayerData player = game.getPlayers().stream().filter(playerData -> playerData.getId().equals(param)).findFirst().orElse(null);
+        PlayerData player = game.getPlayers().stream()
+                .filter(playerData -> playerData.getId().equals(param))
+                .findFirst()
+                .orElse(null);
+
+        ActionJsonObject actionJsonObjectUpdate;
+
         if(player != null && player.isHasCheated()) {
             player.setMoney(200);
             player.setHasCheated(false);
+
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);
+            String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+            webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
+            actionJsonObjectUpdate = new ActionJsonObject(Action.UPDATE_MONEY, null, player);
+        } else{
+            PlayerData fromPlayerServer = game.getPlayers().stream()
+                    .filter(playerData -> playerData.getId().equals(fromPlayer.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            fromPlayerServer.setMoney(200);
+            actionJsonObjectUpdate = new ActionJsonObject(Action.UPDATE_MONEY, null, fromPlayerServer);
         }
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, null, player);
-        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObjectUpdate);
         webSocket.sendMessage(fromPlayer.getGameId(), msg);
 
-        actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);
-        msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
-        webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
     }
 
 }
