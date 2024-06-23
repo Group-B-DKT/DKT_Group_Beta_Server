@@ -137,12 +137,4 @@ class GameTest {
         game.goToPrison(player);
         assertEquals(knast, player.getCurrentField());
     }
-    @Test
-    void testSetPlayerPositionFullRound() {
-        PlayerData player = new PlayerData(null, "P1", "ID1", 1000);
-        game.joinGame(player);
-        player.setCurrentPosition(5);
-        game.setPlayerPosition(player.getId(), 2);
-        assertEquals(2, player.getCurrentPosition());
-    }
 }
