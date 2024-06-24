@@ -79,4 +79,10 @@ class PlayerDataTest {
         playerData.setMoney(money);
         assertEquals(money, playerData.getMoney());
     }
+
+    @Test
+    void setRoundsToSkip(){
+        playerData.setRoundsToSkip(3);
+        assertEquals(3, playerData.getRoundsToSkip());
+    }
 }
