@@ -9,6 +9,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -109,4 +111,22 @@ class GameTest {
         game.setFields(fields);
         assertFalse(game.buyField(f.getId(), playerData));
     }
+
+    @Test
+    void testRemoveFieldOwner(){
+        PlayerData player = new PlayerData(null, "P1", "ID1", 1000);
+        game.joinGame(player);
+
+        game.buyField(0, player);
+        game.buyField(1, player);
+        game.buyField(2, player);
+
+        game.removeFieldOwner(player.getId());
+
+        Set<Field> playerFields = game.getFields().stream()
+                .filter(f -> f.getOwner() != null && f.getOwner().getId().equals(player.getId()))
+                .collect(Collectors.toSet());
+        assertEquals(0, playerFields.size());
+    }
+
 }
