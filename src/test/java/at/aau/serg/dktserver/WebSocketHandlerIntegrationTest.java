@@ -746,6 +746,43 @@ class WebSocketHandlerIntegrationTest {
         assertThat(Integer.parseInt(actionJsonObjectReceived.getParam())).isEqualTo(1300);
     }
 
+    @Test
+    void testWebSocketHandlerUpdateRoundsToSkip() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String username = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData fromPlayer = new PlayerData(null, username, "ID1", -1);
+        fromPlayer.setRoundsToSkip(2);
+
+        int gameId = GameManager.getInstance().createGame(fromPlayer, "game1");
+
+        GameManager.getInstance().getPlayers(gameId).add(fromPlayer);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, new PlayerData());
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+
+        fromPlayer.setGameId(gameId);
+
+        actionJsonObject = new ActionJsonObject(Action.UPDATE_ROUNDS_TO_SKIP, "5", fromPlayer);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = GameManager.getInstance().getPlayers(gameId).stream()
+                .filter(p -> p.getId().equals(fromPlayer.getId()))
+                .findAny().orElse(null);
+
+        assertThat(player).isNotNull();
+        assertThat(player.getRoundsToSkip()).isEqualTo(2);
+    }
+
+
 
 
     @Test
