@@ -45,7 +45,9 @@ public class ActionController {
             case REPORT_CHEAT -> reportCheat(gameId, fromPlayer, param);
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
-            case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0)); }
+            case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0));
+            case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(webSocket.getPlayerByPlayerId(fromPlayerId), param, action);
+        }
     }
 
     private void discardReconnect(int gameId, PlayerData fromPlayer) {
