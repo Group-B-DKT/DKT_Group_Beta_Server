@@ -72,7 +72,6 @@ public class PlayerData implements Serializable {
         this.isReady = false;
         this.money = START_MONEY;
         this.currentPosition = 0;
-        this.currentCard = null;
         this.jokerCards = new ArrayList<>();
     }
 

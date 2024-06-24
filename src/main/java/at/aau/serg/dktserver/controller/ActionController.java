@@ -13,10 +13,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.*;
 
 public class ActionController {
     private GameManager gameManager;
@@ -33,18 +31,97 @@ public class ActionController {
             case ROLL_DICE -> rollDice2(gameId, webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case CREATE_GAME -> createGame(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case JOIN_GAME -> joinGame(gameId, fromPlayerId);
-            case LEAVE_GAME -> leaveGame(fromPlayerId);
+            case LEAVE_GAME -> leaveLobby(fromPlayerId);
+            case CONNECTION_LOST -> leaveGame(gameId, fromPlayerId);
             case BUY_FIELD -> buyField(fromPlayer, fields.get(0));
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
             case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
-            case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId));
-            case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(webSocket.getPlayerByPlayerId(fromPlayerId), param, action);
-            default -> System.out.println("Action not found: " + action.toString());
+            case PAY_TAXES -> payTaxes(fromPlayer);
+            case REPORT_CHEAT -> reportCheat(gameId, fromPlayer, param);
+            case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
+            case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
+            case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0)); }
+    }
+
+    private void discardReconnect(int gameId, PlayerData fromPlayer) {
+        if (!gameManager.removePlayerFromGame(gameId, fromPlayer)){
+            return;
         }
+
+        PlayerData playerData = WebSocketHandlerImpl.getInstance().getPlayerByPlayerId(fromPlayer.getId());
+        if (playerData == null)
+            return;
+
+        boolean wasConnected = playerData.isConnected();
+        playerData.copyFrom(fromPlayer);
+
+        if (!wasConnected) playerData.setGameId(-1);
+        else playerData.setConnected(true);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RECONNECT_DISCARD, null, fromPlayer, null);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(gameId, msg);
+        webSocket.sendToUser(fromPlayer.getId(), msg);
+    }
+
+    private void rejoinPlayer(PlayerData player) {
+        Game game = gameManager.getGameById(player.getGameId());
+
+        if (game == null) return;
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RECONNECT_OK, player.getId(), game.getCurrentPlayer(), game.getFields());
+        String msg = WrapperHelper.toJsonFromObject(game.getId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(game.getId(), msg);
+    }
+
+    private void leaveGame(int gameId, String fromPlayerId) {
+        if (fromPlayerId == null){
+            return;
+        }
+
+        PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
+
+        if (gameManager.isOnTurn(gameId, fromPlayerId))
+            endTurn(player);
+
+        PlayerData newHost = null;
+        if (player.isHost()) {
+            newHost = gameManager.getNewHost(player.getGameId());
+            if (newHost == null) {
+                player.setGameId(-1);
+                gameManager.removeGame(gameId);
+                return;
+            }
+
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.HOST_CHANGED, null, newHost);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+            webSocket.sendMessage(player.getGameId(), msg);
+        }
+
+
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.CONNECTION_LOST, LocalTime.now().toString(), player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(player.getGameId(), msg);
+    }
+
+    private void buyBuilding(PlayerData fromPlayer, Field field) {
+        GameManager.getInstance().updateField(fromPlayer.getGameId(), field);
+        GameManager.getInstance().updatePlayer(fromPlayer.getGameId(), fromPlayer);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_BUILDING, null, fromPlayer, Collections.singletonList(field));
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
     }
 
     private void showSpecialCard(PlayerData fromPlayer, String param, Action action) {
@@ -57,6 +134,8 @@ public class ActionController {
 
     private void endTurn(PlayerData playerById) {
         PlayerData playerData = gameManager.getNextPlayer(playerById);
+        gameManager.getGameById(playerById.getGameId()).setCurrentPlayer(playerData);
+        playerData.setOnTurn(true);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
         String msg = WrapperHelper.toJsonFromObject(playerData.getGameId(), Request.ACTION, actionJsonObject);
@@ -68,14 +147,16 @@ public class ActionController {
         for (Field field: fields) {
             gameManager.updateField(gameId, field);
         }
-        gameManager.getGameById(gameId).setStarted(true);
-        gameManager.getGameById(gameId).getPlayers().sort(Comparator.comparing(PlayerData::getId));
+        Game game = gameManager.getGameById(gameId);
+        game.setStarted(true);
+        game.getPlayers().sort(Comparator.comparing(PlayerData::getId));
 
         SecureRandom random = new SecureRandom();
 
         List<PlayerData> players = gameManager.getGameById(gameId).getPlayers();
         PlayerData isOnTurnPlayer = players.get(random.nextInt(players.size()));
         isOnTurnPlayer.setOnTurn(true);
+        game.setCurrentPlayer(isOnTurnPlayer);
 
         ActionJsonObject actionJsonObject = new ActionJsonObject(Action.GAME_STARTED, null, isOnTurnPlayer, fields);
         String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
@@ -116,10 +197,11 @@ public class ActionController {
         if(game == null) return;
 
         gameManager.updateField(player.getGameId(), field);
+        gameManager.updatePlayer(player.getGameId(), player);
 
-            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player, Collections.singletonList(field));
-            String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
-            webSocket.sendMessage(player.getGameId(), msg);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BUY_FIELD, null, player, Collections.singletonList(field));
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
     }
 
     private void joinGame(int gameId, String fromPlayerId){
@@ -139,7 +221,7 @@ public class ActionController {
     }
 
 
-    private void leaveGame(String fromPlayerId) {
+    private void leaveLobby(String fromPlayerId) {
     PlayerData player = webSocket.getPlayerByPlayerId(fromPlayerId);
     if (player == null) return;
     int gameId = player.getGameId();
@@ -182,8 +264,7 @@ public class ActionController {
 
         boolean positionSet = gameManager.setPlayerPosition(player.getId(), player.getGameId(), diceResult);
 
-        if(positionSet == false){
-
+        if(!positionSet){
             return;
         }
 
@@ -192,10 +273,9 @@ public class ActionController {
         webSocket.sendMessage(player.getGameId(), msg);
     }
 
-
     private void updateMoney(PlayerData player, String param){
 
-        boolean moneySet = gameManager.updatePlayer(player, player.getGameId());
+        boolean moneySet = gameManager.updatePlayer(player.getGameId(), player);
 
         if(moneySet == false){
             return;
@@ -205,11 +285,68 @@ public class ActionController {
         webSocket.sendMessage(player.getGameId(), msg);
 
     }
+    private void payTaxes(PlayerData player){
 
-    private void submitCheat(PlayerData player) {
+        int oldMoney = Objects.requireNonNull(gameManager.getPlayers(player.getGameId()).stream().filter(p -> p.getId().equals(player.getId())).findAny().orElse(null)).getMoney();
+        boolean moneySet = gameManager.updatePlayer(player.getGameId(), player);
+
+        if(moneySet == false){
+            return;
+        }
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.PAY_TAXES,Integer.toString(Math.abs(oldMoney- player.getMoney())) , player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
+
+    }
+
+    private void submitCheat(PlayerData player, String param) {
+        int money;
+        try {
+            money = Integer.parseInt(param);
+        }
+        catch (Exception e) {
+            return;
+        }
         player.setHasCheated(true);
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.SUBMIT_CHEAT, "", player);
+        player.setMoney(player.getMoney() + money);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_MONEY, null, player);
         String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
         webSocket.sendMessage(player.getGameId(), msg);
     }
+
+
+    private void reportCheat(int gameId, PlayerData fromPlayer, String param) {
+        Game game = gameManager.getGameById(gameId);
+        PlayerData player = game.getPlayers().stream()
+                .filter(playerData -> playerData.getId().equals(param))
+                .findFirst()
+                .orElse(null);
+
+        ActionJsonObject actionJsonObjectUpdate;
+
+        if(player != null && player.isHasCheated()) {
+            player.setMoney(200);
+            player.setHasCheated(false);
+
+            ActionJsonObject actionJsonObject = new ActionJsonObject(Action.REPORT_CHEAT, param, fromPlayer);
+            String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+            webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
+            actionJsonObjectUpdate = new ActionJsonObject(Action.UPDATE_MONEY, null, player);
+        } else{
+            PlayerData fromPlayerServer = game.getPlayers().stream()
+                    .filter(playerData -> playerData.getId().equals(fromPlayer.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            fromPlayerServer.setMoney(200);
+            actionJsonObjectUpdate = new ActionJsonObject(Action.UPDATE_MONEY, null, fromPlayerServer);
+        }
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObjectUpdate);
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
+
+
+    }
+
 }
