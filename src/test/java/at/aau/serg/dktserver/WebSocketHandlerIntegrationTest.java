@@ -1009,34 +1009,6 @@ class WebSocketHandlerIntegrationTest {
         assertThat(playerServer).hasSize(1);
     }
 
-    private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
-        String username = "Player" + id;
-        String playerId = "ID" + id;
-        PlayerData playerOne = new PlayerData(null, username , playerId, -1);
-        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
-        Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), gameId, Request.CONNECT, connectJsonObject);
-        String msg = gson.toJson(wrapper);
-        session.sendMessage(new TextMessage(msg));
-
-        id ++;
-        return playerId;
-    }
-
-
-    /**
-     * @return The basic session for the WebSocket connection.
-     */
-    public WebSocketSession initStompSession() throws Exception {
-        WebSocketClient client = new StandardWebSocketClient();
-
-        // connect client to the websocket server
-        WebSocketSession session = client.execute(new WebSocketHandlerClientImpl(messages), // pass the message list
-                        String.format(WEBSOCKET_URI, port))
-                // wait 1 sec for the client to be connected
-                .get(1, TimeUnit.SECONDS);
-
-        return session;
-    }
     @Test
     void testWebSocketHandlerActionRISIKO_CARD_SHOW() throws Exception {
         WebSocketSession session = initStompSession(); //enable connection
@@ -1095,5 +1067,34 @@ class WebSocketHandlerIntegrationTest {
         messages.clear(); //empty message
 
         assertThat(cardIndex == responseCardIndex);
+    }
+
+    private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
+        String username = "Player" + id;
+        String playerId = "ID" + id;
+        PlayerData playerOne = new PlayerData(null, username , playerId, -1);
+        ConnectJsonObject connectJsonObject = new ConnectJsonObject(ConnectType.NEW_CONNECT, playerOne);
+        Wrapper wrapper = new Wrapper(connectJsonObject.getClass().getSimpleName(), gameId, Request.CONNECT, connectJsonObject);
+        String msg = gson.toJson(wrapper);
+        session.sendMessage(new TextMessage(msg));
+
+        id ++;
+        return playerId;
+    }
+
+
+    /**
+     * @return The basic session for the WebSocket connection.
+     */
+    public WebSocketSession initStompSession() throws Exception {
+        WebSocketClient client = new StandardWebSocketClient();
+
+        // connect client to the websocket server
+        WebSocketSession session = client.execute(new WebSocketHandlerClientImpl(messages), // pass the message list
+                        String.format(WEBSOCKET_URI, port))
+                // wait 1 sec for the client to be connected
+                .get(1, TimeUnit.SECONDS);
+
+        return session;
     }
 }
