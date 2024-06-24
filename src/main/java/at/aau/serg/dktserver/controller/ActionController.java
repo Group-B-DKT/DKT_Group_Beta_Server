@@ -46,7 +46,7 @@ public class ActionController {
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
             case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0));
-            case START_GAME -> sellBuilding(fromPlayer, fields.get(0));
+            case SELL_BUILDING -> sellBuilding(fromPlayer, fields.get(0));
         }
     }
 
