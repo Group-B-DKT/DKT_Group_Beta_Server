@@ -98,7 +98,7 @@ public class GameManager {
     public Map<Integer, Integer> getFreeGamesAndPlayerCount() {
         Map<Integer, Integer> gamesAndPlayer = new HashMap<>();
         for(Game g: games) {
-            if (g.getPlayers().size() < Game.maxPlayer) {
+            if (g.getPlayers().size() < Game.MAX_PLAYER) {
                 gamesAndPlayer.put(g.getId(), g.getPlayers().size());
             }
         }

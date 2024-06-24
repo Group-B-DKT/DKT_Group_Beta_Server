@@ -4,6 +4,8 @@ import at.aau.serg.dktserver.model.enums.FieldType;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Field {
@@ -15,29 +17,36 @@ public class Field {
     private PlayerData owner;
     private final boolean ownable;
 
-    private FieldType fieldType;
+    private List<House> houses;
+    private Hotel hotel;
 
-    public Field(int id, String name, int price, boolean ownable, FieldType fieldType) {
+    private FieldType fieldType;
+    private int rent;
+
+    public Field(int id, String name, int price, boolean ownable, FieldType fieldType, int rent) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.ownable = ownable;
         this.fieldType = fieldType;
+        this.houses = new ArrayList<>();
+        this.rent = rent;
     }
-
-
+    public Field(int id, String name, int price, boolean ownable,FieldType fieldType) {
+        this(id, name, price, ownable, FieldType.NORMAL, -1);
+    }
     public Field(int id, String name, boolean ownable) {
-        this.id = id;
-        this.name = name;
-        this.ownable = ownable;
+        this(id, name, -1,ownable, FieldType.NORMAL, -1);
     }
     public Field(int id, String name, int price, boolean ownable) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.ownable = ownable;
+        this(id, name, price, ownable, FieldType.NORMAL, -1);
     }
-
+    public int getRent() {
+        return rent;
+    }
+    public void setRent(int rent) {
+        this.rent = rent;
+    }
 
     public String getName() {
         return name;
@@ -66,6 +75,19 @@ public class Field {
     public PlayerData getOwner() {
         return owner;
     }
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
+
+    public List<House> getHouses(){
+        return this.houses;
+    }
+
+
 
     @Override
     public boolean equals(Object o) {

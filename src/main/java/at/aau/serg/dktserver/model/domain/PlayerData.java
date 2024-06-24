@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.Objects;
 @AllArgsConstructor
 public class PlayerData implements Serializable {
-    private static final int START_MONEY = 1200;
+    private static final int START_MONEY = 1500;
 
     @Getter
     @Setter
