@@ -30,6 +30,8 @@ public interface GameHandler {
 
     boolean updatePlayer(PlayerData player);
 
+    void goToPrison(PlayerData player);
+  
     PlayerData getNewHost();
 
     boolean removePlayer(PlayerData player);
@@ -37,4 +39,5 @@ public interface GameHandler {
     void removeFieldOwner(String id);
 
     boolean isOnTurn(String fromPlayerId);
+  
 }
