@@ -2,7 +2,6 @@ package at.aau.serg.dktserver.model.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
