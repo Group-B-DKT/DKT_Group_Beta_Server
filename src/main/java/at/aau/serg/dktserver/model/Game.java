@@ -17,7 +17,7 @@ public class Game implements GameHandler {
     public static final int MAX_PLAYER = 6;
 
     private static final int NUMBER_OF_FIELDS = 30;
-    private static final int NUMBER_OF_TURNS_TO_WIN = 4;
+    public static final int NUMBER_OF_TURNS_TO_WIN = 4;
 
     public static final List<Integer> PLAYER_COLORS = List.of(
             0xFF66FF66, // Hellgrün
@@ -44,6 +44,7 @@ public class Game implements GameHandler {
     @Getter
     private int id;
     @Getter
+    @Setter
     private int amountOfTurns;
 
     public Game(int id, PlayerData host, String gameName) {
