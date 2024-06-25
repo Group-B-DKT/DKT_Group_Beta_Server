@@ -17,6 +17,7 @@ public class Game implements GameHandler {
     public static final int MAX_PLAYER = 6;
 
     private static final int NUMBER_OF_FIELDS = 30;
+    public static final int NUMBER_OF_TURNS_TO_WIN = 4;
 
     public static final List<Integer> PLAYER_COLORS = List.of(
             0xFF66FF66, // Hellgrün
@@ -42,6 +43,9 @@ public class Game implements GameHandler {
     private ArrayList<Field> fields = new ArrayList<>();
     @Getter
     private int id;
+    @Getter
+    @Setter
+    private int amountOfTurns;
 
     public Game(int id, PlayerData host, String gameName) {
         this.id = id;
@@ -50,6 +54,7 @@ public class Game implements GameHandler {
         rng = new SecureRandom();
         players = new ArrayList<>();
         players.add(host);
+        this.amountOfTurns = 0;
     }
 
 
@@ -137,6 +142,11 @@ public class Game implements GameHandler {
                 .orElse(null);
         if (player == null) return false;
         return player.isOnTurn();
+    }
+
+    @Override
+    public boolean checkWinCondition() {
+        return amountOfTurns++ >= NUMBER_OF_TURNS_TO_WIN;
     }
 
     @Override

@@ -657,6 +657,33 @@ class WebSocketHandlerIntegrationTest {
         assertThat(actionJsonObjectReceived.getAction()).isSameAs(Action.END_TURN);
     }
 
+    @Test
+    void testWebSocketHandlerActionEndTurnWinGame() throws Exception {
+        WebSocketSession session = initStompSession();
+
+        String id = connectToWebsocket(session, -1);
+        messages.poll(1, TimeUnit.SECONDS);
+
+        PlayerData player = new PlayerData(null, "", id, -1);
+
+        int gameId = GameManager.getInstance().createGame(new PlayerData(null, "H1", "HI1", -1), "Game10");
+        Game game = GameManager.getInstance().getGameById(gameId);
+        game.setAmountOfTurns(Game.NUMBER_OF_TURNS_TO_WIN);
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.JOIN_GAME, null, player, null);
+        String msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        messages.poll(1, TimeUnit.SECONDS);
+
+        actionJsonObject = new ActionJsonObject(Action.END_TURN, null, player, null);
+        msg = WrapperHelper.toJsonFromObject(gameId, Request.ACTION, actionJsonObject);
+        session.sendMessage(new TextMessage(msg));
+        String response = messages.poll(1, TimeUnit.SECONDS);
+
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
+        assertThat(actionJsonObjectReceived.getAction()).isSameAs(Action.GAME_WON);
+    }
+
 
     @Test
     void testWebSocketHandlerActionUpdatePlayerNotNull() throws Exception {

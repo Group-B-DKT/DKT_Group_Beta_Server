@@ -124,4 +124,12 @@ public class PlayerData implements Serializable {
         currentPosition = fromPlayer.currentPosition;
         hasCheated = fromPlayer.hasCheated;
     }
+    public void setDefaulValues() {
+        this.gameId = -1;
+        this.money = START_MONEY;
+        this.currentPosition = 0;
+        this.isOnTurn = false;
+        this.color = -1;
+        this.isHost = false;
+    }
 }
