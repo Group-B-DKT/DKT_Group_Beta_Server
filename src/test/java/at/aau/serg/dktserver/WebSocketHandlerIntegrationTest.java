@@ -28,6 +28,7 @@ import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -107,21 +108,25 @@ class WebSocketHandlerIntegrationTest {
 
     @Test
     void testWebSocketHandlerActionRollDice2() throws Exception {
-        WebSocketSession session = initStompSession();
+        WebSocketSession session = initStompSession(); //enable connection
+        connectToWebsocket(session, -1); // make connection to lokal test instanz of server
 
-        connectToWebsocket(session, -1);
-        messages.poll(1, TimeUnit.SECONDS);
+        messages.poll(1, TimeUnit.SECONDS); //needed to get initial connectJsonObject
+
+        //initialize client results
         int[] diceResult = {4,5};
-        String param = gson.toJson(diceResult);
+        String param = gson.toJson(diceResult); //gson makes a json-object out of the diceResult
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, param, null);
-        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject);
-        session.sendMessage(new TextMessage(msg));
-        String response = messages.poll(1, TimeUnit.SECONDS);
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.ROLL_DICE, param, null); //makes new actionJsonObjekt wih special parameters
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject); //create message json object of previous object with new parameters
+        session.sendMessage(new TextMessage(msg)); //sends message to the server
+        String response = messages.poll(1, TimeUnit.SECONDS); //response of the server
 
-        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response);
-        int[] numbers = gson.fromJson(actionJsonObjectReceived.getParam(), new int[2].getClass());
-        messages.clear();
+        System.out.println(response);
+
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response); //pass json from server response
+        int[] numbers = gson.fromJson(actionJsonObjectReceived.getParam(), new int[2].getClass()); //makes params into a new int[] with size 2 -> first argument: String with json format, second argument: desired class
+        messages.clear(); //empty message
 
         assertThat(Arrays.equals(numbers,diceResult)).isTrue();
 
@@ -1004,6 +1009,66 @@ class WebSocketHandlerIntegrationTest {
         assertThat(playerServer).hasSize(1);
     }
 
+    @Test
+    void testWebSocketHandlerActionRISIKO_CARD_SHOW() throws Exception {
+        WebSocketSession session = initStompSession(); //enable connection
+        connectToWebsocket(session, -1); // make connection to lokal test instanz of server
+
+        messages.poll(1, TimeUnit.SECONDS); //needed to get initial connectJsonObject
+        //initialize client results
+        int cardIndex = 2;
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.RISIKO_CARD_SHOW, Integer.toString(cardIndex), null); // Action, card, and player send to server
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject); //create message json object of previous object with new parameters
+
+        session.sendMessage(new TextMessage(msg)); //sends message to the server
+        String response = messages.poll(1, TimeUnit.SECONDS); //response of the server
+
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response); //pass json from server response
+        int responseCardIndex = gson.fromJson(actionJsonObjectReceived.getParam(), int.class); //makes params into a new int[] with size 2 -> first argument: String with json format, second argument: desired class
+        messages.clear(); //empty message
+
+        assertThat(cardIndex == responseCardIndex);
+    }
+
+    @Test
+    void testWebSocketHandlerActionBANK_CARD_SHOW() throws Exception {
+        WebSocketSession session = initStompSession(); //enable connection
+        connectToWebsocket(session, -1); // make connection to lokal test instanz of server
+        messages.poll(1, TimeUnit.SECONDS); //needed to get initial connectJsonObject
+        //initialize client results
+        int cardIndex = 10;
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BANK_CARD_SHOW, Integer.toString(cardIndex), null); // Action, card, and player send to server
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject); //create message json object of previous object with new parameters
+
+        session.sendMessage(new TextMessage(msg)); //sends message to the server
+        String response = messages.poll(1, TimeUnit.SECONDS); //response of the server
+
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response); //pass json from server response
+        int responseCardIndex = gson.fromJson(actionJsonObjectReceived.getParam(), int.class); //makes params into a new int[] with size 2 -> first argument: String with json format, second argument: desired class
+        messages.clear(); //empty message
+
+        assertThat(cardIndex == responseCardIndex);
+    }
+    @Test
+    void testWebSocketHandlerActionBANK_CARD_SHOWwithMinusIndex() throws Exception {
+        WebSocketSession session = initStompSession(); //enable connection
+        connectToWebsocket(session, -1); // make connection to lokal test instanz of server
+        messages.poll(1, TimeUnit.SECONDS); //needed to get initial connectJsonObject
+        //initialize client results
+        int cardIndex = -10;
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.BANK_CARD_SHOW, Integer.toString(cardIndex), null); // Action, card, and player send to server
+        String msg = WrapperHelper.toJsonFromObject(-1, Request.ACTION, actionJsonObject); //create message json object of previous object with new parameters
+
+        session.sendMessage(new TextMessage(msg)); //sends message to the server
+        String response = messages.poll(1, TimeUnit.SECONDS); //response of the server
+
+        ActionJsonObject actionJsonObjectReceived = (ActionJsonObject) WrapperHelper.getInstanceFromJson(response); //pass json from server response
+        int responseCardIndex = gson.fromJson(actionJsonObjectReceived.getParam(), int.class); //makes params into a new int[] with size 2 -> first argument: String with json format, second argument: desired class
+        messages.clear(); //empty message
+
+        assertThat(cardIndex == responseCardIndex);
+    }
+
     private String connectToWebsocket(WebSocketSession session, int gameId) throws IOException {
         String username = "Player" + id;
         String playerId = "ID" + id;
@@ -1032,5 +1097,4 @@ class WebSocketHandlerIntegrationTest {
 
         return session;
     }
-
 }

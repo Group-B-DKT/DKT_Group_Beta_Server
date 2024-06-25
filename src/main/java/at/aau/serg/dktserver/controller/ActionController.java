@@ -13,6 +13,10 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -46,7 +50,17 @@ public class ActionController {
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
             case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0));
+            case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(webSocket.getPlayerByPlayerId(fromPlayerId), param, action);
+            default -> System.out.println("Action not found: " + action.toString());
         }
+    }
+
+    private void showSpecialCard(PlayerData fromPlayer, String param, Action action) {
+        //if(fromPlayer == null) return;
+        ActionJsonObject actionJsonObject = new ActionJsonObject(action, param, fromPlayer, null);
+        String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
+        System.out.println("SPECIAL_CARD_SHOW "+ param);
+        webSocket.sendMessage(fromPlayer.getGameId(), msg);
     }
 
     private void discardReconnect(int gameId, PlayerData fromPlayer) {
