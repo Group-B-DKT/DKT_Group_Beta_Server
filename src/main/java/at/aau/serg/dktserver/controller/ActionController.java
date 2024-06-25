@@ -147,7 +147,8 @@ public class ActionController {
 
         ActionJsonObject actionJsonObject;
         if (game.checkWinCondition()){
-            game.getPlayers().sort(Comparator.comparing(PlayerData::getMoney));
+            game.getPlayers().sort(Comparator.comparing(PlayerData::getMoney).reversed());
+            game.getPlayers().forEach(p -> p.setDefaulValues());
             GameManager.getInstance().removeGame(game.getId());
             actionJsonObject = new ActionJsonObject(Action.GAME_WON, null, game.getPlayers().get(0), null);
         }else{
