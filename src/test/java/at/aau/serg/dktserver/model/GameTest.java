@@ -128,5 +128,13 @@ class GameTest {
                 .collect(Collectors.toSet());
         assertEquals(0, playerFields.size());
     }
-
+    @Test
+    void testGoToPrison() {
+        PlayerData player = new PlayerData(null, "P1", "ID1", 1000);
+        Field knast = new Field(8, "Knast", false);
+        fields.add(knast);
+        game.joinGame(player);
+        game.goToPrison(player);
+        assertEquals(knast, player.getCurrentField());
+    }
 }

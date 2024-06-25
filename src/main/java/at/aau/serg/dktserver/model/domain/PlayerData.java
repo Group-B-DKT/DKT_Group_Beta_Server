@@ -3,17 +3,19 @@ package at.aau.serg.dktserver.model.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Objects;
 @AllArgsConstructor
 public class PlayerData implements Serializable {
     private static final int START_MONEY = 1500;
-
+    @Setter
+    @Getter
+    private Card currentCard;
     @Getter
     @Setter
     private transient WebSocketSession session;
@@ -61,6 +63,10 @@ public class PlayerData implements Serializable {
     @Getter
     @Setter
     private int roundsToSkip;
+    @Getter
+    @Setter
+    private ArrayList<JokerCard> jokerCards;
+
 
     public PlayerData(WebSocketSession session, String username, String playerId, int gameId) {
         this.session = session;
@@ -72,6 +78,8 @@ public class PlayerData implements Serializable {
         this.money = START_MONEY;
         this.currentPosition = 0;
         this.roundsToSkip = 0;
+        this.currentCard = null;
+        this.jokerCards = new ArrayList<>();
     }
 
     public PlayerData(){}
