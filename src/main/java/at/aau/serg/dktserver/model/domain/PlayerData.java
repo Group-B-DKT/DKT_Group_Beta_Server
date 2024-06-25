@@ -1,5 +1,6 @@
 package at.aau.serg.dktserver.model.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.socket.TextMessage;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
-
+@AllArgsConstructor
 public class PlayerData implements Serializable {
     private static final int START_MONEY = 1500;
     @Setter
@@ -61,6 +62,9 @@ public class PlayerData implements Serializable {
 
     @Getter
     @Setter
+    private int roundsToSkip;
+    @Getter
+    @Setter
     private ArrayList<JokerCard> jokerCards;
 
 
@@ -73,6 +77,7 @@ public class PlayerData implements Serializable {
         this.isReady = false;
         this.money = START_MONEY;
         this.currentPosition = 0;
+        this.roundsToSkip = 0;
         this.currentCard = null;
         this.jokerCards = new ArrayList<>();
     }
@@ -119,7 +124,6 @@ public class PlayerData implements Serializable {
         currentPosition = fromPlayer.currentPosition;
         hasCheated = fromPlayer.hasCheated;
     }
-
     public void setDefaulValues() {
         this.gameId = -1;
         this.money = START_MONEY;

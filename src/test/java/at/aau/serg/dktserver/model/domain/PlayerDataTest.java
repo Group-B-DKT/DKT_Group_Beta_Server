@@ -79,4 +79,16 @@ class PlayerDataTest {
         playerData.setMoney(money);
         assertEquals(money, playerData.getMoney());
     }
+
+    @Test
+    void setRoundsToSkip(){
+        playerData.setRoundsToSkip(3);
+        assertEquals(3, playerData.getRoundsToSkip());
+    }
+
+    @Test
+    void allArgsConstructorTest(){
+        PlayerData playerData = new PlayerData(null, webSocketSession, 1, "1", "1", false, null, false, -1, false, false, -1, -1, false, -1, null);
+        assertEquals("1", playerData.getId());
+    }
 }

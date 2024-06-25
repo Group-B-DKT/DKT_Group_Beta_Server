@@ -150,7 +150,6 @@ public class GameManager {
    public boolean setPlayerPosition(String playerId, int gameId, int amount){
 
         Game game = getGameById(gameId);
-
         return game.setPlayerPosition(playerId, amount);
 
     }

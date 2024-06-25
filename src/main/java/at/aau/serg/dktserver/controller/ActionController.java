@@ -41,7 +41,7 @@ public class ActionController {
             case INIT_FIELDS -> initFields(gameId, param);
             case READY, NOT_READY -> setReady(fromPlayer);
             case GAME_STARTED -> initGame(gameId, fields);
-            case MOVE_PLAYER -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
+            case MOVE_PLAYER, SKIP_TURN -> movePlayer(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case END_TURN -> endTurn(webSocket.getPlayerByPlayerId(fromPlayerId));
             case SUBMIT_CHEAT -> submitCheat(webSocket.getPlayerByPlayerId(fromPlayerId), param);
             case UPDATE_MONEY -> updateMoney(fromPlayer, param);
@@ -49,6 +49,7 @@ public class ActionController {
             case REPORT_CHEAT -> reportCheat(gameId, fromPlayer, param);
             case RECONNECT_OK -> rejoinPlayer(webSocket.getPlayerByPlayerId(fromPlayerId));
             case RECONNECT_DISCARD -> discardReconnect(Integer.parseInt(param), fromPlayer);
+            case UPDATE_ROUNDS_TO_SKIP -> updateRoundsToSkip(fromPlayer, param);
             case BUY_BUILDING -> buyBuilding(fromPlayer, fields.get(0));
             case RISIKO_CARD_SHOW, BANK_CARD_SHOW -> showSpecialCard(webSocket.getPlayerByPlayerId(fromPlayerId), param, action);
             default -> System.out.println("Action not found: " + action.toString());
@@ -61,6 +62,18 @@ public class ActionController {
         String msg = WrapperHelper.toJsonFromObject(fromPlayer.getGameId(), Request.ACTION, actionJsonObject);
         System.out.println("SPECIAL_CARD_SHOW "+ param);
         webSocket.sendMessage(fromPlayer.getGameId(), msg);
+    }
+
+    private void updateRoundsToSkip(PlayerData fromPlayer, String param) {
+        PlayerData player = gameManager.getPlayers(fromPlayer.getGameId()).stream()
+                .filter(p->p.getId().equals(fromPlayer.getId()))
+                .findAny().orElse(null);
+        player.setRoundsToSkip(fromPlayer.getRoundsToSkip());
+
+        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.UPDATE_ROUNDS_TO_SKIP, param, player);
+        String msg = WrapperHelper.toJsonFromObject(player.getGameId(), Request.ACTION, actionJsonObject);
+        webSocket.sendMessage(player.getGameId(), msg);
+
     }
 
     private void discardReconnect(int gameId, PlayerData fromPlayer) {
@@ -276,6 +289,17 @@ public class ActionController {
 
     private void movePlayer(PlayerData player, String param){
         int diceResult = Integer.parseInt(param);
+
+        if(player.getRoundsToSkip() > 0){
+            player.setRoundsToSkip(player.getRoundsToSkip() - 1);
+
+           ActionJsonObject actionJsonObject = new ActionJsonObject(Action.MOVE_PLAYER, param, player);
+            String msg = WrapperHelper.toJsonFromObject(player.getGameId(),Request.ACTION, actionJsonObject);
+            webSocket.sendMessage(player.getGameId(), msg);
+            return;
+        }
+
+
 
         boolean positionSet = gameManager.setPlayerPosition(player.getId(), player.getGameId(), diceResult);
 
