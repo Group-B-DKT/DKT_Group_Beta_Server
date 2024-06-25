@@ -58,4 +58,9 @@ public class GameInfoTest {
         gameInfo.setConnectedPlayers(players);
         assertTrue(gameInfo.getConnectedPlayers().get(0).getId().equals("ID1"));
     }
+    @Test
+    void testSetIsStarted() {
+        GameInfo gameInfo = new GameInfo(1, "Test", null);
+        assertFalse(gameInfo.isStarted);
+    }
 }
