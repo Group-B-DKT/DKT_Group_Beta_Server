@@ -39,5 +39,6 @@ public interface GameHandler {
     void removeFieldOwner(String id);
 
     boolean isOnTurn(String fromPlayerId);
-  
+
+    boolean checkWinCondition();
 }

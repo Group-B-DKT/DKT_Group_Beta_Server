@@ -137,4 +137,14 @@ class GameTest {
         game.goToPrison(player);
         assertEquals(knast, player.getCurrentField());
     }
+
+    @Test
+    void testAmountOfTurns(){
+        Game myGame = new Game(1, new PlayerData(null, "P1", "ID1", -1), "Game1");
+
+        assertEquals(0, myGame.getAmountOfTurns());
+        myGame.setAmountOfTurns(100);
+        assertEquals(100, myGame.getAmountOfTurns());
+    }
+
 }
