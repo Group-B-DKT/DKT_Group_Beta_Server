@@ -141,12 +141,19 @@ public class ActionController {
 
     private void endTurn(PlayerData playerById) {
         PlayerData playerData = gameManager.getNextPlayer(playerById);
-        gameManager.getGameById(playerById.getGameId()).setCurrentPlayer(playerData);
+        Game game = gameManager.getGameById(playerById.getGameId());
+        game.setCurrentPlayer(playerData);
         playerData.setOnTurn(true);
 
-        ActionJsonObject actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
+        ActionJsonObject actionJsonObject;
+        if (game.checkWinCondition()){
+            game.getPlayers().sort(Comparator.comparing(PlayerData::getMoney));
+            GameManager.getInstance().removeGame(game.getId());
+            actionJsonObject = new ActionJsonObject(Action.GAME_WON, null, game.getPlayers().get(0), null);
+        }else{
+            actionJsonObject = new ActionJsonObject(Action.END_TURN, null, playerData, null);
+        }
         String msg = WrapperHelper.toJsonFromObject(playerData.getGameId(), Request.ACTION, actionJsonObject);
-
         webSocket.sendMessage(playerData.getGameId(), msg);
     }
 
